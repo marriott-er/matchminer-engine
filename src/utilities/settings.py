@@ -21,11 +21,12 @@ if file_path is not None:
             setattr(sys.modules[__name__], name, value)
 
 
-# clinical columns
+# clinical settings
+sample_collection_name = 'samples'
 sample_id_col = 'sampleId'
 birth_date_col = 'birthDate'
 report_date_col = 'reportDate'
 
-# genomic columns
+# genomic settings
 variants_col = 'variants'
 true_transcript_exon_col = 'trueTranscriptExon'

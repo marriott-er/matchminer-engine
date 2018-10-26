@@ -140,7 +140,7 @@ class LoadService:
                 if col in item:
                     item[col] = dt.datetime.strptime(str(item[col]), self.date_format)
 
-        self.db.clinical.insert(clinical_json)
+        self.db[s.sample_collection_name].insert(clinical_json)
 
     def _add_genomic_data_to_clinical_dataframe(self, clinical_json):
         """
