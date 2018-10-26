@@ -41,7 +41,7 @@ class ConsentValidatorCerberus(Validator):
         return validation error if it isn't a true value
         in the dictionary'''
 
-        # load the mapping
+        # load_service the mapping
         normalize_table = self.db['normalize'].find_one()
 
         if not normalize_table:

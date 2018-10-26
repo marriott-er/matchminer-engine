@@ -118,7 +118,7 @@ class MatchEngine(object):
         if isinstance(data, dict):
             return 0, data
 
-        # try to load
+        # try to load_service
         try:
             data_json = yaml.load(data)
             return 0, data_json

@@ -5,13 +5,13 @@ from pymongo import ASCENDING, DESCENDING
 
 from src.utilities import settings as s
 from src.utilities.utilities import get_db, dataframe_to_json
-from src.services.load.patient import Patient
-from src.services.load.trial import Trial
+from src.services.load_service.patient import Patient
+from src.services.load_service.trial import Trial
 
 logging.basicConfig(level=logging.DEBUG, format='[%(levelname)s] %(message)s', )
 
 
-def load_main(args):
+def load_service(_args):
     """
     Sets up MongoDB for matching
 
@@ -51,14 +51,14 @@ def load_main(args):
 
     :param args: trials: Path to bson trial file.
     """
-    exe = Load(args)
+    exe = LoadService(_args)
 
     # insert trial data
-    if args.trials:
+    if _args.trials:
         exe.add_trial_data_to_mongo()
 
-    # load patient data
-    if args.clinical:
+    # load_service patient data
+    if _args.clinical:
         exe.load_patient_data()
 
         if not exe.clinical_is_bson:
@@ -69,7 +69,7 @@ def load_main(args):
         # exe.create_clinical_index()  # todo enable this
 
 
-class Load:
+class LoadService:
 
     def __init__(self, args):
         self._args = args
