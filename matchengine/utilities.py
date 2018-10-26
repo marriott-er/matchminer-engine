@@ -392,38 +392,7 @@ def add_matches(trial_matches_df, db):
         db.trial_match.insert_many(records)
 
 
-def get_db(uri):
-    """Returns a Mongo connection"""
 
-    if uri:
-        MONGO_URI = uri
-    else:
-
-        # sanity check
-        MONGO_URI = ""
-        file_path = os.getenv("SECRETS_JSON", None)
-        if file_path is None:
-            uri = os.getenv("MONGO_URI")
-            if uri:
-                MONGO_URI = uri
-            else:
-                logging.error("ENVAR SECRETS_JSON not set")
-                sys.exit(1)
-
-        else:
-            # pull values.
-            with open(file_path) as fin:
-                vars = json.load(fin)
-                for name, value in vars.iteritems():
-                    if name == "MONGO_URI":
-                        MONGO_URI = value
-
-    if not MONGO_URI:
-        logging.error("MONGO_URI not set in SECRETS_JSON")
-    else:
-        os.environ["MONGO_URI"] = MONGO_URI
-        connection = MongoClient(MONGO_URI)
-        return connection["matchminer"]
 
 
 def get_structural_variants(g):

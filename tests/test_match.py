@@ -1,8 +1,6 @@
 """Copyright 2016 Dana-Farber Cancer Institute"""
 
 import os
-import json
-
 from tests import TestSetUp
 
 YAML_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data/yaml/'))
