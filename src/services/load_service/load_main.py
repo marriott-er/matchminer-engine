@@ -4,7 +4,7 @@ import datetime as dt
 from pymongo import ASCENDING, DESCENDING
 
 from src.utilities import settings as s
-from src.utilities.utilities import get_db, dataframe_to_json
+from src.utilities.utilities import get_db, dataframe_to_json, map_variant_category_name_to_data_model
 from src.services.load_service.patient import Patient
 from src.services.load_service.trial import Trial
 
@@ -34,7 +34,7 @@ def load_service(_args):
         - trueHugoSymbol                {str} (Gene name)
         - trueProteinChange             {str} (Specific variant)
         - trueVariantClassification     {str} (Variant type)
-        - variantCategory               {str} (CNV, MUTATION, or SV)
+        - variantCategory               {str} (CNV, MUTATION, SV, or SIGNATURE) ** Cannot be null
         - trueTranscriptExon            {int} (Exon number)
         - cnvCall                       {str} (Heterozygous deletion, Homozygous deletion,
                                                Gain, High Level amplification, or null)
@@ -152,7 +152,33 @@ class LoadService:
         f1 = (self.p.genomic_df[s.sample_id_col] == clinical_json[s.sample_id_col])
         gdf = self.p.genomic_df[f1]
         genomic_json = dataframe_to_json(df=gdf)
-        return genomic_json
+
+        # pull gene names to use as key values
+        genomic_data = {k: [] for k in s.genomic_variants_subheader_keys}
+        for item in genomic_json:
+
+            # variant category must be included for every variant
+            if pd.isnull(item[s.variant_category_col]):
+                raise ValueError('%s column cannot be null.' % s.variant_category_col)
+
+            variant_category = item[s.variant_category_col]
+            variant_class = item[s.variant_class_col]
+            protein_change = item[s.protein_change_col]
+            keyname = map_variant_category_name_to_data_model(val=variant_category)
+
+            # add reference residue for SNVs
+            if variant_category == s.mutation_val and variant_class == s.missense_mutation_val:
+                item[s.ref_residue_col] = protein_change[:-1]
+            else:
+                item[s.ref_residue_col] = None
+
+            # separate data by variant category
+            if variant_category in [s.mutation_val, s.cnv_val]:
+                genomic_data[keyname].append({item[s.gene_name_col]: item})
+            else:
+                genomic_data[keyname].append(item)
+
+        return genomic_data
 
     def create_clinical_index(self):
         """

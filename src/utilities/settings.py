@@ -29,4 +29,14 @@ report_date_col = 'reportDate'
 
 # genomic settings
 variants_col = 'variants'
+variant_class_col = 'trueVariantClassification'
 true_transcript_exon_col = 'trueTranscriptExon'
+gene_name_col = 'trueHugoSymbol'
+variant_category_col = 'variantCategory'
+ref_residue_col = 'referenceResidue'
+protein_change_col = 'trueProteinChange'
+genomic_variants_subheader_keys = ['snvs', 'cnvs', 'svs', 'signatures']
+
+mutation_val = 'MUTATION'
+cnv_val = 'CNV'
+missense_mutation_val = 'Missense_Mutation'
