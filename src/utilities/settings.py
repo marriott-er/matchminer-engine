@@ -21,22 +21,32 @@ if file_path is not None:
             setattr(sys.modules[__name__], name, value)
 
 
-# clinical settings
 sample_collection_name = 'samples'
+variants_key = 'variants'
+snv_key = 'snvs'
+cnv_key = 'cnvs'
+sv_key = 'svs'
+signature_key = 'signatures'
+genomic_variants_subheader_keys = [snv_key, cnv_key, sv_key, signature_key]
+
+# clinical fields
 sample_id_col = 'sampleId'
 birth_date_col = 'birthDate'
 report_date_col = 'reportDate'
+diagnosis_col = 'oncotreePrimaryDiagnosisName'
 
-# genomic settings
-variants_col = 'variants'
-variant_class_col = 'trueVariantClassification'
-true_transcript_exon_col = 'trueTranscriptExon'
+# genomic fields
 gene_name_col = 'trueHugoSymbol'
-variant_category_col = 'variantCategory'
 ref_residue_col = 'referenceResidue'
+variant_category_col = 'variantCategory'
 protein_change_col = 'trueProteinChange'
-genomic_variants_subheader_keys = ['snvs', 'cnvs', 'svs', 'signatures']
+cnv_call_col = 'cnvCall'
+sv_comment_col = 'structuralVariantComment'
+mmr_col = 'mmrStatus'
+true_transcript_exon_col = 'trueTranscriptExon'
+variant_class_col = 'trueVariantClassification'
 
+# genomic values
 mutation_val = 'MUTATION'
 cnv_val = 'CNV'
 missense_mutation_val = 'Missense_Mutation'

@@ -135,7 +135,7 @@ class LoadService:
         logging.info('Adding clinical data to mongo...')
         clinical_json = dataframe_to_json(df=self.p.clinical_df)
         for item in clinical_json:
-            item[s.variants_col] = self._add_genomic_data_to_clinical_dataframe(clinical_json=item)
+            item[s.variants_key] = self._add_genomic_data_to_clinical_dataframe(clinical_json=item)
             for col in self.date_cols:
                 if col in item:
                     item[col] = dt.datetime.strptime(str(item[col]), self.date_format)
