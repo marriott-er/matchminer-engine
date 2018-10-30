@@ -12,7 +12,7 @@ from bson.objectid import ObjectId
 from matchengine.utilities import get_db
 from matchengine.engine import MatchEngine
 
-YAML_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data/yaml/'))
+YAML_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), 'old_data/yaml/'))
 
 
 class TestSetUp(unittest.TestCase):

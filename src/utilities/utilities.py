@@ -21,7 +21,7 @@ def dataframe_to_json(df):
 def map_variant_category_name_to_data_model(val):
     """
     Map the string text value for the genomic column "variantCategory" to
-    the corresponding key name in the samples data model.
+    the corresponding key name in the samples old_data model.
 
     :param val: {str}
     :return: {str}

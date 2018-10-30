@@ -198,7 +198,7 @@ class MatchEngine(object):
             # validate the schema.
             status, data = self.validate_yaml_format(raw_data)
             if status != 0:
-                logging.error("invalid trial data")
+                logging.error("invalid trial old_data")
                 return 1, data
 
             # validate the schema.

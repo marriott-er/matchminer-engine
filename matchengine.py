@@ -70,7 +70,7 @@ MATCH_FIELDS = "mrn,sample_id,first_last,protocol_no,nct_id,genomic_alteration,t
 
 if __name__ == '__main__':
 
-    param_trials_help = 'Path to your trial data file or a directory containing a file for each trial.' \
+    param_trials_help = 'Path to your trial old_data file or a directory containing a file for each trial.' \
                         'Default expected format is YML.'
     param_mongo_uri_help = 'Your MongoDB URI. If you do not supply one it will default to whatever is set to ' \
                            '"MONGO_URI" in your secrets file. ' \
@@ -81,8 +81,8 @@ if __name__ == '__main__':
     param_json_help = 'Set this flag to export your results in a .json file.'
     param_csv_help = 'Set this flag to export your results in a .csv file. Default.'
     param_outpath_help = 'Destination and name of your results file.'
-    param_trial_format_help = 'File format of input trial data. Default is YML.'
-    param_patient_format_help = 'File format of input patient data (both clinical and genomic files). Default is CSV.'
+    param_trial_format_help = 'File format of input trial old_data. Default is YML.'
+    param_patient_format_help = 'File format of input patient old_data (both clinical and genomic files). Default is CSV.'
 
     # mode parser.
     parser = argparse.ArgumentParser()

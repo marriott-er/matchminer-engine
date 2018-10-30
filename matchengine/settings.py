@@ -8,7 +8,7 @@ import logging
 # logging
 logging.basicConfig(level=logging.DEBUG, format='[%(levelname)s] %(message)s', )
 
-TUMOR_TREE = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data/tumor_tree.txt'))
+TUMOR_TREE = os.path.abspath(os.path.join(os.path.dirname(__file__), 'old_data/tumor_tree.txt'))
 
 months = [
     'January', 'February', 'March', 'April', 'May', 'June',

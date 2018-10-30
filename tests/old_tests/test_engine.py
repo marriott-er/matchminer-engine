@@ -8,7 +8,7 @@ from matchengine.engine import MatchEngine
 from matchengine.utilities import build_oncotree
 from tests import TestSetUp
 
-YAML_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data/yaml/'))
+YAML_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), 'old_data/yaml/'))
 
 
 def read_file(file):
