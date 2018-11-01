@@ -9,8 +9,8 @@ import unittest
 import datetime as dt
 from bson.objectid import ObjectId
 
-from matchengine.utilities import get_db
-from matchengine.engine import MatchEngine
+from old_matchengine.utilities import get_db
+from old_matchengine.engine import MatchEngine
 
 YAML_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), 'old_data/yaml/'))
 

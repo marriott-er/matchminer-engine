@@ -4,8 +4,8 @@ __author__ = 'priti,james,zachary'
 import os
 import networkx as nx
 
-from matchengine.engine import MatchEngine
-from matchengine.utilities import build_oncotree
+from old_matchengine.engine import MatchEngine
+from old_matchengine.utilities import build_oncotree
 from tests import TestSetUp
 
 YAML_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), 'old_data/yaml/'))

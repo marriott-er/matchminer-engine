@@ -6,7 +6,7 @@ from pymongo import ASCENDING, DESCENDING
 from src.utilities import settings as s
 from src.utilities.utilities import get_db, dataframe_to_json, map_variant_category_name_to_data_model
 from src.services.load_service.patient_utilities import PatientUtilities
-from src.services.load_service.trial import Trial
+from src.services.load_service.trial_utilities import TrialUtilities
 
 logging.basicConfig(level=logging.DEBUG, format='[%(levelname)s] %(message)s', )
 
@@ -30,24 +30,23 @@ def load_service(_args):
         - gender                        {str} (Male or Female)
 
     :param args: genomic: Path to csv file containing genomic old_data. The following fields are used in matching:
-        - sample_id                     {str} (Unique sample identifier)
-        - trueHugoSymbol                {str} (Gene name)
-        - trueProteinChange             {str} (Specific variant)
-        - trueVariantClassification     {str} (Variant type)
-        - variantCategory               {str} (CNV, MUTATION, SV, or SIGNATURE) ** Cannot be null
-        - trueTranscriptExon            {int} (Exon number)
+        - sampleId                      {str} (Unique sample identifier)
+        - variantCategory               {str} (CNV, MUTATION, SV, SIGNATURE, WILDTYPE, PERTINENT_NEGATIVE) ** required
+        - hugoSymbol                    {str} (Gene name)
+        - proteinChange                 {str} (Specific variant)
+        - variantClassification         {str} (Variant type)
+        - transcriptExon                {int} (Exon number)
         - cnvCall                       {str} (Heterozygous deletion, Homozygous deletion,
                                                Gain, High Level amplification, or null)
-        - wildtype                      {bool}
 
         Suggested additional fields:
         - chromosome                    {str}
         - position                      {int}
-        - trueCDNAChange                {str}
+        - cDNAChange                    {str}
         - referenceAllele               {str}
-        - trueStrand                    {str} (- or +)
+        - strand                        {str} (- or +)
         - alleleFraction                {float}
-        - {tier}                        {int}
+        - tier                          {int}
 
     :param args: trials: Path to bson trial file.
     """
@@ -74,7 +73,7 @@ class LoadService:
     def __init__(self, args):
         self._args = args
         self.db = get_db(self._args.mongo_uri)
-        self.t = Trial(self.db)
+        self.t = TrialUtilities(self.db)
         self.p = PatientUtilities()
         self.clinical_is_bson = False
         self.date_cols = [s.birth_date_col, s.report_date_col]
@@ -167,13 +166,13 @@ class LoadService:
             keyname = map_variant_category_name_to_data_model(val=variant_category)
 
             # add reference residue for SNVs
-            if variant_category == s.mutation_val and variant_class == s.missense_mutation_val:
+            if variant_category == s.variant_category_mutation_val and variant_class == s.variant_class_missense_mutation_val:
                 item[s.ref_residue_col] = protein_change[:-1]
             else:
                 item[s.ref_residue_col] = None
 
             # separate old_data by variant category
-            if variant_category in [s.mutation_val, s.cnv_val]:
+            if variant_category in [s.variant_category_mutation_val, s.variant_category_cnv_val]:
                 genomic_data[keyname].append({item[s.gene_name_col]: item})
             else:
                 genomic_data[keyname].append(item)

@@ -45,7 +45,7 @@ class TestMatch(TestSetUp):
         clinical_sample_ids = self._find('clinical', c)
         mongo_results = genomic_sample_ids.intersection(clinical_sample_ids)
 
-        # check that you get the same number of matching patients through the matchengine
+        # check that you get the same number of matching patients through the old_matchengine
         matchengine_results = self._match(match)
         assert sorted(mongo_results) == sorted(matchengine_results)
 
@@ -76,7 +76,7 @@ class TestMatch(TestSetUp):
         cdbsearch = cdb1.intersection(cdb2).intersection(cdb3).intersection(cdb4).intersection(cdb5).intersection(cdb6)
         dbsearch = set(list(cdbsearch) + list(genomic_ids))
 
-        # check that you get the same number of matching patients through the matchengine
+        # check that you get the same number of matching patients through the old_matchengine
         matchengine = self._match(match)
         assert sorted(dbsearch) == sorted(matchengine)
 

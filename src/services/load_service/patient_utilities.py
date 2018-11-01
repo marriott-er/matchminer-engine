@@ -10,7 +10,7 @@ class PatientUtilities:
 
         self.load_dict = {
             'csv': self.load_csv,
-            # 'pkl': self.load_pkl,
+            'pkl': self.load_pkl,
             'bson': self.load_bson
         }
         self.clinical_df = None

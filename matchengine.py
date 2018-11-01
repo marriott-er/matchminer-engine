@@ -4,7 +4,7 @@ import time
 import argparse
 import subprocess
 
-# from matchengine.engine import MatchEngine
+# from old_matchengine.engine import MatchEngine
 from src.utilities.utilities import get_db
 from src.services.load_service.load_main import load_service
 
@@ -32,7 +32,7 @@ MATCH_FIELDS = "mrn,sample_id,first_last,protocol_no,nct_id,genomic_alteration,t
 #     """
 #     Matches all trials in database to patients
 #
-#     :param daemon: Boolean flag; when true, runs the matchengine once per 24 hours.
+#     :param daemon: Boolean flag; when true, runs the old_matchengine once per 24 hours.
 #     """
 #
 #     db = get_db(args.mongo_uri)
@@ -75,7 +75,7 @@ if __name__ == '__main__':
     param_mongo_uri_help = 'Your MongoDB URI. If you do not supply one it will default to whatever is set to ' \
                            '"MONGO_URI" in your secrets file. ' \
                            'See https://docs.mongodb.com/manual/reference/connection-string/ for more information.'
-    param_daemon_help = 'Set to launch the matchengine as a nightly automated process'
+    param_daemon_help = 'Set to launch the old_matchengine as a nightly automated process'
     param_clinical_help = 'Path to your clinical file. Default expected format is CSV.'
     param_genomic_help = 'Path to your genomic file. Default expected format is CSV'
     param_json_help = 'Set this flag to export your results in a .json file.'

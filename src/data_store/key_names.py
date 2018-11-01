@@ -1,0 +1,142 @@
+# ------------------ #
+# Genomic key names  #
+# ------------------ #
+
+# Mutations key names
+variant_category_col = 'variantCategory'
+hugo_symbol_col = 'hugoSymbol'
+chromosome_col = 'chromosome'
+position_col = 'position'
+strand_col = 'strand'
+transcript_exon_col = 'transcriptExon'
+variant_class_col = 'variantClassification'
+protein_change_col = 'proteinChange'
+cdna_change_col = 'cDNAChange'
+cdna_transcript_id_col = 'cDNATranscriptId'
+alt_allele_col = 'alternateAllele'
+ref_allele_col = 'referenceAllele'
+ref_residue_col = 'referenceResidue'
+allele_fraction_col = 'alleleFraction'
+transcript_src_col = 'transcriptSource'
+coverage_col = 'coverage'
+somatic_status_col = 'somaticStatus'
+tier_col = 'tier'
+entrez_id_col = 'entrezId'
+is_best_effect_col = 'isBestEffect'
+
+# CNVs key names
+cytoband_col = 'cytoband'
+cnv_call_col = 'cnvCall'
+cnv_band_col = 'cnvBand'
+copy_count_col = 'copyCount'
+cnv_row_id_col = 'cnvRowId'
+actionability_col ='actionability'
+
+# SVs key names
+sv_comment_col = 'structuralVariantComment'
+
+# Low Coverage key names
+coverage_type_col = 'coverageType'
+roi_type_col = 'roiType'
+panel_col = 'panel'
+codon_col = 'codon'
+show_codon_col = 'show_codon'
+low_coverage_exon_col = 'exon'
+
+# ------------------ #
+# Clinical key names #
+# ------------------ #
+
+# patient identification information
+mrn_col = 'mrn'
+sample_id_col = 'sampleId'
+block_no_col = 'blockNumber'
+data_push_id_col = 'dataPushId'
+alt_mrn_col = 'altMRN'
+patient_id_col = 'patientId'
+powerpath_patient_id_col = 'powerpathPatientId'
+
+# patient personal information
+gender_col = 'gender'
+first_name_col = 'firstName'
+last_name_col = 'lastName'
+birth_date_col = 'birthDate'
+vital_status_col = 'vitalStatus'
+first_last_col = 'firstLast'
+last_first_col = 'lastFirst'
+
+# patient appointment information
+disease_center_descr_col = 'diseaseCenterDescr'
+ord_physician_name_col = 'ordPhysicianName'
+ord_physician_npi_col = 'ordPhysicianNPI'
+ord_physicians_email_col = 'ordPhysicianEmail'
+pathologist_name_col = 'pathologistName'
+last_visit_date_col = 'lastVisitDate'
+
+# patient oncopanel information
+panel_version_col = 'panelVersion'
+report_comment_col = 'reportComment'
+date_received_at_seq_center_col = 'dateReceivedAtSeqCenter'
+report_date_col = 'reportDate'
+report_version_col = 'reportVersion'
+test_type_col = 'testType'
+qc_result_col = 'qcResult'
+cnv_results_col = 'cnvResults'
+snv_results_col = 'snvResults'
+cancer_type_percentile_col = 'cancerTypePercentile'
+all_profile_percentile_col = 'allProfilePercentile'
+metamain_count_col = 'metamainCount'
+case_count_col = 'caseCount'
+pdf_layout_version_col = 'pdfLayoutVersion'
+
+# sequencing information
+ref_genomic_col = 'referenceGenome'
+total_aligned_reads_col = 'totalAlignedReads'
+pct_target_base_col = 'pctTargetBase'
+mean_sample_coverage_col = 'meanSampleCoverage'
+total_reads_col = 'totalReads'
+tmb_col = 'tumorMutationalBurdenPerMegabase'
+
+# patient clinical information
+oncotree_primary_diagnosis_col = 'oncotreePrimaryDiagnosis'
+oncotree_primary_diagnosis_name_col = 'oncotreePrimaryDiagnosisName'
+tumor_purity_percent_col = 'tumorPurityPercent'
+oncotree_biopsy_site_col = 'oncotreeBiopsySite'
+oncotree_biopsy_site_type_col = 'oncotreeBiopsySiteType'
+oncotree_biopsy_site_name_col = 'oncotreeBiopsySiteName'
+oncotree_biopsy_site_meta_col = 'oncotreeBiopsySiteMeta'
+oncotree_biopsy_site_color_col = 'oncotreeBiopsySiteColor'
+oncotree_primary_diagnosis_meta_col = 'oncotreePrimaryDiagnosisMeta'
+oncotree_primary_diagnosis_color_col = 'oncotreePrimaryDiagnosisColor'
+
+# patient consent information
+q1_consent_col = 'question1Consent'
+q2_consent_col = 'question2Consent'
+q3_consent_col = 'question3Consent'
+q4_consent_col = 'question4Consent'
+q5_consent_col = 'question5Consent'
+cris_consent_col = 'crisConsent'
+consent_17000_col = 'consent17000'
+
+# ------------------ #
+# Sample key name    #
+# ------------------ #
+# wild-type information
+wt_genes_col = 'wildtypeGenes'
+
+# variant information
+mutation_list_col = 'mutations'
+cnv_list_col = 'cnvs'
+sv_list_col = 'svs'
+pertinent_negatives_list_col = 'pertinent_negatives'
+pertinent_undercovered_list_col = 'pertinent_undercovered'
+additional_undercovered_list_col = 'additional_undercovered'
+
+# mutational signature information
+mmr_status_col = 'mmrStatus'
+ms_status_col = 'msStatus'
+tobacco_status_col = 'tobaccoStatus'
+tmz_status_col = 'tmzStatus'
+pole_status_col = 'polEStatus'
+apobec_status_col = 'apobecStatus'
+uva_status_col = 'uvaStatus'

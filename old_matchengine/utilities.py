@@ -11,7 +11,7 @@ import datetime as dt
 from pymongo import MongoClient
 
 import oncotreenx
-from matchengine.settings import months, TUMOR_TREE, mmr_map, mmr_map_rev
+from old_matchengine.settings import months, TUMOR_TREE, mmr_map, mmr_map_rev
 
 
 def build_gquery(field, txt):

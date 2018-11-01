@@ -4,8 +4,8 @@ import os
 
 from cerberus1 import Validator
 from cerberus1 import schema_registry
-from matchengine import schema as sch
-from matchengine.utilities import get_db
+from old_matchengine import schema as sch
+from old_matchengine.utilities import get_db
 
 class ConsentValidatorCerberus(Validator):
 
