@@ -1,9 +1,21 @@
+from src.utilities import settings as s
 from src.data_store import key_names as kn
 
+# shared rules
+variant_category_rules = {
+    'type': 'string',
+    'required': True,
+    'allowed': [
+        s.variant_category_mutation_val,
+        s.variant_category_cnv_val,
+        s.variant_category_sv_val
+    ]
+}
+misc_signature_allowed_vals = ['Yes', 'No', 'Cannot assess', 'insufficient variants', None]
 
 # Genomic schemas
 mutations_schema = {
-    kn.variant_category_col: {'type': 'string', 'required': True, 'allowed': ['MUTATION', 'CNV', 'SV', 'SIGNATURE']},
+    kn.variant_category_col: variant_category_rules,
     kn.hugo_symbol_col: {'type': 'string', 'required': True},
     kn.chromosome_col: {'type': 'string', 'required': True},
     kn.position_col: {'type': 'integer', 'required': True},
@@ -15,7 +27,7 @@ mutations_schema = {
     kn.cdna_transcript_id_col: {'type': 'string', 'required': True},
     kn.alt_allele_col: {'type': 'string', 'required': True},
     kn.ref_allele_col: {'type': 'string', 'required': True},
-    kn.ref_residue_col: {'type': 'string', 'readonly': True},
+    kn.ref_residue_col: {'type': 'string', 'readonly': True, 'nullable': True},
     kn.allele_fraction_col: {'type': 'float', 'required': True},
     kn.transcript_src_col: {'type': 'string', 'nullable': True},
     kn.coverage_col: {'type': 'string', 'nullable': True},
@@ -26,13 +38,13 @@ mutations_schema = {
 }
 
 cnvs_schema = {
-    kn.variant_category_col: {'type': 'string', 'required': True, 'allowed': ['MUTATION', 'CNV', 'SV', 'SIGNATURE']},
+    kn.variant_category_col: variant_category_rules,
     kn.hugo_symbol_col: {'type': 'string', 'required': True},
-    kn.cytoband_col: {'type': 'string', 'required': True},
-    kn.cnv_call_col: {'type': 'string', 'required': True},
-    kn.cnv_band_col: {'type': 'string', 'required': True},
-    kn.copy_count_col: {'type': 'integer', 'required': True},
-    kn.cnv_row_id_col: {'type': 'integer', 'required': True},
+    kn.cytoband_col: {'type': 'string', 'required': True, 'nullable': True},
+    kn.cnv_call_col: {'type': 'string', 'required': True, 'nullable': True},
+    kn.cnv_band_col: {'type': 'string', 'required': True, 'nullable': True},
+    kn.copy_count_col: {'type': 'integer', 'required': True, 'nullable': True},
+    kn.cnv_row_id_col: {'type': 'integer', 'required': True, 'nullable': True},
     kn.actionability_col: {
         'type': 'string',
         'allowed': ['actionable', 'investigational', None],
@@ -42,7 +54,7 @@ cnvs_schema = {
 }
 
 svs_schema = {
-    kn.variant_category_col: {'type': 'string', 'required': True, 'allowed': ['MUTATION', 'CNV', 'SV', 'SIGNATURE']},
+    kn.variant_category_col: variant_category_rules,
     kn.sv_comment_col: {'type': 'string', 'required': True},
 }
 
@@ -145,37 +157,29 @@ samples_schema = {
     # mutational signature information
     kn.mmr_status_col: {
         'type': 'string',
-        'allowed': ['Cannot assess', 'Indeterminate (see note)', 'Proficient', 'Deficient', None],
+        'allowed': [
+            s.mmr_status_cannot_assess_val,
+            s.mmr_status_indeterminate_val,
+            s.mmr_status_proficient_val,
+            s.mmr_status_deficient_val,
+            None
+        ],
         'nullable': True
     },
     kn.ms_status_col: {
         'type': 'string',
-        'allowed': ['Cannot assess', 'Indeterminate (see note)', 'MSS', 'MSI-H', None],
+        'allowed': [
+            s.mmr_status_cannot_assess_val,
+            s.mmr_status_indeterminate_val,
+            s.ms_status_mss_val,
+            s.ms_status_msih_val,
+            None
+        ],
         'nullable': True
     },
-    kn.tobacco_status_col: {
-        'type': 'string',
-        'allowed': ['Yes', 'No', 'Cannot assess', 'insufficient variants'],
-        'nullable': True
-    },
-    kn.tmz_status_col: {
-        'type': 'string',
-        'allowed': ['Yes', 'No', 'Cannot assess', 'insufficient variants'],
-        'nullable': True
-    },
-    kn.pole_status_col: {
-        'type': 'string',
-        'allowed': ['Yes', 'No', 'Cannot assess', 'insufficient variants'],
-        'nullable': True
-    },
-    kn.apobec_status_col: {
-        'type': 'string',
-        'allowed': ['Yes', 'No', 'Cannot assess', 'insufficient variants'],
-        'nullable': True
-    },
-    kn.uva_status_col: {
-        'type': 'string',
-        'allowed': ['Yes', 'No', 'Cannot assess', 'insufficient variants'],
-        'nullable': True
-    }
+    kn.tobacco_status_col: {'type': 'string', 'allowed': misc_signature_allowed_vals, 'nullable': True},
+    kn.tmz_status_col: {'type': 'string', 'allowed': misc_signature_allowed_vals, 'nullable': True},
+    kn.pole_status_col: {'type': 'string', 'allowed': misc_signature_allowed_vals, 'nullable': True},
+    kn.apobec_status_col: {'type': 'string', 'allowed': misc_signature_allowed_vals, 'nullable': True},
+    kn.uva_status_col: {'type': 'string', 'allowed': misc_signature_allowed_vals, 'nullable': True}
 }

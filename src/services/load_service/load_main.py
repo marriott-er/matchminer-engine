@@ -4,6 +4,7 @@ import datetime as dt
 from pymongo import ASCENDING, DESCENDING
 
 from src.utilities import settings as s
+from src.data_store import key_names as kn
 from src.utilities.utilities import get_db, dataframe_to_json, map_variant_category_name_to_data_model
 from src.services.load_service.patient_utilities import PatientUtilities
 from src.services.load_service.trial_utilities import TrialUtilities
@@ -76,7 +77,7 @@ class LoadService:
         self.t = TrialUtilities(self.db)
         self.p = PatientUtilities()
         self.clinical_is_bson = False
-        self.date_cols = [s.birth_date_col, s.report_date_col]
+        self.date_cols = [kn.birth_date_col, kn.report_date_col]
         self.date_format = '%Y-%m-%d %X'
 
     def add_trial_data_to_mongo(self):
@@ -115,14 +116,14 @@ class LoadService:
                 self.p.clinical_df[col] = self.p.clinical_df[col].apply(
                     lambda x: str(dt.datetime.strptime(x, self.date_format)))
             except ValueError as exc:
-                if col == s.birth_date_col:
+                if col == kn.birth_date_col:
                     logging.warning('Birth dates should be formatted %Y-%m-%d to be properly stored in MongoDB.')
                     logging.warning('Birth dates may be malformed in the database and will therefore not match'
                                     'trial age restrictions properly.')
                     logging.warning('Caught system error: %s' % exc)
 
         # change exon to type integer
-        self.p.genomic_df[s.true_transcript_exon_col] = self.p.genomic_df[s.true_transcript_exon_col].apply(
+        self.p.genomic_df[kn.transcript_exon_col] = self.p.genomic_df[kn.transcript_exon_col].apply(
             lambda x: int(x) if x != '' and pd.notnull(x) else x)
 
     def add_clinical_data_to_mongo(self):

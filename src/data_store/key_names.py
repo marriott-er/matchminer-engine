@@ -30,7 +30,7 @@ cnv_call_col = 'cnvCall'
 cnv_band_col = 'cnvBand'
 copy_count_col = 'copyCount'
 cnv_row_id_col = 'cnvRowId'
-actionability_col ='actionability'
+actionability_col = 'actionability'
 
 # SVs key names
 sv_comment_col = 'structuralVariantComment'
