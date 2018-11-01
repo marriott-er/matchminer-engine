@@ -69,3 +69,12 @@ class TestVariantsUtilities(unittest.TestCase):
         assert sorted(sample_obj.keys()) == sorted(s.signature_cols), sorted(sample_obj.keys())
         assert sample_obj[kn.mmr_status_col] is None, sample_obj[kn.mmr_status_col]
         assert sample_obj[kn.ms_status_col] is None, sample_obj[kn.ms_status_col]
+
+    def test_determine_wildtype(self):
+
+        wt_gene_list = []
+        wt_gene_list = self.v.determine_wildtype(data=wt1_data, wt_gene_list=wt_gene_list)
+        assert sorted(wt_gene_list) == sorted(['BRAF']), sorted(wt_gene_list)
+
+        wt_gene_list = self.v.determine_wildtype(data=wt1_data, wt_gene_list=wt_gene_list)
+        assert sorted(wt_gene_list) == sorted(['BRAF', 'EGFR']), sorted(wt_gene_list)

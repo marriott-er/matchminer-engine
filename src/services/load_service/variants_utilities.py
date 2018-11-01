@@ -87,3 +87,17 @@ class VariantsUtilities:
             mmr_status = mmr_and_ms_status_text
 
         return mmr_status, ms_status
+
+    @staticmethod
+    def determine_wildtype(data, wt_gene_list):
+        """
+        Append wild type genes to the wild type gene list
+
+        :param data: {dict}
+        :param wt_gene_list: {list of str}
+        :return: {list of str} Updated wt_gene_list
+        """
+        if kn.hugo_symbol_col not in data:
+            raise ValueError('%s column must be included for wild type genes' % kn.hugo_symbol_col)
+
+        return wt_gene_list.append(data[kn.hugo_symbol_col])

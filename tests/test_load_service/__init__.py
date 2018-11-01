@@ -75,3 +75,6 @@ signature_mmr_deficient_data = {
 signature_mmr_none_data = {
     kn.mmr_status_col: None
 }
+
+wt1_data = {kn.hugo_symbol_col: 'BRAF'}
+wt2_data = {kn.hugo_symbol_col: 'EGFR'}
