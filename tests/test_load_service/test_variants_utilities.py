@@ -4,6 +4,7 @@ from tests.test_load_service import *
 from src.data_store import data_model as dm
 from src.services.load_service.variants_utilities import VariantsUtilities
 
+
 class TestVariantsUtilities(unittest.TestCase):
 
     def setUp(self):
