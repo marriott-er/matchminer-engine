@@ -35,6 +35,9 @@ mmr_status_proficient_val = 'Proficient'
 mmr_status_deficient_val = 'Deficient'
 ms_status_mss_val = 'MSS'
 ms_status_msih_val = 'MSI-H'
+pertinent_negative_val = 'PN'
+pertinent_low_coverage_val = 'PLC'
+additional_low_coverage_val = 'NPLC'
 signature_cols = [
     kn.mmr_status_col,
     kn.ms_status_col,

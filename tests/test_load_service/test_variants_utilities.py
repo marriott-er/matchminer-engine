@@ -23,6 +23,17 @@ class TestVariantsUtilities(unittest.TestCase):
         assert ref_residue_missense == 'p.V600', ref_residue_missense
         assert ref_residue_nonsense is None, ref_residue_nonsense
 
+        # catch missing data
+        return_value_error = False
+        missing_protein_change_data = mutation_missense_data.copy()
+        del missing_protein_change_data[kn.protein_change_col]
+        try:
+            self.v._determine_reference_residue(data=missing_protein_change_data)
+        except ValueError:
+            return_value_error = True
+
+        assert return_value_error is True
+
     def test_create_variant_object(self):
 
         mutation_dict = self.v.create_variant_object(data=mutation_missense_data,
@@ -76,5 +87,54 @@ class TestVariantsUtilities(unittest.TestCase):
         wt_gene_list = self.v.determine_wildtype(data=wt1_data, wt_gene_list=wt_gene_list)
         assert sorted(wt_gene_list) == sorted(['BRAF']), sorted(wt_gene_list)
 
-        wt_gene_list = self.v.determine_wildtype(data=wt1_data, wt_gene_list=wt_gene_list)
+        wt_gene_list = self.v.determine_wildtype(data=wt2_data, wt_gene_list=wt_gene_list)
         assert sorted(wt_gene_list) == sorted(['BRAF', 'EGFR']), sorted(wt_gene_list)
+
+        # catch missing data
+        return_value_error = False
+        missing_protein_change_data = {}
+        try:
+            self.v.determine_wildtype(data=missing_protein_change_data, wt_gene_list=wt_gene_list)
+        except ValueError:
+            return_value_error = True
+
+        assert return_value_error is True
+
+    def test_determine_low_coverage_type(self):
+
+        lcd = {
+            kn.pertinent_negatives_list_col: [],
+            kn.pertinent_undercovered_list_col: [],
+            kn.additional_undercovered_list_col: []
+        }
+
+        # PN
+        lcd = self.v.determine_low_coverage_type(data=pertinent_negative_data, low_coverage_dict=lcd)
+        assert lcd[kn.pertinent_negatives_list_col] == [pertinent_negative_data], lcd[kn.pertinent_negatives_list_col]
+        assert lcd[kn.pertinent_undercovered_list_col] == [], lcd[kn.pertinent_undercovered_list_col]
+        assert lcd[kn.additional_undercovered_list_col] == [], lcd[kn.additional_undercovered_list_col]
+
+        # PLC
+        lcd = self.v.determine_low_coverage_type(data=pertinent_undercovered_data, low_coverage_dict=lcd)
+        assert lcd[kn.pertinent_negatives_list_col] == [pertinent_negative_data], lcd[kn.pertinent_negatives_list_col]
+        assert lcd[kn.pertinent_undercovered_list_col] == [pertinent_undercovered_data], \
+            lcd[kn.pertinent_undercovered_list_col]
+        assert lcd[kn.additional_undercovered_list_col] == [], lcd[kn.additional_undercovered_list_col]
+
+        # NPLC
+        lcd = self.v.determine_low_coverage_type(data=additional_undercovered_data, low_coverage_dict=lcd)
+        assert lcd[kn.pertinent_negatives_list_col] == [pertinent_negative_data], lcd[kn.pertinent_negatives_list_col]
+        assert lcd[kn.pertinent_undercovered_list_col] == [pertinent_undercovered_data],\
+            lcd[kn.pertinent_undercovered_list_col]
+        assert lcd[kn.additional_undercovered_list_col] == [additional_undercovered_data], \
+            lcd[kn.additional_undercovered_list_col]
+
+        # PN again
+        lcd = self.v.determine_low_coverage_type(data=pertinent_negative_v2_data, low_coverage_dict=lcd)
+        assert sorted(lcd[kn.pertinent_negatives_list_col]) == sorted([pertinent_negative_data,
+                                                                       pertinent_negative_v2_data]), \
+            sorted(lcd[kn.pertinent_negatives_list_col])
+        assert lcd[kn.pertinent_undercovered_list_col] == [pertinent_undercovered_data], \
+            lcd[kn.pertinent_undercovered_list_col]
+        assert lcd[kn.additional_undercovered_list_col] == [additional_undercovered_data],\
+            lcd[kn.additional_undercovered_list_col]

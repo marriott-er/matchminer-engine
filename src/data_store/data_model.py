@@ -60,11 +60,16 @@ svs_schema = {
 
 low_coverage_schema = {
     kn.hugo_symbol_col: {'type': 'string', 'required': True},
-    kn.coverage_type_col: {'type': 'string', 'allowed': ['PN', 'PLC', 'NPLC'], 'required': True},
+    kn.coverage_type_col: {
+        'type': 'string',
+        'allowed': [s.pertinent_negative_val, s.pertinent_low_coverage_val, s.additional_low_coverage_val],
+        'required': True
+    },
     kn.roi_type_col: {'type': 'string', 'allowed': ['C', 'G', 'R', 'E', 'M', None], 'nullable': True, 'required': True},
     kn.panel_col: {'type': 'string', 'required': True},
     kn.codon_col: {'type': 'integer', 'nullable': True},
     kn.show_codon_col: {'type': 'boolean', 'nullable': True},
+    kn.show_exon_col: {'type': 'boolean', 'nullable': True},
     kn.coverage_col: {'type': 'float', 'nullable': True},
     kn.low_coverage_exon_col: {'type': 'integer', 'nullable': True},
 }

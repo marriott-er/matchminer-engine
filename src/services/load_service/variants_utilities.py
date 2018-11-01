@@ -1,6 +1,6 @@
 from src.utilities import settings as s
 from src.data_store import key_names as kn
-from src.data_store.data_model import mutations_schema, cnvs_schema, svs_schema
+from src.data_store.data_model import mutations_schema, cnvs_schema, svs_schema, low_coverage_schema
 
 
 class VariantsUtilities:
@@ -100,4 +100,34 @@ class VariantsUtilities:
         if kn.hugo_symbol_col not in data:
             raise ValueError('%s column must be included for wild type genes' % kn.hugo_symbol_col)
 
-        return wt_gene_list.append(data[kn.hugo_symbol_col])
+        wt_gene_list.append(data[kn.hugo_symbol_col])
+        return list(set(wt_gene_list))
+
+    @staticmethod
+    def determine_low_coverage_type(data, low_coverage_dict):
+        """
+        Group low coverage gene objects by their type
+
+        :param data: {dict}
+        :param low_coverage_dict: {dict} (Pertinent Negatives, Pertinent Undercovered, Additional Undercovered)
+        :return: {dict} Updated low_coverage_dict
+        """
+        lc_map = {
+            s.pertinent_negative_val: kn.pertinent_negatives_list_col,
+            s.pertinent_low_coverage_val: kn.pertinent_undercovered_list_col,
+            s.additional_low_coverage_val: kn.additional_undercovered_list_col
+        }
+
+        if kn.coverage_type_col not in data.keys() or data[kn.coverage_type_col] not in lc_map.keys():
+            raise ValueError('%s column must be included for low coverage genes' % kn.coverage_type_col)
+
+        lc_obj = {}
+        lc_cols = low_coverage_schema.keys()
+        for col in lc_cols:
+            if col in data:
+                lc_obj[col] = data[col]
+
+        coverage_type = data[kn.coverage_type_col]
+        low_coverage_col = lc_map[coverage_type]
+        low_coverage_dict[low_coverage_col].append(lc_obj)
+        return low_coverage_dict

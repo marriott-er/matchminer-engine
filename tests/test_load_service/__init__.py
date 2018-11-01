@@ -1,7 +1,7 @@
 from src.utilities import settings as s
 from src.data_store import key_names as kn
 
-
+# mutation data
 mutation_missense_data = {
     kn.variant_category_col: s.variant_category_mutation_val,
     kn.hugo_symbol_col: 'BRAF',
@@ -48,6 +48,7 @@ mutation_nonsense_data = {
     'extraCol': None
 }
 
+# cnv data
 cnv_heterozygous_del_data = {
     kn.variant_category_col: s.variant_category_cnv_val,
     kn.hugo_symbol_col: 'WHSC1',
@@ -60,11 +61,13 @@ cnv_heterozygous_del_data = {
     'extraCol': None
 }
 
+# sv data
 sv_data = {
     kn.variant_category_col: s.variant_category_sv_val,
     kn.sv_comment_col: 'NTRK1 fusion detected'
 }
 
+# signature data
 signature_mmr_deficient_data = {
     kn.mmr_status_col: 'Deficient (MMR-D / MSI-H)',
     kn.tobacco_status_col: 'Yes',
@@ -76,5 +79,50 @@ signature_mmr_none_data = {
     kn.mmr_status_col: None
 }
 
+# wildtype data
 wt1_data = {kn.hugo_symbol_col: 'BRAF'}
 wt2_data = {kn.hugo_symbol_col: 'EGFR'}
+
+# low coverage data
+pertinent_negative_data = {
+    kn.hugo_symbol_col: 'BRAF',
+    kn.coverage_type_col: 'PN',
+    kn.roi_type_col: 'C',
+    kn.panel_col: 'GLIOMA',
+    kn.codon_col: 466,
+    kn.show_codon_col: True,
+    kn.coverage_col: None,
+    kn.low_coverage_exon_col: 11,
+}
+pertinent_negative_v2_data = {
+    kn.hugo_symbol_col: 'EGFR',
+    kn.coverage_type_col: 'PN',
+    kn.roi_type_col: 'C',
+    kn.panel_col: 'THORACIC',
+    kn.codon_col: 709,
+    kn.show_codon_col: True,
+    kn.coverage_col: None,
+    kn.low_coverage_exon_col: 18,
+}
+
+pertinent_undercovered_data = {
+    kn.hugo_symbol_col: 'PTEN',
+    kn.coverage_type_col: 'PLC',
+    kn.roi_type_col: 'G',
+    kn.panel_col: 'GLIOMA',
+    kn.codon_col: None,
+    kn.show_exon_col: True,
+    kn.coverage_col: 11.6923,
+    kn.low_coverage_exon_col: 3,
+}
+
+additional_undercovered_data = {
+    kn.hugo_symbol_col: 'PTK2B',
+    kn.coverage_type_col: 'NPLC',
+    kn.roi_type_col: 'G',
+    kn.panel_col: 'GLIOMA',
+    kn.codon_col: None,
+    kn.show_exon_col: True,
+    kn.coverage_col: 11.6923,
+    kn.low_coverage_exon_col: 18,
+}
