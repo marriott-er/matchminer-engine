@@ -6,6 +6,18 @@ class QueryUtilities:
 
     def __init__(self):
         self.inclusion_dict = {True: '$eq', False: '$ne'}
+        self.list_inclusion_dict = {True: '$in', False: {'$nin'}}
+
+    def _expand_query_to_list(self, new_val, include=True):
+        """
+        Expand the given subquery syntax from a single value to a list
+
+        :param new_val: {list}
+        :param include: {bool}
+        :return: {dict}
+        """
+        # todo needs unit test
+        return {self.list_inclusion_dict[include]: new_val}
 
     def create_oncotree_diagnosis_query(self, cancer_type, include=True):
         """
@@ -15,6 +27,7 @@ class QueryUtilities:
         :param include: {bool}
         :return: {dict}
         """
+        # todo needs unit test
         return {kn.oncotree_primary_diagnosis_name_col: {self.inclusion_dict[include]: cancer_type}}
 
     def create_age_query(self, include=True):
@@ -35,6 +48,7 @@ class QueryUtilities:
         :param include: {bool}
         :return: {dict}
         """
+        # todo has updated
         key = '{root}.{variant_category}.{gene_name}.{col}'.format(root=s.variants_key,
                                                                    variant_category=s.snv_key,
                                                                    gene_name=gene_name,
@@ -51,6 +65,7 @@ class QueryUtilities:
         :param include: {bool}
         :return: {dict}
         """
+        # todo has updated
         key = '{root}.{variant_category}.{gene_name}.{col}'.format(root=s.variants_key,
                                                                    variant_category=s.snv_key,
                                                                    gene_name=gene_name,
@@ -67,6 +82,7 @@ class QueryUtilities:
         :param include: {bool}
         :return: {dict}
         """
+        # todo has updated
         key = '{root}.{variant_category}.{gene_name}.{col}'.format(root=s.variants_key,
                                                                    variant_category=s.cnv_key,
                                                                    gene_name=gene_name,
@@ -83,6 +99,7 @@ class QueryUtilities:
         :param include: {bool}
         :return: {dict}
         """
+        # todo has updated
         key = '{root}.{variant_category}.{col}'.format(root=s.variants_key,
                                                        variant_category=s.sv_key,
                                                        col=s.sv_comment_col)
@@ -98,6 +115,7 @@ class QueryUtilities:
         :param include: {bool}
         :return: {dict}
         """
+        # todo has updated
         key = '{root}.{variant_category}.{col}'.format(root=s.variants_key,
                                                        variant_category=s.signature_key,
                                                        col=signature_type)
@@ -113,6 +131,7 @@ class QueryUtilities:
         :param include: {bool}
         :return: {dict}
         """
+        # todo has updated
         key = '%s.{variant_category}.%s' % (s.variants_key, gene_name)
         val = {'$exists': False}
         wt_query = {
