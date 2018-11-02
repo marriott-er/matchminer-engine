@@ -27,6 +27,18 @@ sample_collection_name = 'samples'
 variant_category_mutation_val = 'MUTATION'
 variant_category_cnv_val = 'CNV'
 variant_category_sv_val = 'SV'
+variant_category_signature_val = 'SIGNATURE'
+variant_category_wt_val = 'WILDTYPE'
+variant_category_lc_val = 'LOW_COVERAGE'
+allowed_variants = [
+    variant_category_mutation_val,
+    variant_category_cnv_val,
+    variant_category_sv_val,
+    variant_category_signature_val,
+    variant_category_wt_val,
+    variant_category_lc_val
+]
+
 variant_class_missense_mutation_val = 'Missense_Mutation'
 variant_class_nonsense_mutation_val = 'Nonsense_Mutation'
 mmr_status_cannot_assess_val = 'Cannot assess'
@@ -46,4 +58,13 @@ signature_cols = [
     kn.pole_status_col,
     kn.apobec_status_col,
     kn.uva_status_col
+]
+gcol_list = [
+    kn.mutation_list_col,
+    kn.cnv_list_col,
+    kn.sv_list_col,
+    kn.wt_genes_col,
+    kn.pertinent_negatives_list_col,
+    kn.pertinent_undercovered_list_col,
+    kn.additional_undercovered_list_col
 ]

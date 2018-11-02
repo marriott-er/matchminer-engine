@@ -5,22 +5,40 @@ from src.data_store.data_model import mutations_schema, cnvs_schema, svs_schema,
 
 class VariantsUtilities:
 
-    def __init__(self):
+    def __init__(self, sample_obj):
+        self.sample_obj = sample_obj
         self.col_dict = {
             s.variant_category_mutation_val: mutations_schema.keys(),
             s.variant_category_cnv_val: cnvs_schema.keys(),
             s.variant_category_sv_val: svs_schema.keys()
         }
 
-    def create_variant_object(self, data, variant_type):
+        self.method_parser_dict = {}
+
+    def init_sample_obj(self):
+        """
+        Initialize the sample object with genomic columns
+
+        :return: {null}
+        """
+
+        # Initialize Mutations, CNVs, SVs, Wild-type genes, and Low-coverage genes to empty arrays
+        for gcol in s.gcol_list:
+            self.sample_obj[gcol] = []
+
+        # Initialize all signature types to null
+        for scol in s.signature_cols:
+            self.sample_obj[scol] = None
+
+    def create_variant_object(self, data):
         """
         Create a mutation object from the given data
 
         :param data: {dict}
-        :param variant_type: {str} (MUTATION, CNV, SV)
         :return: {dict}
         """
         variant_dict = {}
+        variant_type = data[kn.variant_category_col]
         for col in self.col_dict[variant_type]:
             if col in data:
                 variant_dict[col] = data[col]
@@ -30,6 +48,50 @@ class VariantsUtilities:
             variant_dict[kn.ref_residue_col] = self._determine_reference_residue(data)
 
         return variant_dict
+
+    def determine_signature_type(self, data):
+        """
+        Determine signature type from the data
+
+        :param data: {dict}
+        :return: {null}
+        """
+
+        cols_to_assess = s.signature_cols[:]
+        cols_to_assess.remove(kn.ms_status_col)
+        for col in cols_to_assess:
+            if col == kn.mmr_status_col:
+                self.sample_obj[kn.mmr_status_col], self.sample_obj[kn.ms_status_col] = self._split_mmr_status(data[col])
+            elif col in data:
+                self.sample_obj[col] = data[col]
+            else:
+                self.sample_obj[col] = None
+
+    def determine_low_coverage_type(self, data):
+        """
+        Group low coverage gene objects by their type
+
+        :param data: {dict}
+        :return: {null}
+        """
+        lc_map = {
+            s.pertinent_negative_val: kn.pertinent_negatives_list_col,
+            s.pertinent_low_coverage_val: kn.pertinent_undercovered_list_col,
+            s.additional_low_coverage_val: kn.additional_undercovered_list_col
+        }
+
+        if kn.coverage_type_col not in data.keys() or data[kn.coverage_type_col] not in lc_map.keys():
+            raise ValueError('%s column must be included for low coverage genes' % kn.coverage_type_col)
+
+        lc_obj = {}
+        lc_cols = low_coverage_schema.keys()
+        for col in lc_cols:
+            if col in data:
+                lc_obj[col] = data[col]
+
+        coverage_type = data[kn.coverage_type_col]
+        low_coverage_col = lc_map[coverage_type]
+        self.sample_obj[low_coverage_col].append(lc_obj)
 
     @staticmethod
     def _determine_reference_residue(data):
@@ -45,27 +107,6 @@ class VariantsUtilities:
                 raise ValueError('%s column must be set for all missense mutations' % kn.protein_change_col)
 
             return data[kn.protein_change_col][:-1]
-
-    def determine_signature_type(self, data, sample_obj):
-        """
-        Determine signature type from the data
-
-        :param data: {dict}
-        :param sample_obj: {dict} This becomes the sample record in MongoDB
-        :return: {dict} Updated sample object
-        """
-
-        cols_to_assess = s.signature_cols[:]
-        cols_to_assess.remove(kn.ms_status_col)
-        for col in cols_to_assess:
-            if col == kn.mmr_status_col:
-                sample_obj[kn.mmr_status_col], sample_obj[kn.ms_status_col] = self._split_mmr_status(data[col])
-            elif col in data:
-                sample_obj[col] = data[col]
-            else:
-                sample_obj[col] = None
-
-        return sample_obj
 
     @staticmethod
     def _split_mmr_status(mmr_and_ms_status_text):
@@ -102,32 +143,3 @@ class VariantsUtilities:
 
         wt_gene_list.append(data[kn.hugo_symbol_col])
         return list(set(wt_gene_list))
-
-    @staticmethod
-    def determine_low_coverage_type(data, low_coverage_dict):
-        """
-        Group low coverage gene objects by their type
-
-        :param data: {dict}
-        :param low_coverage_dict: {dict} (Pertinent Negatives, Pertinent Undercovered, Additional Undercovered)
-        :return: {dict} Updated low_coverage_dict
-        """
-        lc_map = {
-            s.pertinent_negative_val: kn.pertinent_negatives_list_col,
-            s.pertinent_low_coverage_val: kn.pertinent_undercovered_list_col,
-            s.additional_low_coverage_val: kn.additional_undercovered_list_col
-        }
-
-        if kn.coverage_type_col not in data.keys() or data[kn.coverage_type_col] not in lc_map.keys():
-            raise ValueError('%s column must be included for low coverage genes' % kn.coverage_type_col)
-
-        lc_obj = {}
-        lc_cols = low_coverage_schema.keys()
-        for col in lc_cols:
-            if col in data:
-                lc_obj[col] = data[col]
-
-        coverage_type = data[kn.coverage_type_col]
-        low_coverage_col = lc_map[coverage_type]
-        low_coverage_dict[low_coverage_col].append(lc_obj)
-        return low_coverage_dict

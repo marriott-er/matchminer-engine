@@ -10,10 +10,22 @@ class TestVariantsUtilities(unittest.TestCase):
     def setUp(self):
         super(TestVariantsUtilities, self).setUp()
 
-        self.v = VariantsUtilities()
+        self.v = VariantsUtilities(sample_obj={})
 
     def tearDown(self):
         pass
+
+    def test_init_sample_obj(self):
+
+        self.v.init_sample_obj()
+        assert sorted(self.v.sample_obj.keys()) == sorted(s.gcol_list + s.signature_cols), \
+            sorted(self.v.sample_obj.keys())
+
+        for col in s.gcol_list:
+            assert self.v.sample_obj[col] == [], self.v.sample_obj[col]
+
+        for col in s.signature_cols:
+            assert self.v.sample_obj[col] is None, self.v.sample_obj[col]
 
     def test_determine_reference_residue(self):
 
@@ -36,12 +48,9 @@ class TestVariantsUtilities(unittest.TestCase):
 
     def test_create_variant_object(self):
 
-        mutation_dict = self.v.create_variant_object(data=mutation_missense_data,
-                                                     variant_type=s.variant_category_mutation_val)
-        cnv_dict = self.v.create_variant_object(data=cnv_heterozygous_del_data,
-                                                variant_type=s.variant_category_cnv_val)
-        sv_dict = self.v.create_variant_object(data=sv_data,
-                                               variant_type=s.variant_category_sv_val)
+        mutation_dict = self.v.create_variant_object(data=mutation_missense_data)
+        cnv_dict = self.v.create_variant_object(data=cnv_heterozygous_del_data)
+        sv_dict = self.v.create_variant_object(data=sv_data)
 
         assert sorted(mutation_dict.keys()) == sorted(dm.mutations_schema.keys()), sorted(mutation_dict.keys())
         assert sorted(cnv_dict.keys()) == sorted(dm.cnvs_schema.keys()), sorted(cnv_dict.keys())
@@ -67,19 +76,17 @@ class TestVariantsUtilities(unittest.TestCase):
     def test_determine_signature_type(self):
 
         # MMR deficient
-        sample_obj = {}
-        sample_obj = self.v.determine_signature_type(data=signature_mmr_deficient_data, sample_obj=sample_obj)
-        assert sorted(sample_obj.keys()) == sorted(s.signature_cols), sorted(sample_obj.keys())
-        assert sample_obj[kn.mmr_status_col] == s.mmr_status_deficient_val, sample_obj[kn.mmr_status_col]
-        assert sample_obj[kn.ms_status_col] == s.ms_status_msih_val, sample_obj[kn.ms_status_col]
-        assert sample_obj[kn.apobec_status_col] is None, sample_obj[kn.apobec_status_col]
+        self.v.determine_signature_type(data=signature_mmr_deficient_data)
+        assert sorted(self.v.sample_obj.keys()) == sorted(s.signature_cols), sorted(self.v.sample_obj.keys())
+        assert self.v.sample_obj[kn.mmr_status_col] == s.mmr_status_deficient_val, self.v.sample_obj[kn.mmr_status_col]
+        assert self.v.sample_obj[kn.ms_status_col] == s.ms_status_msih_val, self.v.sample_obj[kn.ms_status_col]
+        assert self.v.sample_obj[kn.apobec_status_col] is None, self.v.sample_obj[kn.apobec_status_col]
 
         # MMR not specified
-        sample_obj = {}
-        sample_obj = self.v.determine_signature_type(data=signature_mmr_none_data, sample_obj=sample_obj)
-        assert sorted(sample_obj.keys()) == sorted(s.signature_cols), sorted(sample_obj.keys())
-        assert sample_obj[kn.mmr_status_col] is None, sample_obj[kn.mmr_status_col]
-        assert sample_obj[kn.ms_status_col] is None, sample_obj[kn.ms_status_col]
+        self.v.determine_signature_type(data=signature_mmr_none_data)
+        assert sorted(self.v.sample_obj.keys()) == sorted(s.signature_cols), sorted(self.v.sample_obj.keys())
+        assert self.v.sample_obj[kn.mmr_status_col] is None, self.v.sample_obj[kn.mmr_status_col]
+        assert self.v.sample_obj[kn.ms_status_col] is None, self.v.sample_obj[kn.ms_status_col]
 
     def test_determine_wildtype(self):
 
@@ -102,39 +109,32 @@ class TestVariantsUtilities(unittest.TestCase):
 
     def test_determine_low_coverage_type(self):
 
-        lcd = {
-            kn.pertinent_negatives_list_col: [],
-            kn.pertinent_undercovered_list_col: [],
-            kn.additional_undercovered_list_col: []
-        }
+        self.v.init_sample_obj()
+
+        pnlist = self.v.sample_obj[kn.pertinent_negatives_list_col]
+        plclist = self.v.sample_obj[kn.pertinent_undercovered_list_col]
+        nplclist = self.v.sample_obj[kn.additional_undercovered_list_col]
 
         # PN
-        lcd = self.v.determine_low_coverage_type(data=pertinent_negative_data, low_coverage_dict=lcd)
-        assert lcd[kn.pertinent_negatives_list_col] == [pertinent_negative_data], lcd[kn.pertinent_negatives_list_col]
-        assert lcd[kn.pertinent_undercovered_list_col] == [], lcd[kn.pertinent_undercovered_list_col]
-        assert lcd[kn.additional_undercovered_list_col] == [], lcd[kn.additional_undercovered_list_col]
+        self.v.determine_low_coverage_type(data=pertinent_negative_data)
+        assert pnlist == [pertinent_negative_data], pnlist
+        assert plclist == [], plclist
+        assert nplclist == [], nplclist
 
         # PLC
-        lcd = self.v.determine_low_coverage_type(data=pertinent_undercovered_data, low_coverage_dict=lcd)
-        assert lcd[kn.pertinent_negatives_list_col] == [pertinent_negative_data], lcd[kn.pertinent_negatives_list_col]
-        assert lcd[kn.pertinent_undercovered_list_col] == [pertinent_undercovered_data], \
-            lcd[kn.pertinent_undercovered_list_col]
-        assert lcd[kn.additional_undercovered_list_col] == [], lcd[kn.additional_undercovered_list_col]
+        self.v.determine_low_coverage_type(data=pertinent_undercovered_data)
+        assert pnlist == [pertinent_negative_data], pnlist
+        assert plclist == [pertinent_undercovered_data], plclist
+        assert nplclist == [], nplclist
 
         # NPLC
-        lcd = self.v.determine_low_coverage_type(data=additional_undercovered_data, low_coverage_dict=lcd)
-        assert lcd[kn.pertinent_negatives_list_col] == [pertinent_negative_data], lcd[kn.pertinent_negatives_list_col]
-        assert lcd[kn.pertinent_undercovered_list_col] == [pertinent_undercovered_data],\
-            lcd[kn.pertinent_undercovered_list_col]
-        assert lcd[kn.additional_undercovered_list_col] == [additional_undercovered_data], \
-            lcd[kn.additional_undercovered_list_col]
+        self.v.determine_low_coverage_type(data=additional_undercovered_data)
+        assert pnlist == [pertinent_negative_data], pnlist
+        assert plclist == [pertinent_undercovered_data], plclist
+        assert nplclist == [additional_undercovered_data], nplclist
 
         # PN again
-        lcd = self.v.determine_low_coverage_type(data=pertinent_negative_v2_data, low_coverage_dict=lcd)
-        assert sorted(lcd[kn.pertinent_negatives_list_col]) == sorted([pertinent_negative_data,
-                                                                       pertinent_negative_v2_data]), \
-            sorted(lcd[kn.pertinent_negatives_list_col])
-        assert lcd[kn.pertinent_undercovered_list_col] == [pertinent_undercovered_data], \
-            lcd[kn.pertinent_undercovered_list_col]
-        assert lcd[kn.additional_undercovered_list_col] == [additional_undercovered_data],\
-            lcd[kn.additional_undercovered_list_col]
+        self.v.determine_low_coverage_type(data=pertinent_negative_v2_data)
+        assert sorted(pnlist) == sorted([pertinent_negative_data, pertinent_negative_v2_data]), sorted(pnlist)
+        assert plclist == [pertinent_undercovered_data], plclist
+        assert nplclist == [additional_undercovered_data], nplclist
