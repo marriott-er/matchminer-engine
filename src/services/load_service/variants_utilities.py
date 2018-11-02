@@ -1,5 +1,6 @@
 from src.utilities import settings as s
 from src.data_store import key_names as kn
+from src.utilities.utilities import handle_ints
 from src.data_store.data_model import mutations_schema, cnvs_schema, svs_schema, low_coverage_schema
 
 
@@ -55,7 +56,7 @@ class VariantsUtilities:
         variant_type = data[kn.variant_category_col]
         for col in self.col_dict[variant_type]:
             if col in data:
-                variant_obj[col] = data[col]
+                variant_obj[col] = handle_ints(col=col, val=data[col])
 
         # add reference residue for mutations
         if variant_type == s.variant_category_mutation_val:
@@ -114,7 +115,7 @@ class VariantsUtilities:
         lc_cols = low_coverage_schema.keys()
         for col in lc_cols:
             if col in data:
-                lc_obj[col] = data[col]
+                lc_obj[col] = handle_ints(col=col, val=data[col])
 
         coverage_type = data[kn.coverage_type_col]
         low_coverage_col = lc_map[coverage_type]

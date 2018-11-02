@@ -2,6 +2,7 @@ import subprocess
 import pandas as pd
 
 from src.utilities import settings as s
+from src.data_store import key_names as kn
 
 
 class PatientUtilities:
@@ -24,8 +25,14 @@ class PatientUtilities:
         :param genomic: {str} Path to genomic CSV
         :return: {null}
         """
-        self.clinical_df = pd.read_csv(clinical)
-        self.genomic_df = pd.read_csv(genomic, low_memory=False)
+        cdtypes = {kn.mrn_col: str, kn.alt_mrn_col: str}
+        self.clinical_df = pd.read_csv(clinical).astype(cdtypes)
+
+        gdtypes = {kn.coverage_col: float, kn.chromosome_col: str}
+        self.genomic_df = pd.read_csv(genomic,
+                                      low_memory=False,
+                                      true_values=['TRUE', 'True', 'true'],
+                                      false_values=['FALSE', 'False', 'false']).astype(gdtypes)
 
     def load_pkl(self, clinical, genomic):
         """

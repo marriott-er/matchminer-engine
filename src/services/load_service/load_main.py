@@ -4,7 +4,9 @@ import datetime as dt
 from pymongo import ASCENDING, DESCENDING
 
 from src.utilities import settings as s
+from src.utilities.utilities import handle_chromosome_column
 from src.data_store import key_names as kn
+from src.data_store.data_model import samples_schema
 from src.data_store.validator import SamplesValidator
 from src.utilities.utilities import get_db, dataframe_to_json
 from src.services.load_service.patient_utilities import PatientUtilities
@@ -75,12 +77,14 @@ class LoadService:
 
     def __init__(self, args):
         self._args = args
+
         self.db = get_db(self._args.mongo_uri)
         self.t = TrialUtilities(self.db)
         self.p = PatientUtilities()
-        self.validator = SamplesValidator()
+        self.validator = SamplesValidator(samples_schema)
+
         self.clinical_is_bson = False
-        self.date_cols = [kn.birth_date_col, kn.report_date_col]
+        self.date_cols = [kn.birth_date_col, kn.report_date_col, kn.date_received_at_seq_center_col]
         self.date_format = '%Y-%m-%d %X'
 
     def add_trial_data_to_mongo(self):
@@ -146,6 +150,10 @@ class LoadService:
             for col in self.date_cols:
                 if col in sample_obj:
                     sample_obj[col] = dt.datetime.strptime(str(sample_obj[col]), self.date_format)
+
+            # Special type edge case for chromosome column
+            for mutation in sample_obj[kn.mutation_list_col]:
+                mutation[kn.chromosome_col] = handle_chromosome_column(mutation[kn.chromosome_col])
 
             # validate data with samples schema
             if not self.validator.validate_document(sample_obj):
