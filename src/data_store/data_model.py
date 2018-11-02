@@ -30,7 +30,7 @@ mutations_schema = {
     kn.ref_residue_col: {'type': 'string', 'readonly': True, 'nullable': True},
     kn.allele_fraction_col: {'type': 'float', 'required': True},
     kn.transcript_src_col: {'type': 'string', 'nullable': True},
-    kn.coverage_col: {'type': 'string', 'nullable': True},
+    kn.coverage_col: {'type': 'integer', 'nullable': True},
     kn.somatic_status_col: {'type': 'string', 'nullable': True},
     kn.tier_col: {'type': 'integer', 'allowed': [1, 2, 3, 4], 'required': True},
     kn.entrez_id_col: {'type': 'string', 'nullable': True},
@@ -79,7 +79,7 @@ samples_schema = {
 
     # patient identification information
     kn.mrn_col: {'type': 'string', 'required': True},
-    kn.sample_id_col: {'type': 'string', 'required': True, 'unique': True},
+    kn.sample_id_col: {'type': 'string', 'required': True},
     kn.block_no_col: {'type': 'string', 'required': True, 'nullable': True},
     kn.data_push_id_col: {'type': 'string', 'required': False, 'nullable': True},
     kn.alt_mrn_col: {'type': 'string', 'nullable': True},
@@ -87,7 +87,7 @@ samples_schema = {
     kn.powerpath_patient_id_col: {'type': 'string', 'nullable': True},
 
     # patient personal information
-    kn.gender_col: {'type': 'string', 'required': True},
+    kn.gender_col: {'type': 'string', 'required': True, 'allowed': ['Male', 'Female']},
     kn.first_name_col: {'type': 'string', 'required': True},
     kn.last_name_col: {'type': 'string', 'required': True},
     kn.birth_date_col: {'type': 'datetime', 'required': True},
@@ -137,10 +137,10 @@ samples_schema = {
     kn.oncotree_biopsy_site_meta_col: {'type': 'string', 'nullable': True},
     kn.oncotree_biopsy_site_color_col: {'type': 'string', 'nullable': True},
     kn.oncotree_primary_diagnosis_meta_col: {'type': 'string', 'nullable': True},
-    kn.oncotree_primary_diagnosis_color_col: {'type': 'string'},
+    kn.oncotree_primary_diagnosis_color_col: {'type': 'string', 'nullable': True},
 
     # patient consent information
-    kn.q1_consent_col: {'type': 'string', 'required': True, 'consented': True},
+    kn.q1_consent_col: {'type': 'string', 'required': True},
     kn.q2_consent_col: {'type': 'string', 'required': True},
     kn.q3_consent_col: {'type': 'string', 'required': True},
     kn.q4_consent_col: {'type': 'string', 'required': True},
