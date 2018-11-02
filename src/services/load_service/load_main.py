@@ -77,7 +77,6 @@ class LoadService:
         self.db = get_db(self._args.mongo_uri)
         self.t = TrialUtilities(self.db)
         self.p = PatientUtilities()
-        self.v = VariantsUtilities()
         self.clinical_is_bson = False
         self.date_cols = [kn.birth_date_col, kn.report_date_col]
         self.date_format = '%Y-%m-%d %X'
@@ -156,44 +155,18 @@ class LoadService:
         genomic_json = dataframe_to_json(df=self.p.genomic_df[f1])
 
         # initialize genomic columns in sample object
-        sample_obj[kn.mutation_list_col] = []
-        sample_obj[kn.cnv_list_col] = []
-        sample_obj[kn.sv_list_col] = []
-        sample_obj[kn.wt_genes_col] = []
-        sample_obj[kn.pertinent_negatives_list_col] = []
-        sample_obj[kn.pertinent_undercovered_list_col] = []
-        sample_obj[kn.additional_undercovered_list_col] = []
+        v = VariantsUtilities(sample_obj=sample_obj)
 
         # parse each variant
-        for variant in genomic_json:
-            if kn.variant_category_col not in variant or variant[kn.variant_category_col] not in s.allowed_variants:
+        for variant_obj in genomic_json:
+            if kn.variant_category_col not in variant_obj or \
+                            variant_obj[kn.variant_category_col] not in s.allowed_variants:
                 raise ValueError('%s column must be included for each genomic record.' % kn.variant_category_col)
 
-            # Mutations, CNVs, and Svs
-            variant_type = variant[kn.variant_category_col]
-            vopts = [s.variant_category_mutation_val, s.variant_category_cnv_val, s.variant_category_sv_val]
-            if variant_type in vopts:
-                self.v.create_variant_object(data=variant, variant_type=variant_type)
+            variant_category = variant_obj[kn.variant_category_col]
+            v.variant_parser_dict[variant_category](data=variant_obj)
 
-            # CNVs
 
-            # SVs
-
-            # Signatures
-
-            # WTs
-
-            # Low Coverage Genes
-
-                # method calls by variant category
-                self.variant_parser_dict = {
-                    s.variant_category_mutation_val: self.v.create_variant_object,
-                    s.variant_category_cnv_val: self.v.create_variant_object,
-                    s.variant_category_sv_val: self.v.create_variant_object,
-                    s.variant_category_signature_val: self.v.determine_signature_type,
-                    s.variant_category_wt_val: self.v.determine_wildtype,
-                    s.variant_category_lc_val: self.v.determine_low_coverage_type
-                }
 
 
 

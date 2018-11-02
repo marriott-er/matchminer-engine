@@ -17,7 +17,6 @@ class TestVariantsUtilities(unittest.TestCase):
 
     def test_init_sample_obj(self):
 
-        self.v.init_sample_obj()
         assert sorted(self.v.sample_obj.keys()) == sorted(s.gcol_list + s.signature_cols), \
             sorted(self.v.sample_obj.keys())
 
@@ -48,13 +47,16 @@ class TestVariantsUtilities(unittest.TestCase):
 
     def test_create_variant_object(self):
 
-        mutation_dict = self.v.create_variant_object(data=mutation_missense_data)
-        cnv_dict = self.v.create_variant_object(data=cnv_heterozygous_del_data)
-        sv_dict = self.v.create_variant_object(data=sv_data)
+        self.v.create_variant_object(data=mutation_missense_data)
+        self.v.create_variant_object(data=cnv_heterozygous_del_data)
+        self.v.create_variant_object(data=sv_data)
 
-        assert sorted(mutation_dict.keys()) == sorted(dm.mutations_schema.keys()), sorted(mutation_dict.keys())
-        assert sorted(cnv_dict.keys()) == sorted(dm.cnvs_schema.keys()), sorted(cnv_dict.keys())
-        assert sorted(sv_dict.keys()) == sorted(dm.svs_schema.keys()), sorted(sv_dict.keys())
+        mutation_list = sorted(self.v.sample_obj[kn.mutation_list_col][0].keys())
+        cnv_list = sorted(self.v.sample_obj[kn.cnv_list_col][0].keys())
+        sv_list = sorted(self.v.sample_obj[kn.sv_list_col][0].keys())
+        assert mutation_list == sorted(dm.mutations_schema.keys()), mutation_list
+        assert cnv_list == sorted(dm.cnvs_schema.keys()), cnv_list
+        assert sv_list == sorted(dm.svs_schema.keys()), sv_list
 
     def test_split_mmr_status(self):
 
@@ -77,14 +79,12 @@ class TestVariantsUtilities(unittest.TestCase):
 
         # MMR deficient
         self.v.determine_signature_type(data=signature_mmr_deficient_data)
-        assert sorted(self.v.sample_obj.keys()) == sorted(s.signature_cols), sorted(self.v.sample_obj.keys())
         assert self.v.sample_obj[kn.mmr_status_col] == s.mmr_status_deficient_val, self.v.sample_obj[kn.mmr_status_col]
         assert self.v.sample_obj[kn.ms_status_col] == s.ms_status_msih_val, self.v.sample_obj[kn.ms_status_col]
         assert self.v.sample_obj[kn.apobec_status_col] is None, self.v.sample_obj[kn.apobec_status_col]
 
         # MMR not specified
         self.v.determine_signature_type(data=signature_mmr_none_data)
-        assert sorted(self.v.sample_obj.keys()) == sorted(s.signature_cols), sorted(self.v.sample_obj.keys())
         assert self.v.sample_obj[kn.mmr_status_col] is None, self.v.sample_obj[kn.mmr_status_col]
         assert self.v.sample_obj[kn.ms_status_col] is None, self.v.sample_obj[kn.ms_status_col]
 
@@ -108,8 +108,6 @@ class TestVariantsUtilities(unittest.TestCase):
         assert return_value_error is True
 
     def test_determine_low_coverage_type(self):
-
-        self.v.init_sample_obj()
 
         pnlist = self.v.sample_obj[kn.pertinent_negatives_list_col]
         plclist = self.v.sample_obj[kn.pertinent_undercovered_list_col]

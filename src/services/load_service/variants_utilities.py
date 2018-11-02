@@ -13,9 +13,18 @@ class VariantsUtilities:
             s.variant_category_sv_val: svs_schema.keys()
         }
 
-        self.method_parser_dict = {}
+        # method calls by variant category
+        self.variant_parser_dict = {
+            s.variant_category_mutation_val: self.create_variant_object,
+            s.variant_category_cnv_val: self.create_variant_object,
+            s.variant_category_sv_val: self.create_variant_object,
+            s.variant_category_signature_val: self.determine_signature_type,
+            s.variant_category_wt_val: self.determine_wildtype,
+            s.variant_category_lc_val: self.determine_low_coverage_type
+        }
+        self._init_sample_obj()
 
-    def init_sample_obj(self):
+    def _init_sample_obj(self):
         """
         Initialize the sample object with genomic columns
 
@@ -35,19 +44,25 @@ class VariantsUtilities:
         Create a mutation object from the given data
 
         :param data: {dict}
-        :return: {dict}
+        :return: {null}
         """
-        variant_dict = {}
+        variant_map = {
+            s.variant_category_mutation_val: kn.mutation_list_col,
+            s.variant_category_cnv_val: kn.cnv_list_col,
+            s.variant_category_sv_val: kn.sv_list_col
+        }
+        variant_obj = {}
         variant_type = data[kn.variant_category_col]
         for col in self.col_dict[variant_type]:
             if col in data:
-                variant_dict[col] = data[col]
+                variant_obj[col] = data[col]
 
         # add reference residue for mutations
         if variant_type == s.variant_category_mutation_val:
-            variant_dict[kn.ref_residue_col] = self._determine_reference_residue(data)
+            variant_obj[kn.ref_residue_col] = self._determine_reference_residue(data)
 
-        return variant_dict
+        variant_col = variant_map[variant_type]
+        self.sample_obj[variant_col].append(variant_obj)
 
     def determine_signature_type(self, data):
         """
