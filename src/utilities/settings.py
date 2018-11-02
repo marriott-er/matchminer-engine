@@ -23,6 +23,8 @@ if file_path is not None:
             setattr(sys.modules[__name__], name, value)
 
 
+TUMOR_TREE = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../', 'data/tumor_tree.txt'))
+
 sample_collection_name = 'samples'
 variant_category_mutation_val = 'MUTATION'
 variant_category_cnv_val = 'CNV'
@@ -68,3 +70,6 @@ gcol_list = [
     kn.pertinent_undercovered_list_col,
     kn.additional_undercovered_list_col
 ]
+
+oncotree_all_solid_text = '_SOLID_'
+oncotree_all_liquid_text = '_LIQUID_'

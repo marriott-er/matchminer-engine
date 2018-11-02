@@ -15,7 +15,6 @@ class QueryUtilities:
         :param include: {bool}
         :return: {dict}
         """
-        # todo expand oncotree diagnosis
         return {kn.oncotree_primary_diagnosis_name_col: {self.inclusion_dict[include]: cancer_type}}
 
     def create_age_query(self, include=True):
