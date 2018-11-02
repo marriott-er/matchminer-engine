@@ -5,7 +5,8 @@ from pymongo import ASCENDING, DESCENDING
 
 from src.utilities import settings as s
 from src.data_store import key_names as kn
-from src.utilities.utilities import get_db, dataframe_to_json, map_variant_category_name_to_data_model
+from src.data_store.validator import SamplesValidator
+from src.utilities.utilities import get_db, dataframe_to_json
 from src.services.load_service.patient_utilities import PatientUtilities
 from src.services.load_service.trial_utilities import TrialUtilities
 from src.services.load_service.variants_utilities import VariantsUtilities
@@ -77,6 +78,7 @@ class LoadService:
         self.db = get_db(self._args.mongo_uri)
         self.t = TrialUtilities(self.db)
         self.p = PatientUtilities()
+        self.validator = SamplesValidator()
         self.clinical_is_bson = False
         self.date_cols = [kn.birth_date_col, kn.report_date_col]
         self.date_format = '%Y-%m-%d %X'
@@ -101,7 +103,7 @@ class LoadService:
         if not self._args.genomic:
             raise ValueError('Genomic file must be supplied along with clinical file.')
 
-        logging.info('Reading old_data into pandas...')
+        logging.info('Reading data into pandas...')
         self.clinical_is_bson = self.p.load_dict[self._args.patient_format](self._args.clinical, self._args.genomic)
 
     def reformat_clinical_dates(self):
@@ -137,11 +139,20 @@ class LoadService:
         clinical_json = dataframe_to_json(df=self.p.clinical_df)
         for sample_obj in clinical_json:
 
-            sample = self._add_genomic_data_to_clinical_dataframe(sample_obj=sample_obj)
-            for col in self.date_cols:
-                if col in sample:
-                    sample[col] = dt.datetime.strptime(str(sample[col]), self.date_format)
+            # add genomic data
+            sample_obj = self._add_genomic_data_to_clinical_dataframe(sample_obj=sample_obj)
 
+            # convert date columns as datetime object
+            for col in self.date_cols:
+                if col in sample_obj:
+                    sample_obj[col] = dt.datetime.strptime(str(sample_obj[col]), self.date_format)
+
+            # validate data with samples schema
+            if not self.validator.validate_document(sample_obj):
+                raise ValueError('%s sample did not pass data validation: %s' % (sample_obj[kn.sample_id_col],
+                                                                                 self.validator.errors))
+
+        # insert into mongo
         self.db[s.sample_collection_name].insert(clinical_json)
 
     def _add_genomic_data_to_clinical_dataframe(self, sample_obj):
@@ -149,7 +160,7 @@ class LoadService:
         Add the genomic old_data to the "variants" column of the clinical documents
 
         :param sample_obj: {dict}
-        :return: {list of JSON objects}
+        :return: {dict} sample_obj updated with genomic columns
         """
         f1 = (self.p.genomic_df[kn.sample_id_col] == sample_obj[kn.sample_id_col])
         genomic_json = dataframe_to_json(df=self.p.genomic_df[f1])
@@ -166,37 +177,7 @@ class LoadService:
             variant_category = variant_obj[kn.variant_category_col]
             v.variant_parser_dict[variant_category](data=variant_obj)
 
-
-
-
-
-        # todo old code below
-        # pull gene names to use as key values
-        genomic_data = {k: [] for k in s.genomic_variants_subheader_keys}
-        for item in genomic_json:
-
-            # variant category must be included for every variant
-            if pd.isnull(item[s.variant_category_col]):
-                raise ValueError('%s column cannot be null.' % s.variant_category_col)
-
-            variant_category = item[s.variant_category_col]
-            variant_class = item[s.variant_class_col]
-            protein_change = item[s.protein_change_col]
-            keyname = map_variant_category_name_to_data_model(val=variant_category)
-
-            # add reference residue for SNVs
-            if variant_category == s.variant_category_mutation_val and variant_class == s.variant_class_missense_mutation_val:
-                item[s.ref_residue_col] = protein_change[:-1]
-            else:
-                item[s.ref_residue_col] = None
-
-            # separate old_data by variant category
-            if variant_category in [s.variant_category_mutation_val, s.variant_category_cnv_val]:
-                genomic_data[keyname].append({item[s.gene_name_col]: item})
-            else:
-                genomic_data[keyname].append(item)
-
-        return genomic_data
+        return v.sample_obj
 
     def create_clinical_index(self):
         """

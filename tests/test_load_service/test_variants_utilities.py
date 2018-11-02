@@ -90,18 +90,18 @@ class TestVariantsUtilities(unittest.TestCase):
 
     def test_determine_wildtype(self):
 
-        wt_gene_list = []
-        wt_gene_list = self.v.determine_wildtype(data=wt1_data, wt_gene_list=wt_gene_list)
+        wt_gene_list = self.v.sample_obj[kn.wt_genes_col]
+        self.v.determine_wildtype(data=wt1_data)
         assert sorted(wt_gene_list) == sorted(['BRAF']), sorted(wt_gene_list)
 
-        wt_gene_list = self.v.determine_wildtype(data=wt2_data, wt_gene_list=wt_gene_list)
+        self.v.determine_wildtype(data=wt2_data)
         assert sorted(wt_gene_list) == sorted(['BRAF', 'EGFR']), sorted(wt_gene_list)
 
         # catch missing data
         return_value_error = False
         missing_protein_change_data = {}
         try:
-            self.v.determine_wildtype(data=missing_protein_change_data, wt_gene_list=wt_gene_list)
+            self.v.determine_wildtype(data=missing_protein_change_data)
         except ValueError:
             return_value_error = True
 

@@ -82,6 +82,18 @@ class VariantsUtilities:
             else:
                 self.sample_obj[col] = None
 
+    def determine_wildtype(self, data):
+        """
+        Append wild type genes to the wild type gene list
+
+        :param data: {dict}
+        :return: {null}
+        """
+        if kn.hugo_symbol_col not in data:
+            raise ValueError('%s column must be included for wild type genes' % kn.hugo_symbol_col)
+
+        self.sample_obj[kn.wt_genes_col].append(data[kn.hugo_symbol_col])
+
     def determine_low_coverage_type(self, data):
         """
         Group low coverage gene objects by their type
@@ -143,18 +155,3 @@ class VariantsUtilities:
             mmr_status = mmr_and_ms_status_text
 
         return mmr_status, ms_status
-
-    @staticmethod
-    def determine_wildtype(data, wt_gene_list):
-        """
-        Append wild type genes to the wild type gene list
-
-        :param data: {dict}
-        :param wt_gene_list: {list of str}
-        :return: {list of str} Updated wt_gene_list
-        """
-        if kn.hugo_symbol_col not in data:
-            raise ValueError('%s column must be included for wild type genes' % kn.hugo_symbol_col)
-
-        wt_gene_list.append(data[kn.hugo_symbol_col])
-        return list(set(wt_gene_list))
