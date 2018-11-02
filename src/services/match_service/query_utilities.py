@@ -1,4 +1,5 @@
 from src.utilities import settings as s
+from src.data_store import key_names as kn
 
 
 class QueryUtilities:
@@ -15,7 +16,7 @@ class QueryUtilities:
         :return: {dict}
         """
         # todo expand oncotree diagnosis
-        return {s.diagnosis_col: {self.inclusion_dict[include]: cancer_type}}
+        return {kn.oncotree_primary_diagnosis_name_col: {self.inclusion_dict[include]: cancer_type}}
 
     def create_age_query(self, include=True):
         """

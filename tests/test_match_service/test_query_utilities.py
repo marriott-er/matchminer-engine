@@ -1,5 +1,11 @@
 import unittest
 
+from src.utilities import settings as s
+s.MONGO_URI = 'mongodb://localhost:27017'
+s.MONGO_DBNAME = 'matchminer'
+
+from src.utilities.utilities import get_db
+from tests.test_match_service import *
 from src.services.match_service.query_utilities import QueryUtilities
 
 
@@ -9,12 +15,29 @@ class TestQueryUtilities(unittest.TestCase):
         super(TestQueryUtilities, self).setUp()
 
         self.q = QueryUtilities()
+        self.db = get_db(mongo_uri=s.MONGO_URI, mongo_dbname=s.MONGO_DBNAME)
+        self.proj = {kn.sample_id_col: 1}
+
+        test_cases = [test_case_lung, test_case_colon]
+        self.db.testSamples.insert_many(test_cases)
 
     def tearDown(self):
-        pass
+        self.db.testSamples.drop()
+
+    def _find(self, query):
+        return self.db.testSamples.find_one(query, self.proj)
 
     def test_create_oncotree_diagnosis_query(self):
-        raise NotImplementedError
+
+        q1 = self.q.create_oncotree_diagnosis_query(cancer_type='Lung', include=True)
+        q2 = self.q.create_oncotree_diagnosis_query(cancer_type='Lung', include=False)
+        res1 = self._find(q1)
+        res2 = self._find(q2)
+
+        assert res1 is not None
+        assert res2 is not None
+        assert res1[kn.sample_id_col] == 'TEST-SAMPLE-LUNG', res1
+        assert res2[kn.sample_id_col] == 'TEST-SAMPLE-COLON', res2
 
     def test_create_age_query(self):
         raise NotImplementedError
