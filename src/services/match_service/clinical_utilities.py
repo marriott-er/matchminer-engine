@@ -17,8 +17,7 @@ class ClinicalUtilities(object):
         :param nodes: {list of oncotree nodes}
         :return {list of str}
         """
-        # todo needs unit test
-        return [self.oncotree.node[n]['text'] for n in nodes]
+        return list(set(self.oncotree.node[n]['text'] for n in nodes))
 
     def expand_oncotree_diagnosis(self, diagnosis):
         """
@@ -27,7 +26,6 @@ class ClinicalUtilities(object):
         :param diagnosis: {str}
         :return: {list of str}
         """
-        # todo needs unit test
         node = ox.lookup_text(self.oncotree, diagnosis)
         nodes = [node]
 
@@ -43,10 +41,9 @@ class ClinicalUtilities(object):
         All liquid tumors is defined as the set of diagnoses under "Blood" or "Lymph".
         All solid tumor is defined as the entire set of diagnoses minus this all liquid tumor set.
 
-        :param diagnosis: {str} __LIQUID__ or __SOLID__
+        :param diagnosis: {str} _LIQUID_ or _SOLID_
         :return: {list of str}
         """
-        # todo needs unit test
         # build the nodes for liquid.
         lymph_node = ox.lookup_text(self.oncotree, "Lymph")
         blood_node = ox.lookup_text(self.oncotree, "Blood")
