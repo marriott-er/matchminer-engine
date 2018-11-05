@@ -8,9 +8,10 @@ class TestClinicalQueries(TestQueryUtilitiesShared):
         super(TestClinicalQueries, self).setUp()
 
         self.cq = ClinicalQueries()
+        self.db.testSamples.insert_many(self.test_cases)
 
     def tearDown(self):
-        pass
+        self.db.testSamples.drop()
 
     def test_create_oncotree_diagnosis_query(self):
 
