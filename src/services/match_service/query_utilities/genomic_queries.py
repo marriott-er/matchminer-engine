@@ -1,7 +1,7 @@
+import re
+
 from src.utilities import settings as s
 from src.data_store import key_names as kn
-
-
 from src.services.match_service.query_utilities.query_utilities import QueryUtilities
 from src.services.match_service.query_utilities.genomic_utilities import GenomicUtilities
 
@@ -113,7 +113,14 @@ class GenomicQueries(QueryUtilities, GenomicUtilities):
         :param include: {bool}
         :return: {dict}
         """
-        raise NotImplementedError
+        gene_name_regex = self.regex_compile_gene_name(gene_name)
+        if include:
+            subquery = {kn.sv_comment_col: gene_name_regex}
+        else:
+            subquery = {kn.sv_comment_col: {'$not': gene_name_regex}}
+
+        query = {kn.sv_list_col: {'$elemMatch': subquery}}
+        return self.handle_exclusion_queries(query=query, variant_category=s.variant_category_sv_val, include=include)
 
     def create_mutational_signature_query(self, signature_type, signature_val, include=True):
         """

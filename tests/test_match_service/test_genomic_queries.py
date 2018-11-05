@@ -30,14 +30,16 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
                                              variant_category=s.variant_category_mutation_val,
                                              include=False)
         res2 = self._findall(q2)
-        assert len(res2) == 7, res2
+        assert len(res2) == 9, res2
         assert sorted([i[kn.sample_id_col] for i in res2]) == sorted(['TEST-SAMPLE-COLON',
                                                                       'TEST-SAMPLE-LUNG',
                                                                       'TEST-SAMPLE-EGFR',
                                                                       'TEST-SAMPLE-NO-MUTATION',
                                                                       'TEST-SAMPLE-BRAF-GENERIC-CNV',
                                                                       'TEST-SAMPLE-BRAF-CNV-HETERO-DEL',
-                                                                      'TEST-SAMPLE-BRAF-CNV-GAIN']), res2
+                                                                      'TEST-SAMPLE-BRAF-CNV-GAIN',
+                                                                      'TEST-SAMPLE-NTRK1-SV',
+                                                                      'TEST-SAMPLE-NTRK2-SV']), res2
 
         # BRAF any CNV (inclusion)
         q3 = self.gq.create_gene_level_query(gene_name='BRAF',
@@ -54,13 +56,15 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
                                              variant_category=s.variant_category_cnv_val,
                                              include=False)
         res4 = self._findall(q4)
-        assert len(res4) == 6, res4
+        assert len(res4) == 8, res4
         assert sorted([i[kn.sample_id_col] for i in res4]) == sorted(['TEST-SAMPLE-BRAF-V600E',
                                                                       'TEST-SAMPLE-BRAF-NON-V600E',
                                                                       'TEST-SAMPLE-COLON',
                                                                       'TEST-SAMPLE-LUNG',
                                                                       'TEST-SAMPLE-EGFR',
-                                                                      'TEST-SAMPLE-NO-MUTATION']), res4
+                                                                      'TEST-SAMPLE-NO-MUTATION',
+                                                                      'TEST-SAMPLE-NTRK1-SV',
+                                                                      'TEST-SAMPLE-NTRK2-SV']), res4
 
     def test_create_variant_level_snv_missense_query(self):
 
@@ -73,7 +77,7 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
         # BRAF V600E (exclusion)
         q2 = self.gq.create_variant_level_snv_missense_query(gene_name='BRAF', protein_change='p.V600E', include=False)
         res2 = self._findall(q2)
-        assert len(res2) == 8, res2
+        assert len(res2) == 10, res2
         assert sorted([i[kn.sample_id_col] for i in res2]) == sorted(['TEST-SAMPLE-BRAF-NON-V600E',
                                                                       'TEST-SAMPLE-EGFR',
                                                                       'TEST-SAMPLE-NO-MUTATION',
@@ -81,8 +85,9 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
                                                                       'TEST-SAMPLE-LUNG',
                                                                       'TEST-SAMPLE-BRAF-GENERIC-CNV',
                                                                       'TEST-SAMPLE-BRAF-CNV-HETERO-DEL',
-                                                                      'TEST-SAMPLE-BRAF-CNV-GAIN'
-                                                                      ]), res2
+                                                                      'TEST-SAMPLE-BRAF-CNV-GAIN',
+                                                                      'TEST-SAMPLE-NTRK1-SV',
+                                                                      'TEST-SAMPLE-NTRK2-SV']), res2
 
         # BRAF V600D (inclusion)
         q3 = self.gq.create_variant_level_snv_missense_query(gene_name='BRAF', protein_change='p.V600D', include=True)
@@ -92,7 +97,7 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
         # BRAF V600D (exclusion)
         q4 = self.gq.create_variant_level_snv_missense_query(gene_name='BRAF', protein_change='p.V600D', include=False)
         res4 = self._findall(q4)
-        assert len(res4) == 9, res4
+        assert len(res4) == 11, res4
         assert sorted([i[kn.sample_id_col] for i in res4]) == sorted(['TEST-SAMPLE-BRAF-V600E',
                                                                       'TEST-SAMPLE-BRAF-NON-V600E',
                                                                       'TEST-SAMPLE-EGFR',
@@ -101,9 +106,11 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
                                                                       'TEST-SAMPLE-LUNG',
                                                                       'TEST-SAMPLE-BRAF-GENERIC-CNV',
                                                                       'TEST-SAMPLE-BRAF-CNV-HETERO-DEL',
-                                                                      'TEST-SAMPLE-BRAF-CNV-GAIN']), res4
+                                                                      'TEST-SAMPLE-BRAF-CNV-GAIN',
+                                                                      'TEST-SAMPLE-NTRK1-SV',
+                                                                      'TEST-SAMPLE-NTRK2-SV']), res4
 
-    def create_cnv_query(self):
+    def test_create_cnv_query(self):
 
         # BRAF CNV Heterozygous deletion (inclusion)
         q1 = self.gq.create_cnv_query(gene_name='BRAF', cnv_call=s.cnv_call_hetero_del, include=True)
@@ -114,7 +121,7 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
         # BRAF CNV Heterozygous deletion (exclusion)
         q2 = self.gq.create_cnv_query(gene_name='BRAF', cnv_call=s.cnv_call_hetero_del, include=False)
         res2 = self._findall(q2)
-        assert len(res2) == 8, res2
+        assert len(res2) == 10, res2
         assert sorted([i[kn.sample_id_col] for i in res2]) == sorted(['TEST-SAMPLE-BRAF-V600E',
                                                                       'TEST-SAMPLE-BRAF-NON-V600E',
                                                                       'TEST-SAMPLE-EGFR',
@@ -122,23 +129,44 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
                                                                       'TEST-SAMPLE-COLON',
                                                                       'TEST-SAMPLE-LUNG',
                                                                       'TEST-SAMPLE-BRAF-GENERIC-CNV',
-                                                                      'TEST-SAMPLE-BRAF-CNV-GAIN']), res2
+                                                                      'TEST-SAMPLE-BRAF-CNV-GAIN',
+                                                                      'TEST-SAMPLE-NTRK1-SV',
+                                                                      'TEST-SAMPLE-NTRK2-SV']), res2
 
+    def test_create_sv_query(self):
 
-    def create_sv_query(self):
+        # BRAF SV (inclusion)
+        q1 = self.gq.create_sv_query(gene_name='NTRK1', include=True)
+        res1 = self._findall(q1)
+        assert len(res1) == 1, res1
+        assert res1[0][kn.sample_id_col] == 'TEST-SAMPLE-NTRK1-SV', res1
+
+        # BRAF SV (exclusion)
+        q2 = self.gq.create_sv_query(gene_name='NTRK1', include=False)
+        res2 = self._findall(q2)
+        assert len(res2) == 10, res2
+        assert sorted([i[kn.sample_id_col] for i in res2]) == sorted(['TEST-SAMPLE-BRAF-V600E',
+                                                                      'TEST-SAMPLE-BRAF-NON-V600E',
+                                                                      'TEST-SAMPLE-EGFR',
+                                                                      'TEST-SAMPLE-NO-MUTATION',
+                                                                      'TEST-SAMPLE-COLON',
+                                                                      'TEST-SAMPLE-LUNG',
+                                                                      'TEST-SAMPLE-BRAF-GENERIC-CNV',
+                                                                      'TEST-SAMPLE-BRAF-CNV-GAIN',
+                                                                      'TEST-SAMPLE-BRAF-CNV-HETERO-DEL',
+                                                                      'TEST-SAMPLE-NTRK2-SV']), res2
+
+    def test_create_mutational_signature_query(self):
         raise NotImplementedError
 
-    def create_mutational_signature_query(self):
+    def test_create_wildtype_query(self):
         raise NotImplementedError
 
-    def create_wildtype_query(self):
+    def test_create_wildcard_query(self):
         raise NotImplementedError
 
-    def create_wildcard_query(self):
+    def test_create_exon_query(self):
         raise NotImplementedError
 
-    def create_exon_query(self):
-        raise NotImplementedError
-
-    def create_low_coverage_query(self):
+    def test_create_low_coverage_query(self):
         raise NotImplementedError

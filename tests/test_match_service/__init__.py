@@ -68,6 +68,18 @@ class TestQueryUtilitiesShared(unittest.TestCase):
             kn.sample_id_col: 'TEST-SAMPLE-NO-MUTATION',
             kn.mutation_list_col: []
         }
+        self.test_case_sv = {
+            kn.sample_id_col: 'TEST-SAMPLE-NTRK1-SV',
+            kn.sv_list_col: [{
+                kn.sv_comment_col: 'This sample has a NTRK1 fusion'
+            }]
+        }
+        self.test_case_sv_2 = {
+            kn.sample_id_col: 'TEST-SAMPLE-NTRK2-SV',
+            kn.sv_list_col: [{
+                kn.sv_comment_col: 'This sample has a NTRK2 fusion'
+            }]
+        }
         self.test_cases = [
             self.test_case_lung,
             self.test_case_colon,
@@ -77,7 +89,9 @@ class TestQueryUtilitiesShared(unittest.TestCase):
             self.test_case_no_mutation,
             self.test_case_braf_generic_cnv,
             self.test_case_braf_cnv_hetero_del,
-            self.test_case_braf_cnv_gain
+            self.test_case_braf_cnv_gain,
+            self.test_case_sv,
+            self.test_case_sv_2
         ]
 
         self.all_nsclc_cancer_types = sorted([
