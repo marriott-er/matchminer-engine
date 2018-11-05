@@ -1,12 +1,15 @@
 from src.utilities import settings as s
 from src.data_store import key_names as kn
+from src.services.match_service.clinical_utilities import ClinicalUtilities
 
 
-class QueryUtilities:
+class QueryUtilities(ClinicalUtilities):
 
     def __init__(self):
+        ClinicalUtilities.__init__(self)
+
         self.inclusion_dict = {True: '$eq', False: '$ne'}
-        self.list_inclusion_dict = {True: '$in', False: {'$nin'}}
+        self.list_inclusion_dict = {True: '$in', False: '$nin'}
 
     def _expand_query_to_list(self, new_val, include=True):
         """
@@ -16,7 +19,6 @@ class QueryUtilities:
         :param include: {bool}
         :return: {dict}
         """
-        # todo needs unit test
         return {self.list_inclusion_dict[include]: new_val}
 
     def create_oncotree_diagnosis_query(self, cancer_type, include=True):
@@ -27,8 +29,9 @@ class QueryUtilities:
         :param include: {bool}
         :return: {dict}
         """
-        # todo needs unit test
-        return {kn.oncotree_primary_diagnosis_name_col: {self.inclusion_dict[include]: cancer_type}}
+        expanded_diagnoses = self.expand_oncotree_diagnosis(diagnosis=cancer_type)
+        subquery = self._expand_query_to_list(new_val=expanded_diagnoses, include=include)
+        return {kn.oncotree_primary_diagnosis_name_col: subquery}
 
     def create_age_query(self, include=True):
         """

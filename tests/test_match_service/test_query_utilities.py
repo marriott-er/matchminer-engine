@@ -6,6 +6,7 @@ s.MONGO_DBNAME = 'matchminer'
 
 from src.utilities.utilities import get_db
 from tests.test_match_service import *
+from src.data_store import key_names as kn
 from src.services.match_service.query_utilities import QueryUtilities
 
 
@@ -27,6 +28,13 @@ class TestQueryUtilities(unittest.TestCase):
     def _find(self, query):
         return self.db.testSamples.find_one(query, self.proj)
 
+    def test_expand_query_to_list(self):
+
+        res1 = self.q._expand_query_to_list(new_val=['Lung Type 1', 'Lung Type 2'], include=True)
+        res2 = self.q._expand_query_to_list(new_val=['Lung Type 1', 'Lung Type 2'], include=False)
+        print res1
+        print res2  # todo add assertions
+
     def test_create_oncotree_diagnosis_query(self):
 
         q1 = self.q.create_oncotree_diagnosis_query(cancer_type='Lung', include=True)
@@ -41,6 +49,10 @@ class TestQueryUtilities(unittest.TestCase):
 
     def test_create_age_query(self):
         raise NotImplementedError
+
+
+    # todo old tests below
+
 
     def test_create_gene_level_query(self):
 

@@ -5,7 +5,7 @@ from src.data_store import key_names as kn
 from src.utilities import settings as s
 
 
-class ClinicalUtilities:
+class ClinicalUtilities(object):
 
     def __init__(self):
         self.oncotree = ox.build_oncotree(file_path=s.TUMOR_TREE)
