@@ -13,6 +13,11 @@ class TestClinical(unittest.TestCase):
     def tearDown(self):
         pass
 
+    def test_text_from_node(self):
+
+        res = self.c._text_from_node(nodes=['LUNG'])
+        print res
+
     def test_expand_oncotree_diagnosis(self):
 
         diagnoses = self.c.expand_oncotree_diagnosis(diagnosis='Lung')
