@@ -1,8 +1,8 @@
 import unittest
 
-from tests.test_match_service import all_nsclc_cancer_types, all_liquid_cancer_types, all_solid_cancer_types
+from src.services.match_service.query_utilities.clinical_utilities import ClinicalUtilities
 from src.utilities.settings import oncotree_all_solid_text, oncotree_all_liquid_text
-from src.services.match_service.clinical_utilities import ClinicalUtilities
+from tests.test_match_service import all_nsclc_cancer_types, all_liquid_cancer_types, all_solid_cancer_types
 
 
 class TestClinicalUtilities(unittest.TestCase):
