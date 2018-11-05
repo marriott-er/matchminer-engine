@@ -12,23 +12,24 @@ class GenomicQueries(QueryUtilities, GenomicUtilities):
         QueryUtilities.__init__(self)
         GenomicUtilities.__init__(self)
 
-    def create_gene_level_query(self, gene_name, include=True):
+    def create_gene_level_query(self, gene_name, variant_category, include=True):
         """
         Create MongoDB query to find records by gene name and variant category
 
         :param gene_name: {str}
+        :param variant_category: {str} (MUTATION, CNV, SV, WT)
         :param include: {bool}
         :return: {dict}
         """
         query = {
-            kn.mutation_list_col: {
+            self.variant_category_dict[variant_category]: {
                 '$elemMatch': {
                     kn.hugo_symbol_col: {self.inclusion_dict[include]: gene_name}
                 }
             }
         }
         return self.handle_exclusion_queries(query=query,
-                                             variant_category=s.variant_category_mutation_val,
+                                             variant_category=variant_category,
                                              include=include)
 
     def create_variant_level_snv_missense_query(self, gene_name, protein_change, include=True):
@@ -41,7 +42,7 @@ class GenomicQueries(QueryUtilities, GenomicUtilities):
         :return: {dict}
         """
         if include:
-            return {
+            query = {
                 kn.mutation_list_col: {
                     '$elemMatch': {
                         kn.hugo_symbol_col: {'$eq': gene_name},
@@ -58,17 +59,19 @@ class GenomicQueries(QueryUtilities, GenomicUtilities):
                     }
                 }
             }
-            return {'$or': [
+            query = {'$or': [
                 self.create_gene_level_query(gene_name=gene_name, include=False),
                 exclude_query
             ]}
 
-    def create_cnv_query(self, gene_name, cnv_call=None, include=True):
+        return query
+
+    def create_cnv_query(self, gene_name, cnv_call, include=True):
         """
         Create MongoDB query to find CNV records by gene name and, if supplied, cnv call
 
         :param gene_name: {str}
-        :param cnv_call: {str or null}
+        :param cnv_call: {str}
         :param include: {bool}
         :return: {dict}
         """

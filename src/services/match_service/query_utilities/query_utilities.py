@@ -35,4 +35,9 @@ class QueryUtilities(object):
         :param variant_category: {str} (MUTATION, CNV, SV, WT)
         :return: {dict}
         """
-        return {self.variant_category_dict[variant_category]: []}
+        return {
+            '$or': [
+                {self.variant_category_dict[variant_category]: []},
+                {self.variant_category_dict[variant_category]: {'$exists': False}}
+            ]
+        }

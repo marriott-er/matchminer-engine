@@ -43,6 +43,9 @@ allowed_variants = [
 
 variant_class_missense_mutation_val = 'Missense_Mutation'
 variant_class_nonsense_mutation_val = 'Nonsense_Mutation'
+cnv_call_hetero_del = 'Heterozygous deletion'
+cnv_call_homo_del = 'Homozygous deletion'
+cnv_call_gain = 'Gain'
 mmr_status_cannot_assess_val = 'Cannot assess'
 mmr_status_indeterminate_val = 'Indeterminate (see note)'
 mmr_status_proficient_val = 'Proficient'

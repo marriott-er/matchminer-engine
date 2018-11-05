@@ -38,6 +38,26 @@ class TestQueryUtilitiesShared(unittest.TestCase):
                 kn.protein_change_col: 'p.V600X'
             }]
         }
+        self.test_case_braf_generic_cnv = {
+            kn.sample_id_col: 'TEST-SAMPLE-BRAF-GENERIC-CNV',
+            kn.cnv_list_col: [{
+                kn.hugo_symbol_col: 'BRAF'
+            }]
+        }
+        self.test_case_braf_cnv_hetero_del = {
+            kn.sample_id_col: 'TEST-SAMPLE-BRAF-CNV-HETERO-DEL',
+            kn.cnv_list_col: [{
+                kn.hugo_symbol_col: 'BRAF',
+                kn.cnv_call_col: s.cnv_call_hetero_del
+            }]
+        }
+        self.test_case_braf_cnv_gain = {
+            kn.sample_id_col: 'TEST-SAMPLE-BRAF-CNV-GAIN',
+            kn.cnv_list_col: [{
+                kn.hugo_symbol_col: 'BRAF',
+                kn.cnv_call_col: s.cnv_call_gain
+            }]
+        }
         self.test_case_egfr = {
             kn.sample_id_col: 'TEST-SAMPLE-EGFR',
             kn.mutation_list_col: [{
@@ -54,7 +74,10 @@ class TestQueryUtilitiesShared(unittest.TestCase):
             self.test_case_braf_v600e,
             self.test_case_braf_non_v600e,
             self.test_case_egfr,
-            self.test_case_no_mutation
+            self.test_case_no_mutation,
+            self.test_case_braf_generic_cnv,
+            self.test_case_braf_cnv_hetero_del,
+            self.test_case_braf_cnv_gain
         ]
 
         self.all_nsclc_cancer_types = sorted([
