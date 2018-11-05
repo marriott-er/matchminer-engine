@@ -80,6 +80,10 @@ class TestQueryUtilitiesShared(unittest.TestCase):
                 kn.sv_comment_col: 'This sample has a NTRK2 fusion'
             }]
         }
+        self.test_case_mmr_deficient = {
+            kn.sample_id_col: 'TEST-SAMPLE-MMR-DEFICIENT',
+            kn.mmr_status_col: s.mmr_status_deficient_val
+        }
         self.test_cases = [
             self.test_case_lung,
             self.test_case_colon,
@@ -91,7 +95,8 @@ class TestQueryUtilitiesShared(unittest.TestCase):
             self.test_case_braf_cnv_hetero_del,
             self.test_case_braf_cnv_gain,
             self.test_case_sv,
-            self.test_case_sv_2
+            self.test_case_sv_2,
+            self.test_case_mmr_deficient
         ]
 
         self.all_nsclc_cancer_types = sorted([

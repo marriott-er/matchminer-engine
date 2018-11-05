@@ -127,10 +127,11 @@ class GenomicQueries(QueryUtilities, GenomicUtilities):
         Create MongoDB query to find records by the given mutational signature value.
 
         :param signature_type: {str} (e.g. MMR Status, TMZ Status, etc.)
+        :param signature_val: {str}
         :param include: {bool}
         :return: {dict}
         """
-        raise NotImplementedError
+        return {signature_type: {self.inclusion_dict[include]: signature_val}}
 
     def create_wildtype_query(self, gene_name, include=True):
         """
