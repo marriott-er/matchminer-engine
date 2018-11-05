@@ -60,7 +60,9 @@ class GenomicQueries(QueryUtilities, GenomicUtilities):
                 }
             }
             query = {'$or': [
-                self.create_gene_level_query(gene_name=gene_name, include=False),
+                self.create_gene_level_query(gene_name=gene_name,
+                                             variant_category=s.variant_category_mutation_val,
+                                             include=False),
                 exclude_query
             ]}
 
@@ -75,7 +77,32 @@ class GenomicQueries(QueryUtilities, GenomicUtilities):
         :param include: {bool}
         :return: {dict}
         """
-        raise NotImplementedError
+        if include:
+            query = {
+                kn.cnv_list_col: {
+                    '$elemMatch': {
+                        kn.hugo_symbol_col: {'$eq': gene_name},
+                        kn.cnv_call_col: {'$eq': cnv_call}
+                    }
+                }
+            }
+        else:
+            exclude_query = {
+                kn.cnv_list_col: {
+                    '$elemMatch': {
+                        kn.hugo_symbol_col: {'$eq': gene_name},
+                        kn.cnv_call_col: {'$ne': cnv_call}
+                    }
+                }
+            }
+            query = {'$or': [
+                self.create_gene_level_query(gene_name=gene_name,
+                                             variant_category=s.variant_category_cnv_val,
+                                             include=False),
+                exclude_query
+            ]}
+
+        return query
 
     def create_sv_query(self, gene_name, include=True):
         """
