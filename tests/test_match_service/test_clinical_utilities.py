@@ -3,10 +3,10 @@ import unittest
 from src.services.match_service.clinical_utilities import ClinicalUtilities
 
 
-class TestClinical(unittest.TestCase):
+class TestClinicalUtilities(unittest.TestCase):
 
     def setUp(self):
-        super(TestClinical, self).setUp()
+        super(TestClinicalUtilities, self).setUp()
 
         self.c = ClinicalUtilities()
 
