@@ -28,11 +28,12 @@ class TestQueryUtilities(TestQueryUtilitiesShared):
         res1 = self._findall(q1)
         res2 = self._findall(q2)
 
-        assert len(res1) == 1, res1
-        assert res1[0][kn.sample_id_col] == 'TEST-SAMPLE-BRAF'
+        assert len(res1) == 2, res1
+        assert sorted([i[kn.sample_id_col] for i in res1]) == sorted(['TEST-SAMPLE-BRAF-V600E',
+                                                                      'TEST-SAMPLE-BRAF-NON-V600E']), res2
         assert len(res2) == 2, res2
-        assert sorted([i[kn.sample_id_col] for i in res2]) == sorted(['TEST-SAMPLE-EGFR', 'TEST-SAMPLE-NO-MUTATION']), \
-            res2
+        assert sorted([i[kn.sample_id_col] for i in res2]) == sorted(['TEST-SAMPLE-EGFR',
+                                                                      'TEST-SAMPLE-NO-MUTATION']), res2
 
     def test_create_no_variants_query(self):
 

@@ -1,3 +1,4 @@
+import json
 import unittest
 
 from src.utilities import settings as s
@@ -23,10 +24,18 @@ class TestQueryUtilitiesShared(unittest.TestCase):
             kn.sample_id_col: 'TEST-SAMPLE-COLON',
             kn.oncotree_primary_diagnosis_name_col: 'Colon'
         }
-        self.test_case_braf = {
-            kn.sample_id_col: 'TEST-SAMPLE-BRAF',
+        self.test_case_braf_v600e = {
+            kn.sample_id_col: 'TEST-SAMPLE-BRAF-V600E',
             kn.mutation_list_col: [{
-                kn.hugo_symbol_col: 'BRAF'
+                kn.hugo_symbol_col: 'BRAF',
+                kn.protein_change_col: 'p.V600E'
+            }]
+        }
+        self.test_case_braf_non_v600e = {
+            kn.sample_id_col: 'TEST-SAMPLE-BRAF-NON-V600E',
+            kn.mutation_list_col: [{
+                kn.hugo_symbol_col: 'BRAF',
+                kn.protein_change_col: 'p.V600X'
             }]
         }
         self.test_case_egfr = {
@@ -42,7 +51,8 @@ class TestQueryUtilitiesShared(unittest.TestCase):
         self.test_cases = [
             self.test_case_lung,
             self.test_case_colon,
-            self.test_case_braf,
+            self.test_case_braf_v600e,
+            self.test_case_braf_non_v600e,
             self.test_case_egfr,
             self.test_case_no_mutation
         ]
@@ -686,3 +696,7 @@ class TestQueryUtilitiesShared(unittest.TestCase):
 
     def _findall(self, query):
         return list(self.db.testSamples.find(query, self.proj))
+
+    @staticmethod
+    def _print(query):
+        print json.dumps(query, indent=2)
