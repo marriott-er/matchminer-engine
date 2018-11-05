@@ -42,22 +42,21 @@ class QueryUtilities(ClinicalUtilities):
         """
         raise NotImplementedError
 
-    def create_gene_level_query(self, gene_name, variant_category, include=True):
+    def create_gene_level_query(self, gene_name, include=True):
         """
         Create MongoDB query to find records by gene name and variant category
 
         :param gene_name: {str}
-        :param variant_category: {str}
         :param include: {bool}
         :return: {dict}
         """
-        # todo has updated
-        key = '{root}.{variant_category}.{gene_name}.{col}'.format(root=s.variants_key,
-                                                                   variant_category=s.snv_key,
-                                                                   gene_name=gene_name,
-                                                                   col=s.variant_category_col)
-
-        return {key: {self.inclusion_dict[include]: variant_category}}
+        return {
+            kn.mutation_list_col: {
+                '$elemMatch': {
+                    kn.hugo_symbol_col: {self.inclusion_dict[include]: gene_name}
+                }
+            }
+        }
 
     def create_variant_level_snv_missense_query(self, gene_name, protein_change, include=True):
         """
