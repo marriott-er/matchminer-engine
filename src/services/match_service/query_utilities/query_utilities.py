@@ -10,6 +10,7 @@ class QueryUtilities(object):
         self.variant_category_dict = {
             s.variant_category_mutation_val: kn.mutation_list_col,
             s.variant_category_wildcard_mutation_val: kn.mutation_list_col,
+            s.variant_category_exon_val: kn.mutation_list_col,
             s.variant_category_cnv_val: kn.cnv_list_col,
             s.variant_category_sv_val: kn.sv_list_col,
             s.variant_category_wt_val: kn.wt_genes_col
@@ -17,6 +18,7 @@ class QueryUtilities(object):
         self.variant_type_col_dict = {
             s.variant_category_mutation_val: kn.protein_change_col,
             s.variant_category_wildcard_mutation_val: kn.ref_residue_col,
+            s.variant_category_exon_val: kn.transcript_exon_col,
             s.variant_category_cnv_val: kn.cnv_call_col
         }
 

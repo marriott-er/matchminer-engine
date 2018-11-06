@@ -92,6 +92,13 @@ class TestQueryUtilitiesShared(unittest.TestCase):
                 kn.hugo_symbol_col: 'BRAF'
             }]
         }
+        self.test_case_braf_exon_20 = {
+            kn.sample_id_col: 'TEST-SAMPLE-BRAF-EXON-20',
+            kn.mutation_list_col: [{
+                kn.hugo_symbol_col: 'BRAF',
+                kn.transcript_exon_col: 20
+            }]
+        }
         self.test_cases = [
             self.test_case_lung,
             self.test_case_colon,
@@ -105,7 +112,8 @@ class TestQueryUtilitiesShared(unittest.TestCase):
             self.test_case_sv,
             self.test_case_sv_2,
             self.test_case_mmr_deficient,
-            self.test_case_braf_wt
+            self.test_case_braf_wt,
+            self.test_case_braf_exon_20
         ]
 
         self.all_nsclc_cancer_types = sorted([

@@ -107,6 +107,19 @@ class GenomicQueries(QueryUtilities, GenomicUtilities):
                                                       gene_name=gene_name,
                                                       variant_val=protein_change)
 
+    def create_exon_query(self, gene_name, exon, include=True):
+        """
+        Create MongoDB query to find samples with mutations in the given exon.
+
+        :param gene_name: {str}
+        :param exon: {int}
+        :param include: {bool}
+        :return: {dict}
+        """
+        return self.variant_level_query_dict[include](variant_category=s.variant_category_exon_val,
+                                                      gene_name=gene_name,
+                                                      variant_val=exon)
+
     def create_cnv_query(self, gene_name, cnv_call, include=True):
         """
         Create MongoDB query to find CNV records by gene name and, if supplied, cnv call
@@ -148,17 +161,6 @@ class GenomicQueries(QueryUtilities, GenomicUtilities):
         :return: {dict}
         """
         return {signature_type: {self.inclusion_dict[include]: signature_val}}
-
-    def create_exon_query(self, gene_name, exon, include=True):
-        """
-        Create MongoDB query to find samples with mutations in the given exon.
-
-        :param gene_name: {str}
-        :param exon: {int}
-        :param include: {bool}
-        :return: {dict}
-        """
-        raise NotImplementedError
 
     def create_low_coverage_query(self, gene_name, low_coverage_type, include=True):
         """
