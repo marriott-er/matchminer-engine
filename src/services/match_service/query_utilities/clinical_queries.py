@@ -8,8 +8,8 @@ from src.services.match_service.query_utilities.clinical_utilities import Clinic
 class ClinicalQueries(QueryUtilities, ClinicalUtilities):
 
     def __init__(self):
-        super(ClinicalQueries, self).__init__()
-        super(QueryUtilities, self).__init__()
+        ClinicalUtilities.__init__(self)
+        QueryUtilities.__init__(self)
 
     def create_oncotree_diagnosis_query(self, cancer_type, include=True):
         """

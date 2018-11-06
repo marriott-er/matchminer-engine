@@ -48,6 +48,7 @@ allowed_variants = [
 
 variant_class_missense_mutation_val = 'Missense_Mutation'
 variant_class_nonsense_mutation_val = 'Nonsense_Mutation'
+cnv_call_high_amp = 'High level amplification'
 cnv_call_hetero_del = 'Heterozygous deletion'
 cnv_call_homo_del = 'Homozygous deletion'
 cnv_call_gain = 'Gain'
@@ -90,6 +91,32 @@ trial_step_col = 'step'
 trial_arm_col = 'arm'
 trial_dose_col = 'dose_level'
 trial_match_tree_col = 'match'
+
+# trial genomic criteria settings
+mt_hugo_symbol = 'hugo_symbol'
+mt_variant_category = 'variant_category'
+mt_protein_change = 'protein_change'
+mt_wc_protein_change = 'wildcard_protein_change'
+mt_exon = 'exon'
+mt_cnv_call = 'cnv_call'
+mt_mmr_status = 'mmr_status'
+mt_ms_status = 'ms_status'
+mt_signature_cols = [
+    mt_mmr_status,
+    mt_ms_status
+]
+
+mt_cnv_val = 'Copy Number Variation'
+mt_mut_val = 'Mutation'
+mt_sv_val = 'Structural Variation'
+mt_high_amp_val = 'High Amplification'
+mt_homo_del_val = 'Homozygous Deletion'
+mt_hetero_del_val = 'Heterozygous Deletion'
+mt_low_amp_val = 'Low Amplification'
+mt_mmr_deficient_val = 'MMR-Deficient'
+mt_mmr_proficient_val = 'MMR-Proficient'
+mt_msi_high_val = 'MSI-H'
+mt_mss_val = 'MSS'
 
 # match table settings
 match_accrual_status_open_val = 'open'
