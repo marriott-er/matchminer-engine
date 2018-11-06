@@ -50,7 +50,7 @@ class GenomicQueries(QueryUtilities, GenomicUtilities):
             self.variant_category_dict[variant_category]: {
                 '$elemMatch': {
                     kn.hugo_symbol_col: {'$eq': gene_name},
-                    self.variant_type_col_dict[variant_val]: {'$eq': variant_val}
+                    self.variant_type_col_dict[variant_category]: {'$eq': variant_val}
                 }
             }
         }
@@ -68,13 +68,13 @@ class GenomicQueries(QueryUtilities, GenomicUtilities):
             self.variant_category_dict[variant_category]: {
                 '$elemMatch': {
                     kn.hugo_symbol_col: {'$eq': gene_name},
-                    self.variant_type_col_dict[variant_val]: {'$ne': variant_val}
+                    self.variant_type_col_dict[variant_category]: {'$ne': variant_val}
                 }
             }
         }
         query = {'$or': [
             self.create_gene_level_query(gene_name=gene_name,
-                                         variant_category=s.variant_category_mutation_val,
+                                         variant_category=variant_category,
                                          include=False),
             exclude_query
         ]}

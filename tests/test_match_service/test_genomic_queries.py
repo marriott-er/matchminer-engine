@@ -97,7 +97,7 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
                                                                       'TEST-SAMPLE-BRAF-CNV-HETERO-DEL',
                                                                       'TEST-SAMPLE-BRAF-CNV-GAIN']), res6
 
-    def test_create_variant_level_snv_missense_query(self):
+    def test_create_mutation_query(self):
 
         # BRAF V600E (inclusion)
         q1 = self.gq.create_mutation_query(gene_name='BRAF', protein_change='p.V600E', include=True)
@@ -171,8 +171,6 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
                                                                       'TEST-SAMPLE-BRAF-WT']), res2
 
     def test_create_wildcard_query(self):
-
-        # todo test
 
         # BRAF V600 wildcard (inclusion)
         q1 = self.gq.create_wildcard_query(gene_name='BRAF', protein_change='p.V600', include=True)
@@ -250,9 +248,6 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
                                                                       'TEST-SAMPLE-NTRK1-SV',
                                                                       'TEST-SAMPLE-NTRK2-SV',
                                                                       'TEST-SAMPLE-BRAF-WT']), res2
-
-    def test_create_wildcard_query(self):
-        raise NotImplementedError
 
     def test_create_exon_query(self):
         raise NotImplementedError

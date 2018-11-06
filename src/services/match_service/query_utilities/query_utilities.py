@@ -9,6 +9,7 @@ class QueryUtilities(object):
         self.list_inclusion_dict = {True: '$in', False: '$nin'}
         self.variant_category_dict = {
             s.variant_category_mutation_val: kn.mutation_list_col,
+            s.variant_category_wildcard_mutation_val: kn.mutation_list_col,
             s.variant_category_cnv_val: kn.cnv_list_col,
             s.variant_category_sv_val: kn.sv_list_col,
             s.variant_category_wt_val: kn.wt_genes_col

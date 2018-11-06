@@ -28,14 +28,16 @@ class TestQueryUtilitiesShared(unittest.TestCase):
             kn.sample_id_col: 'TEST-SAMPLE-BRAF-V600E',
             kn.mutation_list_col: [{
                 kn.hugo_symbol_col: 'BRAF',
-                kn.protein_change_col: 'p.V600E'
+                kn.protein_change_col: 'p.V600E',
+                kn.ref_residue_col: 'p.V600'
             }]
         }
         self.test_case_braf_non_v600e = {
             kn.sample_id_col: 'TEST-SAMPLE-BRAF-NON-V600E',
             kn.mutation_list_col: [{
                 kn.hugo_symbol_col: 'BRAF',
-                kn.protein_change_col: 'p.V600X'
+                kn.protein_change_col: 'p.V600X',
+                kn.ref_residue_col: 'p.V600'
             }]
         }
         self.test_case_braf_generic_cnv = {
