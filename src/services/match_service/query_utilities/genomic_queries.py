@@ -103,7 +103,6 @@ class GenomicQueries(QueryUtilities, GenomicUtilities):
         :param include: {bool}
         :return: {dict}
         """
-        # todo test
         return self.variant_level_query_dict[include](variant_category=s.variant_category_wildcard_mutation_val,
                                                       gene_name=gene_name,
                                                       variant_val=protein_change)

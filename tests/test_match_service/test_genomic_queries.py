@@ -170,6 +170,33 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
                                                                       'TEST-SAMPLE-MMR-DEFICIENT',
                                                                       'TEST-SAMPLE-BRAF-WT']), res2
 
+    def test_create_wildcard_query(self):
+
+        # todo test
+
+        # BRAF V600 wildcard (inclusion)
+        q1 = self.gq.create_wildcard_query(gene_name='BRAF', protein_change='p.V600', include=True)
+        res1 = self._findall(q1)
+        assert len(res1) == 2, res1
+        assert sorted([i[kn.sample_id_col] for i in res1]) == sorted(['TEST-SAMPLE-BRAF-V600E',
+                                                                      'TEST-SAMPLE-BRAF-NON-V600E']), res1
+
+        # BRAF V600 wildcard (exclusion)
+        q2 = self.gq.create_wildcard_query(gene_name='BRAF', protein_change='p.V600', include=False)
+        res2 = self._findall(q2)
+        assert len(res2) == 11, res2
+        assert sorted([i[kn.sample_id_col] for i in res2]) == sorted(['TEST-SAMPLE-EGFR',
+                                                                      'TEST-SAMPLE-NO-MUTATION',
+                                                                      'TEST-SAMPLE-COLON',
+                                                                      'TEST-SAMPLE-LUNG',
+                                                                      'TEST-SAMPLE-BRAF-GENERIC-CNV',
+                                                                      'TEST-SAMPLE-BRAF-CNV-HETERO-DEL',
+                                                                      'TEST-SAMPLE-BRAF-CNV-GAIN',
+                                                                      'TEST-SAMPLE-NTRK1-SV',
+                                                                      'TEST-SAMPLE-NTRK2-SV',
+                                                                      'TEST-SAMPLE-MMR-DEFICIENT',
+                                                                      'TEST-SAMPLE-BRAF-WT']), res2
+
     def test_create_sv_query(self):
 
         # BRAF SV (inclusion)
