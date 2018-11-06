@@ -100,13 +100,13 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
     def test_create_variant_level_snv_missense_query(self):
 
         # BRAF V600E (inclusion)
-        q1 = self.gq.create_variant_level_snv_missense_query(gene_name='BRAF', protein_change='p.V600E', include=True)
+        q1 = self.gq.create_mutation_query(gene_name='BRAF', protein_change='p.V600E', include=True)
         res1 = self._findall(q1)
         assert len(res1) == 1, res1
         assert res1[0][kn.sample_id_col] == 'TEST-SAMPLE-BRAF-V600E', res1
 
         # BRAF V600E (exclusion)
-        q2 = self.gq.create_variant_level_snv_missense_query(gene_name='BRAF', protein_change='p.V600E', include=False)
+        q2 = self.gq.create_mutation_query(gene_name='BRAF', protein_change='p.V600E', include=False)
         res2 = self._findall(q2)
         assert len(res2) == 12, res2
         assert sorted([i[kn.sample_id_col] for i in res2]) == sorted(['TEST-SAMPLE-BRAF-NON-V600E',
@@ -123,12 +123,12 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
                                                                       'TEST-SAMPLE-BRAF-WT']), res2
 
         # BRAF V600D (inclusion)
-        q3 = self.gq.create_variant_level_snv_missense_query(gene_name='BRAF', protein_change='p.V600D', include=True)
+        q3 = self.gq.create_mutation_query(gene_name='BRAF', protein_change='p.V600D', include=True)
         res3 = self._findall(q3)
         assert len(res3) == 0, res3
 
         # BRAF V600D (exclusion)
-        q4 = self.gq.create_variant_level_snv_missense_query(gene_name='BRAF', protein_change='p.V600D', include=False)
+        q4 = self.gq.create_mutation_query(gene_name='BRAF', protein_change='p.V600D', include=False)
         res4 = self._findall(q4)
         assert len(res4) == 13, res4
         assert sorted([i[kn.sample_id_col] for i in res4]) == sorted(['TEST-SAMPLE-BRAF-V600E',

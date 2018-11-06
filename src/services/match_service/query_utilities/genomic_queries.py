@@ -12,6 +12,11 @@ class GenomicQueries(QueryUtilities, GenomicUtilities):
         QueryUtilities.__init__(self)
         GenomicUtilities.__init__(self)
 
+        self.variant_level_query_dict = {
+            True: self.create_variant_level_inclusion_query,
+            False: self.create_variant_level_exclusion_query
+        }
+
     def create_gene_level_query(self, gene_name, variant_category, include=True):
         """
         Create MongoDB query to find records by gene name and variant category
@@ -32,7 +37,51 @@ class GenomicQueries(QueryUtilities, GenomicUtilities):
                                              variant_category=variant_category,
                                              include=include)
 
-    def create_variant_level_snv_missense_query(self, gene_name, protein_change, include=True):
+    def create_variant_level_inclusion_query(self, variant_category, gene_name, variant_val):
+        """
+        Create MongoDB query that matches the specific variant specified.
+
+        :param variant_category: {str} (e.g. MUTATION, WILDCARD_MUTATION, CNV)
+        :param gene_name: {str}
+        :param variant_val: {str}
+        :return: {dict}
+        """
+        return {
+            self.variant_category_dict[variant_category]: {
+                '$elemMatch': {
+                    kn.hugo_symbol_col: {'$eq': gene_name},
+                    self.variant_type_col_dict[variant_val]: {'$eq': variant_val}
+                }
+            }
+        }
+
+    def create_variant_level_exclusion_query(self, variant_category, gene_name, variant_val):
+        """
+        Create MongoDB query that matches the specific variant specified.
+
+        :param variant_category: {str} (e.g. MUTATION, WILDCARD_MUTATION, CNV)
+        :param gene_name: {str}
+        :param variant_val: {str}
+        :return: {dict}
+        """
+        exclude_query = {
+            self.variant_category_dict[variant_category]: {
+                '$elemMatch': {
+                    kn.hugo_symbol_col: {'$eq': gene_name},
+                    self.variant_type_col_dict[variant_val]: {'$ne': variant_val}
+                }
+            }
+        }
+        query = {'$or': [
+            self.create_gene_level_query(gene_name=gene_name,
+                                         variant_category=s.variant_category_mutation_val,
+                                         include=False),
+            exclude_query
+        ]}
+
+        return query
+
+    def create_mutation_query(self, gene_name, protein_change, include=True):
         """
         Create MongoDB query to find SNV records by gene name and protein change
 
@@ -41,32 +90,23 @@ class GenomicQueries(QueryUtilities, GenomicUtilities):
         :param include: {bool}
         :return: {dict}
         """
-        if include:
-            query = {
-                kn.mutation_list_col: {
-                    '$elemMatch': {
-                        kn.hugo_symbol_col: {'$eq': gene_name},
-                        kn.protein_change_col: {'$eq': protein_change}
-                    }
-                }
-            }
-        else:
-            exclude_query = {
-                kn.mutation_list_col: {
-                    '$elemMatch': {
-                        kn.hugo_symbol_col: {'$eq': gene_name},
-                        kn.protein_change_col: {'$ne': protein_change}
-                    }
-                }
-            }
-            query = {'$or': [
-                self.create_gene_level_query(gene_name=gene_name,
-                                             variant_category=s.variant_category_mutation_val,
-                                             include=False),
-                exclude_query
-            ]}
+        return self.variant_level_query_dict[include](variant_category=s.variant_category_mutation_val,
+                                                      gene_name=gene_name,
+                                                      variant_val=protein_change)
 
-        return query
+    def create_wildcard_query(self, gene_name, protein_change, include=True):
+        """
+        Create MongoDB query to find samples that match the given wildcard protein change value
+
+        :param gene_name: {str}
+        :param protein_change: {str}
+        :param include: {bool}
+        :return: {dict}
+        """
+        # todo test
+        return self.variant_level_query_dict[include](variant_category=s.variant_category_wildcard_mutation_val,
+                                                      gene_name=gene_name,
+                                                      variant_val=protein_change)
 
     def create_cnv_query(self, gene_name, cnv_call, include=True):
         """
@@ -77,32 +117,9 @@ class GenomicQueries(QueryUtilities, GenomicUtilities):
         :param include: {bool}
         :return: {dict}
         """
-        if include:
-            query = {
-                kn.cnv_list_col: {
-                    '$elemMatch': {
-                        kn.hugo_symbol_col: {'$eq': gene_name},
-                        kn.cnv_call_col: {'$eq': cnv_call}
-                    }
-                }
-            }
-        else:
-            exclude_query = {
-                kn.cnv_list_col: {
-                    '$elemMatch': {
-                        kn.hugo_symbol_col: {'$eq': gene_name},
-                        kn.cnv_call_col: {'$ne': cnv_call}
-                    }
-                }
-            }
-            query = {'$or': [
-                self.create_gene_level_query(gene_name=gene_name,
-                                             variant_category=s.variant_category_cnv_val,
-                                             include=False),
-                exclude_query
-            ]}
-
-        return query
+        return self.variant_level_query_dict[include](variant_category=s.variant_category_cnv_val,
+                                                      gene_name=gene_name,
+                                                      variant_val=cnv_call)
 
     def create_sv_query(self, gene_name, include=True):
         """
@@ -132,17 +149,6 @@ class GenomicQueries(QueryUtilities, GenomicUtilities):
         :return: {dict}
         """
         return {signature_type: {self.inclusion_dict[include]: signature_val}}
-
-    def create_wildcard_query(self, gene_name, protein_change, include=True):
-        """
-        Create MongoDB query to find samples that match the given wildcard protein change value
-
-        :param gene_name: {str}
-        :param protein_change: {str}
-        :param include: {bool}
-        :return: {dict}
-        """
-        raise NotImplementedError
 
     def create_exon_query(self, gene_name, exon, include=True):
         """

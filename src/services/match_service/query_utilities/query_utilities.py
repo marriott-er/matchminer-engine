@@ -13,6 +13,11 @@ class QueryUtilities(object):
             s.variant_category_sv_val: kn.sv_list_col,
             s.variant_category_wt_val: kn.wt_genes_col
         }
+        self.variant_type_col_dict = {
+            s.variant_category_mutation_val: kn.protein_change_col,
+            s.variant_category_wildcard_mutation_val: kn.ref_residue_col,
+            s.variant_category_cnv_val: kn.cnv_call_col
+        }
 
     def handle_exclusion_queries(self, query, variant_category, include):
         """
