@@ -123,7 +123,7 @@ consent_17000_col = 'consent17000'
 # Sample key name    #
 # ------------------ #
 # wild-type information
-wt_genes_col = 'wildtypeGenes'
+wt_genes_col = 'wildTypeGenes'
 
 # variant information
 mutation_list_col = 'mutations'

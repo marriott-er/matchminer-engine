@@ -133,16 +133,6 @@ class GenomicQueries(QueryUtilities, GenomicUtilities):
         """
         return {signature_type: {self.inclusion_dict[include]: signature_val}}
 
-    def create_wildtype_query(self, gene_name, include=True):
-        """
-        Create MongoDB query to find samples that are wild-type for the given gene name.
-
-        :param gene_name: {str}
-        :param include: {bool}
-        :return: {dict}
-        """
-        raise NotImplementedError
-
     def create_wildcard_query(self, gene_name, protein_change, include=True):
         """
         Create MongoDB query to find samples that match the given wildcard protein change value

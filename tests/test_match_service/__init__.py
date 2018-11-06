@@ -84,6 +84,12 @@ class TestQueryUtilitiesShared(unittest.TestCase):
             kn.sample_id_col: 'TEST-SAMPLE-MMR-DEFICIENT',
             kn.mmr_status_col: s.mmr_status_deficient_val
         }
+        self.test_case_braf_wt = {
+            kn.sample_id_col: 'TEST-SAMPLE-BRAF-WT',
+            kn.wt_genes_col: [{
+                kn.hugo_symbol_col: 'BRAF'
+            }]
+        }
         self.test_cases = [
             self.test_case_lung,
             self.test_case_colon,
@@ -96,7 +102,8 @@ class TestQueryUtilitiesShared(unittest.TestCase):
             self.test_case_braf_cnv_gain,
             self.test_case_sv,
             self.test_case_sv_2,
-            self.test_case_mmr_deficient
+            self.test_case_mmr_deficient,
+            self.test_case_braf_wt
         ]
 
         self.all_nsclc_cancer_types = sorted([
