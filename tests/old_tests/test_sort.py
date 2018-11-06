@@ -1,6 +1,6 @@
 """Copyright 2016 Dana-Farber Cancer Institute"""
 
-from old_matchengine.sort import *
+from src.services.match_service.match_utilities.sort import *
 from tests import TestSetUp
 
 

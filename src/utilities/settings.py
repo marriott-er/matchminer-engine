@@ -22,9 +22,12 @@ if file_path is not None:
         for name, value in vars.iteritems():
             setattr(sys.modules[__name__], name, value)
 
-
+# oncotree settings
 TUMOR_TREE = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../', 'data/tumor_tree.txt'))
+oncotree_all_solid_text = '_SOLID_'
+oncotree_all_liquid_text = '_LIQUID_'
 
+# sample table settings
 sample_collection_name = 'samples'
 variant_category_mutation_val = 'MUTATION'
 variant_category_wildcard_mutation_val = 'WILDCARD_MUTATION'
@@ -76,5 +79,18 @@ gcol_list = [
     kn.additional_undercovered_list_col
 ]
 
-oncotree_all_solid_text = '_SOLID_'
-oncotree_all_liquid_text = '_LIQUID_'
+# trial table settings
+trial_protocol_no_col = 'protocol_no'
+trial_nct_id_col = 'nct_id'
+trial_treatment_list_col = 'treatment_list'
+trial_summary_col = '_summary'
+trial_accrual_status_col = 'status'
+trial_accrual_status_open_val = 'open to accrual'
+trial_step_col = 'step'
+trial_arm_col = 'arm'
+trial_dose_col = 'dose_level'
+trial_match_tree_col = 'match'
+
+# match table settings
+match_accrual_status_open_val = 'open'
+match_accrual_status_closed_val = 'closed'

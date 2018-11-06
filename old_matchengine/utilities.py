@@ -376,20 +376,7 @@ def format_query(g, gene=False):
 def add_matches(trial_matches_df, db):
     """Add the match table to the database or update what already exists theres"""
 
-    if 'clinical_id' in trial_matches_df.columns:
-        trial_matches_df['clinical_id'] = trial_matches_df['clinical_id'].apply(lambda x: str(x))
 
-    if 'genomic_id' in trial_matches_df.columns:
-        trial_matches_df['genomic_id'] = trial_matches_df['genomic_id'].apply(lambda x: str(x))
-
-    if 'report_date' in trial_matches_df.columns:
-        trial_matches_df['report_date'] = trial_matches_df['report_date'].apply(
-            lambda x: dt.datetime.strftime(x, '%Y-%m-%d %X') if pd.notnull(x) else x)
-
-    if len(trial_matches_df.index) > 0:
-        records = json.loads(trial_matches_df.T.to_json()).values()
-        db.trial_match.drop()
-        db.trial_match.insert_many(records)
 
 
 
