@@ -120,7 +120,7 @@ cris_consent_col = 'crisConsent'
 consent_17000_col = 'consent17000'
 
 # ------------------ #
-# Sample key name    #
+# Samples key names  #
 # ------------------ #
 # wild-type information
 wt_genes_col = 'wildTypeGenes'
@@ -141,3 +141,32 @@ tmz_status_col = 'tmzStatus'
 pole_status_col = 'polEStatus'
 apobec_status_col = 'apobecStatus'
 uva_status_col = 'uvaStatus'
+
+# ----------------------- #
+# Trial matches key names #
+# ----------------------- #
+tm_sample_id_col = 'sampleId'
+tm_trial_protocol_no_col = 'trialProtocolNo'
+tm_mrn_col = 'mrn'
+tm_vital_status_col = 'vitalStatus'
+tm_trial_accrual_status_col = 'trialAccrualStatus'
+tm_sort_order_col = 'sortOrder'
+tm_match_reasons_col = 'matchReasons'
+
+# ----------------------- #
+# Match reasons key names #
+# ----------------------- #
+mr_trial_level_col = 'trialLevel'
+mr_trial_step_code_col = 'trialStepCode'
+mr_trial_arm_code_col = 'trialArmCode'
+mr_trial_dose_code_col = 'trialDoseCode'
+mr_mutation_list_col = 'mutations'
+mr_cnv_list_col = 'cnvs'
+mr_sv_list_col = 'svs'
+mr_signature_list_col = 'signatures'
+mr_wildtype_list_col = 'wildtypes'
+mr_low_coverage_list_col = 'lowCoverage'
+mr_diagnosis_col = 'diagnosis'
+mr_age_col = 'age'
+mr_gender_col = 'gender'
+mr_reason_level_col = 'level'

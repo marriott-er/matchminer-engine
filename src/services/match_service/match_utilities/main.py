@@ -31,4 +31,3 @@ def main():
 
             # save results
             utils.add_trial_matches(trial_matches_df=trial_matches_df)
-

@@ -6,7 +6,7 @@ from pymongo import ASCENDING, DESCENDING
 from src.utilities import settings as s
 from src.utilities.utilities import handle_chromosome_column
 from src.data_store import key_names as kn
-from src.data_store.data_model import samples_schema
+from src.data_store.samples_data_model import samples_schema
 from src.data_store.validator import SamplesValidator
 from src.utilities.utilities import get_db, dataframe_to_json
 from src.services.load_service.patient_utilities import PatientUtilities

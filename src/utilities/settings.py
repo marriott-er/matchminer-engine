@@ -134,5 +134,6 @@ mt_msi_high_val = 'MSI-H'
 mt_mss_val = 'MSS'
 
 # match table settings
+
 match_accrual_status_open_val = 'open'
 match_accrual_status_closed_val = 'closed'

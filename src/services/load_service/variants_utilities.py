@@ -1,7 +1,7 @@
 from src.utilities import settings as s
 from src.data_store import key_names as kn
 from src.utilities.utilities import handle_ints
-from src.data_store.data_model import mutations_schema, cnvs_schema, svs_schema, low_coverage_schema
+from src.data_store.samples_data_model import mutations_schema, cnvs_schema, svs_schema, low_coverage_schema
 
 
 class VariantsUtilities:

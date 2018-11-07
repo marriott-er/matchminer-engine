@@ -11,7 +11,12 @@ variant_category_rules = {
         s.variant_category_sv_val
     ]
 }
+vital_status_allowed_vals = ['alive', 'deceased']
 misc_signature_allowed_vals = ['Yes', 'No', 'Cannot assess', 'insufficient variants', None]
+tier_allowed_vals = [1, 2, 3, 4]
+actionability_allowed_vals = ['actionable', 'investigational', None]
+low_coverage_allowed_vals = [s.pertinent_negative_val, s.pertinent_low_coverage_val, s.additional_low_coverage_val]
+gender_allowed_vals = ['Male', 'Female']
 
 # Genomic schemas
 mutations_schema = {
@@ -32,7 +37,7 @@ mutations_schema = {
     kn.transcript_src_col: {'type': 'string', 'nullable': True},
     kn.coverage_col: {'type': 'integer', 'nullable': True},
     kn.somatic_status_col: {'type': 'string', 'nullable': True},
-    kn.tier_col: {'type': 'integer', 'allowed': [1, 2, 3, 4], 'required': True},
+    kn.tier_col: {'type': 'integer', 'allowed': tier_allowed_vals, 'required': True},
     kn.entrez_id_col: {'type': 'string', 'nullable': True},
     kn.is_best_effect_col: {'type': 'boolean', 'required': True}
 }
@@ -45,12 +50,7 @@ cnvs_schema = {
     kn.cnv_band_col: {'type': 'string', 'required': True, 'nullable': True},
     kn.copy_count_col: {'type': 'integer', 'required': True, 'nullable': True},
     kn.cnv_row_id_col: {'type': 'integer', 'required': True, 'nullable': True},
-    kn.actionability_col: {
-        'type': 'string',
-        'allowed': ['actionable', 'investigational', None],
-        'required': True,
-        'nullable': True
-    }
+    kn.actionability_col: {'type': 'string', 'required': True, 'nullable': True, 'allowed': actionability_allowed_vals}
 }
 
 svs_schema = {
@@ -60,11 +60,7 @@ svs_schema = {
 
 low_coverage_schema = {
     kn.hugo_symbol_col: {'type': 'string', 'required': True},
-    kn.coverage_type_col: {
-        'type': 'string',
-        'allowed': [s.pertinent_negative_val, s.pertinent_low_coverage_val, s.additional_low_coverage_val],
-        'required': True
-    },
+    kn.coverage_type_col: {'type': 'string', 'required': True, 'allowed': low_coverage_allowed_vals},
     kn.roi_type_col: {'type': 'string', 'allowed': ['C', 'G', 'R', 'E', 'M', None], 'nullable': True, 'required': True},
     kn.panel_col: {'type': 'string', 'required': True},
     kn.codon_col: {'type': 'integer', 'nullable': True},
@@ -87,11 +83,11 @@ samples_schema = {
     kn.powerpath_patient_id_col: {'type': 'string', 'nullable': True},
 
     # patient personal information
-    kn.gender_col: {'type': 'string', 'required': True, 'allowed': ['Male', 'Female']},
+    kn.gender_col: {'type': 'string', 'required': True, 'allowed': gender_allowed_vals},
     kn.first_name_col: {'type': 'string', 'required': True},
     kn.last_name_col: {'type': 'string', 'required': True},
     kn.birth_date_col: {'type': 'datetime', 'required': True},
-    kn.vital_status_col: {'type': 'string', 'required': True, 'allowed': ['alive', 'deceased']},
+    kn.vital_status_col: {'type': 'string', 'required': True, 'allowed': vital_status_allowed_vals},
     kn.first_last_col: {'type': 'string', 'readonly': True},
     kn.last_first_col: {'type': 'string', 'readonly': True},
 

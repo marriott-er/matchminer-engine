@@ -1,6 +1,6 @@
 from src.utilities import settings as s
 from src.data_store import key_names as kn
-from src.data_store.data_model import misc_signature_allowed_vals
+from src.data_store.samples_data_model import misc_signature_allowed_vals
 
 
 def assess_inclusion(node_value):

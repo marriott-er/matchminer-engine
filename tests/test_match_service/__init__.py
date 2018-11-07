@@ -1,5 +1,8 @@
+import os
 import json
+import yaml
 import unittest
+import pandas as pd
 
 from src.utilities import settings as s
 s.MONGO_URI = 'mongodb://localhost:27017'
@@ -7,6 +10,8 @@ s.MONGO_DBNAME = 'matchminer'
 
 from src.utilities.utilities import get_db
 from src.data_store import key_names as kn
+from src.data_store.samples_data_model import vital_status_allowed_vals
+from src.data_store.trial_matches_data_model import trial_matches_schema
 
 
 class TestQueryUtilitiesShared(unittest.TestCase):
@@ -14,6 +19,7 @@ class TestQueryUtilitiesShared(unittest.TestCase):
     def setUp(self):
 
         self.db = get_db(mongo_uri=s.MONGO_URI, mongo_dbname=s.MONGO_DBNAME)
+        self.data_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../', 'data'))
         self.proj = {kn.sample_id_col: 1}
 
         self.test_case_lung = {
@@ -749,12 +755,41 @@ class TestQueryUtilitiesShared(unittest.TestCase):
             'Anaplastic Meningioma',
             'Gastrointestinal Stromal Tumor'
         ])
+        self.trial_match_df = None
 
-    def _find(self, query):
-        return self.db.testSamples.find_one(query, self.proj)
+    def add_test_trials(self):
+        """
+        Adds all test trials to the database.
 
-    def _findall(self, query):
-        return list(self.db.testSamples.find(query, self.proj))
+        :return: {null}
+        """
+        trial_docs = []
+        for r, d, f in os.walk(self.data_path):
+            for fn in f:
+                if fn.endswith('yml'):
+                    with open(os.path.join(r, fn), 'r') as ff:
+                        trial_docs.append(yaml.load(ff))
+
+        self.db.trial.insert_many(trial_docs)
+
+    def add_test_trial_matches(self):
+
+        trial_match_data = {
+            kn.tm_sample_id_col: ['TEST-SAMPLE-TM-1'],
+            kn.tm_trial_protocol_no_col: ['00-000'],
+            kn.tm_mrn_col: ['100100'],
+            kn.tm_vital_status_col: [vital_status_allowed_vals[0]],
+            kn.tm_trial_accrual_status_col: [s.match_accrual_status_open_val],
+            kn.tm_sort_order_col: [0],
+        }
+        cols, data = trial_match_data.keys(), trial_match_data.values()
+        self.trial_match_df = pd.DataFrame(data=[data], columns=cols)
+
+    def _find(self, query, table='testSamples'):
+        return self.db[table].find_one(query, self.proj)
+
+    def _findall(self, query, table='testSamples'):
+        return list(self.db[table].find(query, self.proj))
 
     @staticmethod
     def _print(query):
