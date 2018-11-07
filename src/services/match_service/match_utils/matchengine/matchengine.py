@@ -1,6 +1,7 @@
 import networkx as nx
 
 from src.utilities import settings as s
+from src.utilities.utilities import get_db
 from src.data_store import key_names as kn
 from src.services.match_service.match_utils.matchengine import matchengine_utils as me_utils
 from src.services.match_service.query_utils.clinical_queries import ClinicalQueries
@@ -17,7 +18,9 @@ class MatchEngine(ClinicalQueries, GenomicQueries):
         self.match_tree = match_tree
         self.trial_level = trial_level
         self.match_tree_nx = None
+        self.db = get_db()
         self.query = {}
+        self.proj = {}
 
     def convert_match_tree_to_digraph(self):
         """
@@ -58,20 +61,36 @@ class MatchEngine(ClinicalQueries, GenomicQueries):
         :return: {dict}
         """
         # todo unit test
+
         for node_id in list(nx.dfs_postorder_nodes(self.match_tree_nx, source=1)):
+
+            # access node and its children
             node = self.match_tree_nx.node[node_id]
+            children = g.successors(node_id)
+
+            # clinical nodes
             if node['type'] == 'clinical':
-                subquery = self._assess_genomic_node(node=node)
+                node['query'] = self._assess_genomic_node(node=node)
+
+            # genomic nodes
             elif node['type'] == 'genomic':
-                subquery = self._assess_genomic_node(node=node)
+                node['query'] = self._assess_genomic_node(node=node)
+
+            # join child queries with "and"
             elif node['type'] == 'and':
-                # todo add and node logic
-                pass
+                node['query'] = {'$and': []}
+                for child in children:
+                    node['query']['$and'].append(child['query'])
+
             elif node['type'] == 'or':
-                # todo add or node logic
-                pass
+                node['query'] = {'$or': []}
+                for child in children:
+                    node['query']['$or'].append(child['query'])
+
             else:
                 raise ValueError('match tree node must be of type "clinical", "genomic", "and", or "or')
+
+        self.query = self.match_tree_nx.node[1]['query']
 
     def _assess_clinical_node(self, node):
         """
@@ -176,11 +195,14 @@ class MatchEngine(ClinicalQueries, GenomicQueries):
             for sig in s.mt_signature_cols:
                 sigtype, sigval = me_utils.normalize_signature_vals(signature_type=sig, signature_val=node['value'][sig])
                 return self.create_mutational_signature_query(signature_type=sigtype, signature_val=sigval)
-                # todo add TMZ, Tobacco, etc. statuses
 
         # low-coverage criteria
         # todo build out low coverage criteria logic
 
     def search_for_matching_records(self):
-        # todo unit test
-        raise NotImplementedError
+        """
+        Search for any sample records that match the constructed query
+
+        :return: {dict}
+        """
+        return list(self.db[s.sample_collection_name].find(self.query, self.proj))
