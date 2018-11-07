@@ -236,31 +236,16 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
 
         # MMR Deficient (inclusion)
         q1 = self.gq.create_mutational_signature_query(signature_type=kn.mmr_status_col,
-                                                       signature_val=s.mmr_status_deficient_val,
-                                                       include=True)
+                                                       signature_val=s.mmr_status_deficient_val)
         res1 = self._findall(q1)
         assert len(res1) == 1, res1
         assert res1[0][kn.sample_id_col] == 'TEST-SAMPLE-MMR-DEFICIENT', res1
 
         # MMR Deficient (exclusion)
         q2 = self.gq.create_mutational_signature_query(signature_type=kn.mmr_status_col,
-                                                       signature_val=s.mmr_status_deficient_val,
-                                                       include=False)
+                                                       signature_val=s.mmr_status_proficient_val)
         res2 = self._findall(q2)
-        assert len(res2) == 13, res2
-        assert sorted([i[kn.sample_id_col] for i in res2]) == sorted(['TEST-SAMPLE-BRAF-V600E',
-                                                                      'TEST-SAMPLE-BRAF-NON-V600E',
-                                                                      'TEST-SAMPLE-EGFR',
-                                                                      'TEST-SAMPLE-NO-MUTATION',
-                                                                      'TEST-SAMPLE-COLON',
-                                                                      'TEST-SAMPLE-LUNG',
-                                                                      'TEST-SAMPLE-BRAF-GENERIC-CNV',
-                                                                      'TEST-SAMPLE-BRAF-CNV-GAIN',
-                                                                      'TEST-SAMPLE-BRAF-CNV-HETERO-DEL',
-                                                                      'TEST-SAMPLE-NTRK1-SV',
-                                                                      'TEST-SAMPLE-NTRK2-SV',
-                                                                      'TEST-SAMPLE-BRAF-WT',
-                                                                      'TEST-SAMPLE-BRAF-EXON-20']), res2
+        assert len(res2) == 0, res2
 
     def test_create_exon_query(self):
 

@@ -58,16 +58,26 @@ class MatchEngine(ClinicalQueries, GenomicQueries):
         """
         for node_id in list(nx.dfs_postorder_nodes(self.match_tree_nx, source=1)):
             node = self.match_tree_nx.node[node_id]
-            if node['type'] == 'genomic':
+            if node['type'] == 'clinical':
                 subquery = self._assess_genomic_node(node=node)
+            elif node['type'] == 'genomic':
+                subquery = self._assess_genomic_node(node=node)
+
+    def _assess_clinical_node(self, node):
+        """
+        Assess the given node and construct the appropriate MongoDB query.
+
+        :param node: {digraph node}
+        :return: {dict}
+        """
+        criteria = sorted(node['value'].keys())
 
     def _assess_genomic_node(self, node):
         """
         Assess the given node and construct the appropriate MongoDB query.
 
         :param node: {digraph node}
-        :param query: {dict}
-        :return: {dict} Updated query
+        :return: {dict}
         """
         criteria = sorted(node['value'].keys())
 
@@ -122,10 +132,18 @@ class MatchEngine(ClinicalQueries, GenomicQueries):
             return self.create_cnv_query(gene_name=gene_name,
                                          cnv_call=cnv_call,
                                          include=include)
+
         # mutational signature criteria
         elif any([criterion in s.mt_signature_cols for criterion in criteria]):
-            # todo here
-            pass
+            for sig in s.mt_signature_cols:
+                sigtype, sigval = self._normalize_signature_vals(signature_type=sig, signature_val=node['value'][sig])
+                # todo is there such a thing as signature exclusion criteria?
+                # todo is there such a thing as non MMR/MS Status signature curation?
+
+        # low-coverage criteria
+        # todo build out low coverage criteria logic
+
+
 
     @staticmethod
     def _assess_inclusion(node_value):

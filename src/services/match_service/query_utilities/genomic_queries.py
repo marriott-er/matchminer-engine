@@ -151,16 +151,16 @@ class GenomicQueries(QueryUtilities, GenomicUtilities):
         query = {kn.sv_list_col: {'$elemMatch': subquery}}
         return self.handle_exclusion_queries(query=query, variant_category=s.variant_category_sv_val, include=include)
 
-    def create_mutational_signature_query(self, signature_type, signature_val, include=True):
+    @staticmethod
+    def create_mutational_signature_query(signature_type, signature_val):
         """
         Create MongoDB query to find records by the given mutational signature value.
 
         :param signature_type: {str} (e.g. MMR Status, TMZ Status, etc.)
         :param signature_val: {str}
-        :param include: {bool}
         :return: {dict}
         """
-        return {signature_type: {self.inclusion_dict[include]: signature_val}}
+        return {signature_type: {'$eq': signature_val}}
 
     def create_low_coverage_query(self, gene_name, low_coverage_type, include=True):
         """
