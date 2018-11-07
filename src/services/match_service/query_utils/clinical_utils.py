@@ -77,7 +77,6 @@ class ClinicalUtils(object):
         :param age_str: {str}
         :return: {dict}
         """
-        # todo unit test
         today = dt.datetime.today()
 
         # parse operator and age from string
@@ -108,7 +107,6 @@ class ClinicalUtils(object):
         :param today: {datetime object}
         :return {tuple} (month {int}, year {int})
         """
-        # todo unit test
         split_age = str(age).split('.')
 
         # month

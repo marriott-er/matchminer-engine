@@ -119,7 +119,6 @@ class MatchEngine(ClinicalQueries, GenomicQueries):
 
         # gender query
         if s.mt_gender in criteria:
-            # todo enable
             gender = node['value'][s.mt_gender]
             subquery = self.create_gender_query(gender=gender)
             query['$and'].append(subquery)

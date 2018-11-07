@@ -37,7 +37,8 @@ class ClinicalQueries(QueryUtils, ClinicalUtils):
         subquery = self.convert_age_to_birth_date_subquery(age_str=age)
         return {kn.birth_date_col: subquery}
 
-    def create_gender_query(self, gender):
+    @staticmethod
+    def create_gender_query(gender):
         """
         Create MongoDB query to find records by gender
 
@@ -45,4 +46,4 @@ class ClinicalQueries(QueryUtils, ClinicalUtils):
         :return: {dict}
         """
         # todo unit test
-        raise NotImplementedError
+        return {kn.gender_col: {'$eq': gender}}
