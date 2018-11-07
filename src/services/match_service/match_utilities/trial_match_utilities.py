@@ -16,6 +16,6 @@ class TrialMatchUtilities:
 
         :return: {Pandas dataframe}
         """
-
+        # todo unit test
         logging.info('Sorting trial matches')
         return add_sort_order(self.trial_matches)

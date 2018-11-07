@@ -18,7 +18,7 @@ class TrialUtilities:
 
         :return: {list of MatchEngine class objects} Each item is a MatchEngine object instantiated with a match tree
         """
-
+        # todo unit test
         logging.info('Matching trial %s' % self.trial[s.trial_protocol_no_col])
 
         # If the trial is not open to accrual, all matches to all match trees in this trial will be marked closed

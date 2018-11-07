@@ -92,6 +92,11 @@ trial_arm_col = 'arm'
 trial_dose_col = 'dose_level'
 trial_match_tree_col = 'match'
 
+# trial clinical criteria settings
+mt_diagnosis = 'oncotree_primary_diagnosis'
+mt_age = 'age_numerical'
+mt_gender = 'gender'
+
 # trial genomic criteria settings
 mt_hugo_symbol = 'hugo_symbol'
 mt_variant_category = 'variant_category'
@@ -101,9 +106,19 @@ mt_exon = 'exon'
 mt_cnv_call = 'cnv_call'
 mt_mmr_status = 'mmr_status'
 mt_ms_status = 'ms_status'
+mt_tobacco_status = 'tobacco_status'
+mt_tmz_status = 'tmz_status'
+mt_pole_status = 'pole_status'
+mt_apobec_status = 'apobec_status'
+mt_uva_status = 'uva_status'
 mt_signature_cols = [
     mt_mmr_status,
-    mt_ms_status
+    mt_ms_status,
+    mt_tobacco_status,
+    mt_tmz_status,
+    mt_pole_status,
+    mt_apobec_status,
+    mt_uva_status
 ]
 
 mt_cnv_val = 'Copy Number Variation'

@@ -19,7 +19,7 @@ class SharedUtilities(object):
         :param: {null or dict}
         :return: {list of dict} Each item is a trial record
         """
-
+        # todo unit test
         logging.info('Retrieving trials from the database')
 
         if query is None:
@@ -40,7 +40,7 @@ class SharedUtilities(object):
         :param trial_matches_df: {Pandas dataframe}
         :return: {null}
         """
-
+        # todo unit test
         logging.info('Adding trial matches to database')
 
         if len(trial_matches_df.index) > 0:

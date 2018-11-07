@@ -22,20 +22,22 @@ class ClinicalQueries(QueryUtilities, ClinicalUtilities):
         expanded_diagnoses = self.expand_oncotree_diagnosis(diagnosis=cancer_type)
         return {kn.oncotree_primary_diagnosis_name_col: {self.list_inclusion_dict[include]: expanded_diagnoses}}
 
-    def create_age_query(self, include=True):
+    def create_age_query(self, age):
         """
         Create MongoDB query to find records by birth date
 
-        :param include: {bool}
+        :param age: {str} (e.g. ">=17")
         :return: {dict}
         """
-        raise NotImplementedError
+        # todo unit test
+        subquery = self.convert_age_to_birth_date_subquery(age=age)
+        return {kn.birth_date_col: subquery}
 
-    def create_gender_query(self, include=True):
+    def create_gender_query(self, gender):
         """
         Create MongoDB query to find records by gender
 
-        :param include: {bool}
+        :param gender: {str} (e.g. "Male", "Female")
         :return: {dict}
         """
         raise NotImplementedError

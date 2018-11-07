@@ -23,7 +23,7 @@ def main():
             matchengine.create_mongo_query_from_match_tree()
 
             # find matching records
-            matchengine.search_for_matching_records()
+            trial_matches = matchengine.search_for_matching_records()
 
             # sort trial matches
             trial_match_utils = TrialMatchUtilities(trial_matches=trial_matches)

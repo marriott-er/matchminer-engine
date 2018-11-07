@@ -20,7 +20,7 @@ def add_sort_order(trial_matches):
         (1) sort_order: Order in which to display the matches
         (2) freq: Frequency with which this trial match appears throughout the entire patient cohort
     """
-
+    # todo unit test
     trial_match_df = pd.DataFrame.from_dict(trial_matches)
 
     if len(trial_match_df.index) == 0:
@@ -73,7 +73,7 @@ def sort_by_tier(match, sort_order):
     """
     Highest priority sorting
     """
-
+    # todo unit test
     idx = (match['sample_id'], match['protocol_no'])
 
     if 'mmr_status' in match and pd.notnull(match['mmr_status']):
@@ -123,7 +123,7 @@ def sort_by_match_type(match, sort_order):
     """
     Second highest priority sorting
     """
-
+    # todo unit test
     idx = (match['sample_id'], match['protocol_no'])
 
     if 'match_type' in match and match['match_type'] == 'variant':
@@ -177,7 +177,7 @@ def sort_by_coordinating_center(match, sort_order):
     """
     Fourth highest priority sorting
     """
-
+    # todo unit test
     idx = (match['sample_id'], match['protocol_no'])
 
     if 'coordinating_center' in match and match['coordinating_center'] == 'Dana-Farber Cancer Institute':
@@ -196,7 +196,7 @@ def sort_by_reverse_protocol_no(matches, sort_order):
     """
     Lowest priority sorting
     """
-
+    # todo unit test
     rev_prot_no_sort = sorted(matches, key=lambda k: int(k['protocol_no'].split('-')[0]))
     i = 0
 
@@ -210,7 +210,7 @@ def sort_by_reverse_protocol_no(matches, sort_order):
 
 
 def final_sort(sort_order, master_sort_order):
-
+    # todo unit test
     cols = ['tier', 'match_type', 'cancer_type', 'coordinating_center', 'rev_protocol_no']
     sort_order_df = pd.DataFrame(sort_order.values(), columns=cols, index=sort_order.keys())
     sort_order_df.sort_values(by=cols, axis=0, ascending=True, inplace=True)
@@ -233,7 +233,7 @@ def add_sort_value(sort_value, priority, sort_order_li):
         (e.g. tier, match_type, etc.)
     :param sort_order_li: The match-specific sort order list so far
     """
-
+    # todo unit test
     if len(sort_order_li) >= priority + 1:
 
         if sort_value < sort_order_li[priority]:
