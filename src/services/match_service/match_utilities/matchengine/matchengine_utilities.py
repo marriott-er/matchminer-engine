@@ -11,7 +11,6 @@ def assess_inclusion(node_value):
     :param node_value: {str}
     :return: {bool} True if inclusion, False if exclusion
     """
-    # todo unit test
     return not node_value.startswith('!')
 
 
@@ -22,7 +21,6 @@ def sanitize_exclusion_vals(val):
     :param val: {str}
     :return: {str}
     """
-    # todo unit test
     if val.startswith('!'):
         return val[1:]
     else:
