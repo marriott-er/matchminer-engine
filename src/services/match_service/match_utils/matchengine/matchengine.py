@@ -8,15 +8,14 @@ from src.services.match_service.query_utils.clinical_queries import ClinicalQuer
 from src.services.match_service.query_utils.genomic_queries import GenomicQueries
 
 
-# todo move to two files: Core Matchengine and Matchengine Utils ??
 class MatchEngine(ClinicalQueries, GenomicQueries):
 
     def __init__(self, match_tree, trial_level):
         ClinicalQueries.__init__(self)
         GenomicQueries.__init__(self)
 
-        self.match_tree = match_tree
         self.trial_level = trial_level
+        self.match_tree = match_tree
         self.match_tree_nx = None
         self.db = get_db()
         self.query = {}
@@ -29,7 +28,6 @@ class MatchEngine(ClinicalQueries, GenomicQueries):
 
         :return: {diGraph object}
         """
-        # todo unit test
         key = self.match_tree.keys()[0]
         value = self.match_tree[key]
         global_node = 1
@@ -61,16 +59,15 @@ class MatchEngine(ClinicalQueries, GenomicQueries):
         :return: {dict}
         """
         # todo unit test
-
         for node_id in list(nx.dfs_postorder_nodes(self.match_tree_nx, source=1)):
 
             # access node and its children
             node = self.match_tree_nx.node[node_id]
-            children = g.successors(node_id)
+            children = [self.match_tree_nx.node[n] for n in self.match_tree_nx.successors(node_id)]
 
             # clinical nodes
             if node['type'] == 'clinical':
-                node['query'] = self._assess_genomic_node(node=node)
+                node['query'] = self._assess_clinical_node(node=node)
 
             # genomic nodes
             elif node['type'] == 'genomic':
@@ -116,12 +113,13 @@ class MatchEngine(ClinicalQueries, GenomicQueries):
 
         # age query
         if s.mt_age in criteria:
-            age = node['value'][s.mt_diagnosis]
+            age = node['value'][s.mt_age]
             subquery = self.create_age_query(age=age)
             query['$and'].append(subquery)
 
         # gender query
         if s.mt_gender in criteria:
+            # todo enable
             gender = node['value'][s.mt_gender]
             subquery = self.create_gender_query(gender=gender)
             query['$and'].append(subquery)

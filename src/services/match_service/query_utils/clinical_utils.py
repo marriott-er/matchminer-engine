@@ -23,6 +23,9 @@ class ClinicalUtils(object):
         :param nodes: {list of oncotree nodes}
         :return {list of str}
         """
+        for n in nodes:
+            print self.oncotree.node[n]
+
         return list(set(self.oncotree.node[n]['text'] for n in nodes))
 
     def expand_oncotree_diagnosis(self, diagnosis):

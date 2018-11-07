@@ -22,6 +22,7 @@ class TestQueryUtilitiesShared(unittest.TestCase):
         self.data_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../', 'data'))
         self.proj = {kn.sample_id_col: 1}
 
+        # test data
         self.test_case_lung = {
             kn.sample_id_col: 'TEST-SAMPLE-LUNG',
             kn.oncotree_primary_diagnosis_name_col: 'Lung'
@@ -122,6 +123,7 @@ class TestQueryUtilitiesShared(unittest.TestCase):
             self.test_case_braf_exon_20
         ]
 
+        # test values
         self.all_nsclc_cancer_types = sorted([
             'Adenoid Cystic Carcinoma of the Lung',
             'Giant Cell Carcinoma of the Lung',
@@ -757,6 +759,24 @@ class TestQueryUtilitiesShared(unittest.TestCase):
         ])
         self.trial_match_df = None
 
+        # test match tree
+        self.simple_mutation_match_tree = {
+            'and': [
+                {
+                    'genomic': {
+                        'hugo_symbol': 'BRAF',
+                        'variant_category': 'Mutation'
+                    }
+                },
+                {
+                    'clinical': {
+                        'age_numerical': '>=18',
+                        'oncotree_primary_diagnosis': 'Leiomyosarcoma'
+                    }
+                }
+            ]
+        }
+
     def add_test_trials(self):
         """
         Adds all test trials to the database.
@@ -810,4 +830,4 @@ class TestQueryUtilitiesShared(unittest.TestCase):
 
     @staticmethod
     def _print(query):
-        print json.dumps(query, indent=2)
+        print json.dumps(query, indent=4, default=str)

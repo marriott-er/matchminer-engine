@@ -1,5 +1,5 @@
+from src.utilities import settings as s
 from src.data_store import key_names as kn
-
 
 from src.services.match_service.query_utils.query_utils import QueryUtils
 from src.services.match_service.query_utils.clinical_utils import ClinicalUtils
@@ -19,7 +19,11 @@ class ClinicalQueries(QueryUtils, ClinicalUtils):
         :param include: {bool}
         :return: {dict}
         """
-        expanded_diagnoses = self.expand_oncotree_diagnosis(diagnosis=cancer_type)
+        if cancer_type in [s.oncotree_all_solid_text, s.oncotree_all_liquid_text]:
+            expanded_diagnoses = self.expand_grouped_diagnoses(diagnosis=cancer_type)
+        else:
+            expanded_diagnoses = self.expand_oncotree_diagnosis(diagnosis=cancer_type)
+
         return {kn.oncotree_primary_diagnosis_name_col: {self.list_inclusion_dict[include]: expanded_diagnoses}}
 
     def create_age_query(self, age):
@@ -30,7 +34,7 @@ class ClinicalQueries(QueryUtils, ClinicalUtils):
         :return: {dict}
         """
         # todo unit test
-        subquery = self.convert_age_to_birth_date_subquery(age=age)
+        subquery = self.convert_age_to_birth_date_subquery(age_str=age)
         return {kn.birth_date_col: subquery}
 
     def create_gender_query(self, gender):
@@ -40,4 +44,5 @@ class ClinicalQueries(QueryUtils, ClinicalUtils):
         :param gender: {str} (e.g. "Male", "Female")
         :return: {dict}
         """
+        # todo unit test
         raise NotImplementedError

@@ -1,0 +1,334 @@
+cancer_center_accrual_goal_upper: 10
+age: Adults
+cancer_center_current_accrual: 10
+curated_on: October 26, 2018
+data_table4: Interventional
+disease_site_list:
+  disease_site:
+  - disease_site_code: '10'
+    disease_site_name: DEV
+drug_list:
+  drug:
+  - drug_name: DEV DRUGS
+last_updated: October 26, 2018
+long_title: DEV LONG TITLE
+management_group_list:
+  management_group:
+  - is_primary: Y
+    management_group_name: DEV MANAGEMENT GROUP PRIMARY
+  - is_primary: N
+    management_group_name: DEV MANAGEMENT GROUP
+nct_id: DEV01
+oncology_group_list:
+  oncology_group:
+  - group_name: DEV ONCOLOGY GROUP
+    is_primary: N
+phase: II
+principal_investigator: PILastNameDev, PIFirstNameDev, A.
+program_area_list:
+  program_area:
+  - is_primary: Y
+    program_area_name: DEV PROGRAM AREA
+protocol_id: 1000
+protocol_no: 10-114
+protocol_target_accrual: 10
+protocol_type: Treatment
+short_title: DEV SHORT TITLE
+site_list:
+  site:
+  - coordinating_center: N
+    site_name: DEV COORDINATING CENTER IRB
+    site_status: SUSPENDED
+    uses_cancer_center_irb: Y
+  - coordinating_center: N
+    site_name: DEV COORDINATING CENTER
+    site_status: SUSPENDED
+    uses_cancer_center_irb: N
+sponsor_list:
+  sponsor:
+  - is_principal_sponsor: N
+    sponsor_name: DEV SPONSOR
+    sponsor_protocol_no: ''
+    sponsor_roles: Funding
+  - is_principal_sponsor: Y
+    sponsor_name: DEV SPONSOR PRINCIPAL
+    sponsor_protocol_no: ''
+    sponsor_roles: Funding
+staff_list:
+  protocol_staff:
+  - email_address: dev_staff@dfci.harvard.edu
+    first_name: StaffFirstNameDev
+    institution_name: DevInstitution
+    last_name: StaffLastNameDev
+    middle_name: StaffMiddleNameDev
+    npi: ''
+    phone_no: 100-100-1000
+    staff_role: Study Coordinator
+    start_date: 1503547200000
+    stop_date: 1529640000000
+status: Open to Accrual
+_summary:
+  status:
+    - value: 'Suspended'
+treatment_list:
+  step:
+  - arm:
+    - arm_code: DEV ARM A
+      arm_description: ''
+      arm_internal_id: 100
+      arm_suspended: N
+      dose_level:
+      - level_code: DEV DOSE A
+        level_description: ''
+        level_internal_id: 10
+        level_suspended: Y
+      - level_code: DEV DOSE B
+        level_description: ''
+        level_internal_id: 11
+        level_suspended: N
+      - level_code: DEV DOSE C
+        level_description: ''
+        level_internal_id: 12
+        level_suspended: Y
+      - level_code: DEV DOSE D
+        level_description: ''
+        level_internal_id: 13
+        level_suspended: Y
+      - level_code: DEV DOSE E
+        level_description: ''
+        level_internal_id: 14
+        level_suspended: Y
+    - arm_code: DEV ARM B
+      arm_description: ''
+      arm_internal_id: 110
+      arm_suspended: N
+      dose_level:
+      - level_code: DEV DOSE F
+        level_description: ''
+        level_internal_id: 15
+        level_suspended: N
+      - level_code: DEV DOSE G
+        level_description: ''
+        level_internal_id: 16
+        level_suspended: Y
+      - level_code: DEV DOSE H
+        level_description: ''
+        level_internal_id: 17
+        level_suspended: Y
+      - level_code: DEV DOSE I
+        level_description: ''
+        level_internal_id: 18
+        level_suspended: Y
+      - level_code: DEV DOSE J
+        level_description: ''
+        level_internal_id: 19
+        level_suspended: Y
+      match:
+      - or:
+        - and:
+          - genomic:
+              cnv_call: High Amplification
+              hugo_symbol: MDM4
+              variant_category: Copy Number Variation
+          - genomic:
+              hugo_symbol: TP53
+              wildtype: true
+          - clinical:
+              age_numerical: '>=1'
+              oncotree_primary_diagnosis: Retinoblastoma
+          - clinical:
+              age_numerical: <=21
+              oncotree_primary_diagnosis: Retinoblastoma
+        - and:
+          - genomic:
+              cnv_call: High Amplification
+              hugo_symbol: MDM2
+              variant_category: Copy Number Variation
+          - genomic:
+              hugo_symbol: TP53
+              wildtype: true
+          - or:
+            - and:
+              - clinical:
+                  age_numerical: '>=1'
+                  oncotree_primary_diagnosis: _SOLID_
+              - clinical:
+                  age_numerical: <=21
+                  oncotree_primary_diagnosis: _SOLID_
+            - and:
+              - clinical:
+                  age_numerical: '>=1'
+                  oncotree_primary_diagnosis: CNS/Brain
+              - clinical:
+                  age_numerical: <=21
+                  oncotree_primary_diagnosis: CNS/Brain
+            - and:
+              - clinical:
+                  age_numerical: '>=1'
+                  oncotree_primary_diagnosis: Hodgkin Lymphoma
+              - clinical:
+                  age_numerical: <=21
+                  oncotree_primary_diagnosis: Hodgkin Lymphoma
+            - and:
+              - clinical:
+                  age_numerical: '>=1'
+                  oncotree_primary_diagnosis: Non-Hodgkin Lymphoma
+              - clinical:
+                  age_numerical: <=21
+                  oncotree_primary_diagnosis: Non-Hodgkin Lymphoma
+        - and:
+          - genomic:
+              hugo_symbol: TP53
+              wildtype: true
+          - or:
+            - genomic:
+                cnv_call: Homozygous Deletion
+                hugo_symbol: TET2
+                variant_category: Copy Number Variation
+            - genomic:
+                hugo_symbol: TET2
+                variant_category: Mutation
+          - or:
+            - and:
+              - clinical:
+                  age_numerical: '>=1'
+                  oncotree_primary_diagnosis: _SOLID_
+              - clinical:
+                  age_numerical: <=21
+                  oncotree_primary_diagnosis: _SOLID_
+            - and:
+              - clinical:
+                  age_numerical: '>=1'
+                  oncotree_primary_diagnosis: Hodgkin Lymphoma
+              - clinical:
+                  age_numerical: <=21
+                  oncotree_primary_diagnosis: Hodgkin Lymphoma
+            - and:
+              - clinical:
+                  age_numerical: '>=1'
+                  oncotree_primary_diagnosis: Non-Hodgkin Lymphoma
+              - clinical:
+                  age_numerical: <=21
+                  oncotree_primary_diagnosis: Non-Hodgkin Lymphoma
+        - and:
+          - genomic:
+              hugo_symbol: TP53
+              wildtype: true
+          - or:
+            - genomic:
+                hugo_symbol: SMARCB1
+                variant_category: Mutation
+            - genomic:
+                hugo_symbol: SMARCA4
+                variant_category: Mutation
+            - genomic:
+                cnv_call: Homozygous Deletion
+                hugo_symbol: SMARCB1
+                variant_category: Copy Number Variation
+            - genomic:
+                cnv_call: Homozygous Deletion
+                hugo_symbol: SMARCA4
+                variant_category: Copy Number Variation
+          - or:
+            - and:
+              - clinical:
+                  age_numerical: '>=1'
+                  oncotree_primary_diagnosis: Atypical Teratoid/Rhabdoid Tumor
+              - clinical:
+                  age_numerical: <=21
+                  oncotree_primary_diagnosis: Atypical Teratoid/Rhabdoid Tumor
+            - and:
+              - clinical:
+                  age_numerical: '>=1'
+                  oncotree_primary_diagnosis: Rhabdoid Cancer
+              - clinical:
+                  age_numerical: <=21
+                  oncotree_primary_diagnosis: Rhabdoid Cancer
+        - and:
+          - genomic:
+              cnv_call: High Amplification
+              hugo_symbol: MDM4
+              variant_category: Copy Number Variation
+          - genomic:
+              hugo_symbol: TP53
+              wildtype: true
+          - or:
+            - and:
+              - clinical:
+                  age_numerical: '>=1'
+                  oncotree_primary_diagnosis: _SOLID_
+              - clinical:
+                  age_numerical: <=21
+                  oncotree_primary_diagnosis: _SOLID_
+            - and:
+              - clinical:
+                  age_numerical: '>=1'
+                  oncotree_primary_diagnosis: CNS/Brain
+              - clinical:
+                  age_numerical: <=21
+                  oncotree_primary_diagnosis: CNS/Brain
+            - and:
+              - clinical:
+                  age_numerical: '>=1'
+                  oncotree_primary_diagnosis: Hodgkin Lymphoma
+              - clinical:
+                  age_numerical: <=21
+                  oncotree_primary_diagnosis: Hodgkin Lymphoma
+            - and:
+              - clinical:
+                  age_numerical: '>=1'
+                  oncotree_primary_diagnosis: Non-Hodgkin Lymphoma
+              - clinical:
+                  age_numerical: <=21
+                  oncotree_primary_diagnosis: Non-Hodgkin Lymphoma
+            - and:
+              - clinical:
+                  age_numerical: '>=1'
+                  oncotree_primary_diagnosis: Hepatoblastoma
+              - clinical:
+                  age_numerical: <=21
+                  oncotree_primary_diagnosis: Hepatoblastoma
+        - and:
+          - genomic:
+              hugo_symbol: TP53
+              wildtype: true
+          - or:
+            - genomic:
+                cnv_call: High Amplification
+                hugo_symbol: PPM1D
+                variant_category: Copy Number Variation
+            - genomic:
+                hugo_symbol: PPM1D
+                variant_category: Mutation
+          - or:
+            - and:
+              - clinical:
+                  age_numerical: '>=1'
+                  oncotree_primary_diagnosis: _SOLID_
+              - clinical:
+                  age_numerical: <=21
+                  oncotree_primary_diagnosis: _SOLID_
+            - and:
+              - clinical:
+                  age_numerical: '>=1'
+                  oncotree_primary_diagnosis: CNS/Brain
+              - clinical:
+                  age_numerical: <=21
+                  oncotree_primary_diagnosis: CNS/Brain
+            - and:
+              - clinical:
+                  age_numerical: '>=1'
+                  oncotree_primary_diagnosis: Hodgkin Lymphoma
+              - clinical:
+                  age_numerical: <=21
+                  oncotree_primary_diagnosis: Hodgkin Lymphoma
+            - and:
+              - clinical:
+                  age_numerical: '>=1'
+                  oncotree_primary_diagnosis: Non-Hodgkin Lymphoma
+              - clinical:
+                  age_numerical: <=21
+                  oncotree_primary_diagnosis: Non-Hodgkin Lymphoma
+    step_code: '1'
+    step_internal_id: 10000
+    step_type: Registration
