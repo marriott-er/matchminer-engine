@@ -1,0 +1,92 @@
+cancer_center_accrual_goal_upper: 10
+age: Adults
+cancer_center_current_accrual: 10
+curated_on: October 26, 2018
+data_table4: Interventional
+disease_site_list:
+  disease_site:
+  - disease_site_code: '10'
+    disease_site_name: DEV
+drug_list:
+  drug:
+  - drug_name: DEV DRUGS
+last_updated: October 26, 2018
+long_title: DEV LONG TITLE
+management_group_list:
+  management_group:
+  - is_primary: Y
+    management_group_name: DEV MANAGEMENT GROUP PRIMARY
+  - is_primary: N
+    management_group_name: DEV MANAGEMENT GROUP
+nct_id: DEV01
+oncology_group_list:
+  oncology_group:
+  - group_name: DEV ONCOLOGY GROUP
+    is_primary: N
+phase: II
+principal_investigator: PILastNameDev, PIFirstNameDev, A.
+program_area_list:
+  program_area:
+  - is_primary: Y
+    program_area_name: DEV PROGRAM AREA
+protocol_id: 1000
+protocol_no: 10-100
+protocol_target_accrual: 10
+protocol_type: Treatment
+short_title: DEV SHORT TITLE
+site_list:
+  site:
+  - coordinating_center: N
+    site_name: DEV COORDINATING CENTER IRB
+    site_status: SUSPENDED
+    uses_cancer_center_irb: Y
+  - coordinating_center: N
+    site_name: DEV COORDINATING CENTER
+    site_status: SUSPENDED
+    uses_cancer_center_irb: N
+sponsor_list:
+  sponsor:
+  - is_principal_sponsor: N
+    sponsor_name: DEV SPONSOR
+    sponsor_protocol_no: ''
+    sponsor_roles: Funding
+  - is_principal_sponsor: Y
+    sponsor_name: DEV SPONSOR PRINCIPAL
+    sponsor_protocol_no: ''
+    sponsor_roles: Funding
+staff_list:
+  protocol_staff:
+  - email_address: dev_staff@dfci.harvard.edu
+    first_name: StaffFirstNameDev
+    institution_name: DevInstitution
+    last_name: StaffLastNameDev
+    middle_name: StaffMiddleNameDev
+    npi: ''
+    phone_no: 100-100-1000
+    staff_role: Study Coordinator
+    start_date: 1503547200000
+    stop_date: 1529640000000
+status: Open to Accrual
+_summary:
+  status:
+    - value: 'Suspended'
+treatment_list:
+  step:
+  - arm:
+    - arm_code: '1'
+      arm_description: 'DEV ARM'
+      arm_internal_id: 10000
+      arm_suspended: N
+      dose_level: []
+      match:
+      - and:
+        - genomic:
+            hugo_symbol: BRAF
+            wildcard_protein_change: p.V600
+            variant_category: Mutation
+        - clinical:
+            age_numerical: '>=18'
+            oncotree_primary_diagnosis: Leiomyosarcoma
+    step_code: '1'
+    step_internal_id: 10000
+    step_type: Registration

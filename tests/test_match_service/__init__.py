@@ -773,6 +773,11 @@ class TestQueryUtilitiesShared(unittest.TestCase):
         self.db.trial.insert_many(trial_docs)
 
     def add_test_trial_matches(self):
+        """
+        Add all test trials found in the test data path to this class
+
+        :return: {null}
+        """
 
         trial_match_data = {
             kn.tm_sample_id_col: ['TEST-SAMPLE-TM-1'],
@@ -784,6 +789,18 @@ class TestQueryUtilitiesShared(unittest.TestCase):
         }
         cols, data = trial_match_data.keys(), trial_match_data.values()
         self.trial_match_df = pd.DataFrame(data=[data], columns=cols)
+
+    def load_trial(self, trial):
+        """
+        Load the trial at the given yml_path into this class
+
+        :param yml_path: {trial} Trial name (e.g. 10-113)
+        :return: {dict}
+        """
+        with open(os.path.join(self.data_path, '%s.yml' % trial), 'r') as f:
+            doc = yaml.load(f)
+
+        return doc
 
     def _find(self, query, table='testSamples'):
         return self.db[table].find_one(query, self.proj)

@@ -1,7 +1,7 @@
 import logging
 
 from src.utilities import settings as s
-from src.services.match_service.match_utilities.matchengine import MatchEngine
+from src.services.match_service.match_utilities.matchengine.matchengine import MatchEngine
 
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s', )
 
