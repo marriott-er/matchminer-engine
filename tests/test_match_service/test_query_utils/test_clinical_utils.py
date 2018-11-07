@@ -1,14 +1,14 @@
 from tests.test_match_service import TestQueryUtilitiesShared
-from src.services.match_service.query_utilities.clinical_utilities import ClinicalUtilities
+from src.services.match_service.query_utils.clinical_utils import ClinicalUtils
 from src.utilities.settings import oncotree_all_solid_text, oncotree_all_liquid_text
 
 
-class TestClinicalUtilities(TestQueryUtilitiesShared):
+class TestClinicalUtils(TestQueryUtilitiesShared):
 
     def setUp(self):
-        super(TestClinicalUtilities, self).setUp()
+        super(TestClinicalUtils, self).setUp()
 
-        self.c = ClinicalUtilities()
+        self.c = ClinicalUtils()
 
     def tearDown(self):
         pass

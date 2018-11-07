@@ -5,7 +5,7 @@ from src.utilities import settings as s
 from src.data_store import key_names as kn
 
 
-class PatientUtilities:
+class PatientUtils:
 
     def __init__(self):
 

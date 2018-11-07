@@ -1,7 +1,7 @@
 import re
 
 
-class GenomicUtilities:
+class GenomicUtils:
 
     def __init__(self):
         pass

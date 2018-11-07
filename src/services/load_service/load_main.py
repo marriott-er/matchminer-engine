@@ -9,9 +9,9 @@ from src.data_store import key_names as kn
 from src.data_store.samples_data_model import samples_schema
 from src.data_store.validator import SamplesValidator
 from src.utilities.utilities import get_db, dataframe_to_json
-from src.services.load_service.patient_utilities import PatientUtilities
-from src.services.load_service.trial_utilities import TrialUtilities
-from src.services.load_service.variants_utilities import VariantsUtilities
+from src.services.load_service.patient_utils import PatientUtils
+from src.services.load_service.trial_utils import TrialUtils
+from src.services.load_service.variants_utils import VariantsUtils
 
 logging.basicConfig(level=logging.DEBUG, format='[%(levelname)s] %(message)s', )
 
@@ -79,8 +79,8 @@ class LoadService:
         self._args = args
 
         self.db = get_db(self._args.mongo_uri)
-        self.t = TrialUtilities(self.db)
-        self.p = PatientUtilities()
+        self.t = TrialUtils(self.db)
+        self.p = PatientUtils()
         self.validator = SamplesValidator(samples_schema)
 
         self.clinical_is_bson = False
@@ -174,7 +174,7 @@ class LoadService:
         genomic_json = dataframe_to_json(df=self.p.genomic_df[f1])
 
         # initialize genomic columns in sample object
-        v = VariantsUtilities(sample_obj=sample_obj)
+        v = VariantsUtils(sample_obj=sample_obj)
 
         # parse each variant
         for variant_obj in genomic_json:

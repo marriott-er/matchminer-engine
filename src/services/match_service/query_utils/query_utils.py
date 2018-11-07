@@ -2,7 +2,7 @@ from src.utilities import settings as s
 from src.data_store import key_names as kn
 
 
-class QueryUtilities(object):
+class QueryUtils(object):
 
     def __init__(self):
         self.inclusion_dict = {True: '$eq', False: '$ne'}

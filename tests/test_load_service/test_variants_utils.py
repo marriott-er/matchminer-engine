@@ -2,15 +2,15 @@ import unittest
 
 from tests.test_load_service import *
 from src.data_store import samples_data_model as dm
-from src.services.load_service.variants_utilities import VariantsUtilities
+from src.services.load_service.variants_utils import VariantsUtils
 
 
-class TestVariantsUtilities(unittest.TestCase):
+class TestVariantsUtils(unittest.TestCase):
 
     def setUp(self):
-        super(TestVariantsUtilities, self).setUp()
+        super(TestVariantsUtils, self).setUp()
 
-        self.v = VariantsUtilities(sample_obj={})
+        self.v = VariantsUtils(sample_obj={})
 
     def tearDown(self):
         pass

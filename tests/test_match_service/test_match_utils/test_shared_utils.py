@@ -1,14 +1,14 @@
 from src.utilities import settings as s
 from tests.test_match_service import TestQueryUtilitiesShared
-from src.services.match_service.match_utilities.shared_utilities import SharedUtilities
+from src.services.match_service.match_utils.shared_utils import SharedUtils
 
 
-class TestSharedUtilities(TestQueryUtilitiesShared):
+class TestSharedUtils(TestQueryUtilitiesShared):
 
     def setUp(self):
-        super(TestSharedUtilities, self).setUp()
+        super(TestSharedUtils, self).setUp()
 
-        self.s = SharedUtilities()
+        self.s = SharedUtils()
         self.db.trial.drop()
         self.db.trial_match.drop()
 

@@ -4,7 +4,7 @@ from src.utilities.utilities import handle_ints
 from src.data_store.samples_data_model import mutations_schema, cnvs_schema, svs_schema, low_coverage_schema
 
 
-class VariantsUtilities:
+class VariantsUtils:
 
     def __init__(self, sample_obj):
         self.sample_obj = sample_obj

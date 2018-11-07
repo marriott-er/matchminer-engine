@@ -1,18 +1,18 @@
-from src.services.match_service.match_utilities.shared_utilities import SharedUtilities
-from src.services.match_service.match_utilities.trial_utilities import TrialUtilities
-from src.services.match_service.match_utilities.trial_match_utilities import TrialMatchUtilities
+from src.services.match_service.match_utils.shared_utils import SharedUtils
+from src.services.match_service.match_utils.trial_utils import TrialUtils
+from src.services.match_service.match_utils.trial_match_utils import TrialMatchUtils
 
 
 def main():
 
-    utils = SharedUtilities()
+    utils = SharedUtils()
 
     # parse input arguments
     trials = utils.find_trials()
     for trial in trials:
 
         # parse trial document for all match trees
-        trial_utils = TrialUtilities(trial=trial)
+        trial_utils = TrialUtils(trial=trial)
         matchengines = trial_utils.parse_match_trees_from_trial()
         for matchengine in matchengines:
 
@@ -26,7 +26,7 @@ def main():
             trial_matches = matchengine.search_for_matching_records()
 
             # sort trial matches
-            trial_match_utils = TrialMatchUtilities(trial_matches=trial_matches)
+            trial_match_utils = TrialMatchUtils(trial_matches=trial_matches)
             trial_matches_df = trial_match_utils.sort_trial_matches()
 
             # save results

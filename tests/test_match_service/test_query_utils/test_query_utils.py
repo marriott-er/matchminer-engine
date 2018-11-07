@@ -1,15 +1,15 @@
 from src.utilities import settings as s
 from src.data_store import key_names as kn
 from tests.test_match_service import TestQueryUtilitiesShared
-from src.services.match_service.query_utilities.query_utilities import QueryUtilities
+from src.services.match_service.query_utils.query_utils import QueryUtils
 
 
-class TestQueryUtilities(TestQueryUtilitiesShared):
+class TestQueryUtils(TestQueryUtilitiesShared):
 
     def setUp(self):
-        super(TestQueryUtilities, self).setUp()
+        super(TestQueryUtils, self).setUp()
 
-        self.q = QueryUtilities()
+        self.q = QueryUtils()
         self.db.testSamples.insert_many(self.test_cases)
 
     def tearDown(self):

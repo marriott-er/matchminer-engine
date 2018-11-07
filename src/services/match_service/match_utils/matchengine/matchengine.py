@@ -2,9 +2,9 @@ import networkx as nx
 
 from src.utilities import settings as s
 from src.data_store import key_names as kn
-from src.services.match_service.match_utilities.matchengine import matchengine_utilities as me_utils
-from src.services.match_service.query_utilities.clinical_queries import ClinicalQueries
-from src.services.match_service.query_utilities.genomic_queries import GenomicQueries
+from src.services.match_service.match_utils.matchengine import matchengine_utils as me_utils
+from src.services.match_service.query_utils.clinical_queries import ClinicalQueries
+from src.services.match_service.query_utils.genomic_queries import GenomicQueries
 
 
 # todo move to two files: Core Matchengine and Matchengine Utils ??

@@ -6,7 +6,7 @@ from cerberus1 import schema_registry
 from old_matchengine import schema
 from old_matchengine.utilities import *
 from old_matchengine.validation import ConsentValidatorCerberus
-from src.services.match_service.match_utilities.sort import add_sort_order
+from src.services.match_service.match_utils.sort import add_sort_order
 
 # logging
 logging.basicConfig(level=logging.DEBUG, format='[%(levelname)s] %(message)s', )

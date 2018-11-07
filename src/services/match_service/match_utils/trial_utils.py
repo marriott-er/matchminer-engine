@@ -1,12 +1,12 @@
 import logging
 
 from src.utilities import settings as s
-from src.services.match_service.match_utilities.matchengine.matchengine import MatchEngine
+from src.services.match_service.match_utils.matchengine.matchengine import MatchEngine
 
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s', )
 
 
-class TrialUtilities:
+class TrialUtils:
 
     def __init__(self, trial):
         self.trial = trial

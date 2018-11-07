@@ -1,15 +1,15 @@
 from src.data_store import key_names as kn
 
 
-from src.services.match_service.query_utilities.query_utilities import QueryUtilities
-from src.services.match_service.query_utilities.clinical_utilities import ClinicalUtilities
+from src.services.match_service.query_utils.query_utils import QueryUtils
+from src.services.match_service.query_utils.clinical_utils import ClinicalUtils
 
 
-class ClinicalQueries(QueryUtilities, ClinicalUtilities):
+class ClinicalQueries(QueryUtils, ClinicalUtils):
 
     def __init__(self):
-        ClinicalUtilities.__init__(self)
-        QueryUtilities.__init__(self)
+        ClinicalUtils.__init__(self)
+        QueryUtils.__init__(self)
 
     def create_oncotree_diagnosis_query(self, cancer_type, include=True):
         """

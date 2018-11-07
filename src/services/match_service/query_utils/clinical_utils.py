@@ -5,7 +5,7 @@ import oncotreenx as ox
 from src.utilities import settings as s
 
 
-class ClinicalUtilities(object):
+class ClinicalUtils(object):
 
     def __init__(self):
         self.oncotree = ox.build_oncotree(file_path=s.TUMOR_TREE)

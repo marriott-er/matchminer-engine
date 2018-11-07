@@ -1,11 +1,11 @@
 import logging
 
-from src.services.match_service.match_utilities.sort import add_sort_order
+from src.services.match_service.match_utils.sort import add_sort_order
 
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s', )
 
 
-class TrialMatchUtilities:
+class TrialMatchUtils:
 
     def __init__(self, trial_matches):
         self.trial_matches = trial_matches

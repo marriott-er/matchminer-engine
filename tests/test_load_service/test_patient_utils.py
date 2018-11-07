@@ -6,16 +6,16 @@ from src.utilities import settings as s
 s.MONGO_URI = 'mongodb://localhost:27017'
 s.MONGO_DBNAME = 'matchminer'
 
-from src.services.load_service.patient_utilities import PatientUtilities
+from src.services.load_service.patient_utils import PatientUtils
 
 
-class TestPatientUtilities(unittest.TestCase):
+class TestPatientUtils(unittest.TestCase):
 
     def setUp(self):
-        super(TestPatientUtilities, self).setUp()
+        super(TestPatientUtils, self).setUp()
 
         self.db = get_db(mongo_uri=s.MONGO_URI, mongo_dbname=s.MONGO_DBNAME)
-        self.p = PatientUtilities()
+        self.p = PatientUtils()
 
         data_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../', 'data'))
         self.example_clinical_csv = os.path.join(data_path, 'example_clinical.csv')

@@ -7,7 +7,7 @@ from src.utilities.utilities import get_db
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s', )
 
 
-class SharedUtilities(object):
+class SharedUtils(object):
 
     def __init__(self):
         self.db = get_db()

@@ -3,7 +3,7 @@ import yaml
 import subprocess
 
 
-class TrialUtilities:
+class TrialUtils:
 
     def __init__(self, db):
 

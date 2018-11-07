@@ -1,6 +1,6 @@
 from src.data_store import key_names as kn
 from tests.test_match_service import TestQueryUtilitiesShared
-from src.services.match_service.query_utilities.clinical_queries import ClinicalQueries
+from src.services.match_service.query_utils.clinical_queries import ClinicalQueries
 
 
 class TestClinicalQueries(TestQueryUtilitiesShared):

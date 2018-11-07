@@ -2,15 +2,15 @@ import re
 
 from src.utilities import settings as s
 from src.data_store import key_names as kn
-from src.services.match_service.query_utilities.query_utilities import QueryUtilities
-from src.services.match_service.query_utilities.genomic_utilities import GenomicUtilities
+from src.services.match_service.query_utils.query_utils import QueryUtils
+from src.services.match_service.query_utils.genomic_utis import GenomicUtils
 
 
-class GenomicQueries(QueryUtilities, GenomicUtilities):
+class GenomicQueries(QueryUtils, GenomicUtils):
 
     def __init__(self):
-        QueryUtilities.__init__(self)
-        GenomicUtilities.__init__(self)
+        QueryUtils.__init__(self)
+        GenomicUtils.__init__(self)
 
         self.variant_level_query_dict = {
             True: self.create_variant_level_inclusion_query,

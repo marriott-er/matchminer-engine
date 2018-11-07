@@ -1,6 +1,6 @@
 from src.utilities import settings as s
 from tests.test_match_service import TestQueryUtilitiesShared
-from src.services.match_service.match_utilities.matchengine.matchengine_utilities import *
+from src.services.match_service.match_utils.matchengine.matchengine_utils import *
 
 
 class TestMatchEngineUtils(TestQueryUtilitiesShared):

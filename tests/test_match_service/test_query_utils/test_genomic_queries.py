@@ -1,7 +1,7 @@
 from src.utilities import settings as s
 from src.data_store import key_names as kn
 from tests.test_match_service import TestQueryUtilitiesShared
-from src.services.match_service.query_utilities.genomic_queries import GenomicQueries
+from src.services.match_service.query_utils.genomic_queries import GenomicQueries
 
 
 class TestGenomicQueries(TestQueryUtilitiesShared):
