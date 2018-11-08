@@ -37,19 +37,43 @@ class TrialUtils:
         # STEP #
         for step in self.trial[s.trial_treatment_list_col][s.trial_step_col]:
             if s.trial_match_tree_col in step:
-                matchengine = MatchEngine(match_tree=step[s.trial_match_tree_col][0], trial_level=s.trial_step_col)
+                trial_info = self._get_trial_info(level=s.trial_step_col, step=step)
+                matchengine = MatchEngine(match_tree=step[s.trial_match_tree_col][0], trial_info=trial_info)
                 match_trees.append(matchengine)
 
             # ARM #
             for arm in step[s.trial_arm_col]:
                 if s.trial_match_tree_col in arm:
-                    matchengine = MatchEngine(match_tree=arm[s.trial_match_tree_col][0], trial_level=s.trial_arm_col)
+                    trial_info = self._get_trial_info(level=s.trial_arm_col, step=step, arm=arm)
+                    matchengine = MatchEngine(match_tree=arm[s.trial_match_tree_col][0], trial_info=trial_info)
                     match_trees.append(matchengine)
 
                 # DOSE #
                 for dose in arm[s.trial_dose_col]:
                     if s.trial_match_tree_col in dose:
-                        matchengine = MatchEngine(match_tree=dose[s.trial_match_tree_col][0], trial_level=s.trial_dose_col)
+                        trial_info = self._get_trial_info(level=s.trial_dose_col, step=step, arm=arm, dose=dose)
+                        matchengine = MatchEngine(match_tree=dose[s.trial_match_tree_col][0], trial_info=trial_info)
                         match_trees.append(matchengine)
 
         return match_trees
+
+    def _get_trial_info(self, **kwargs):
+        """
+        Parse match tree level, step code, arm code, and dose level code for the given match tree
+
+        :param kwargs:
+            - step {dict} -- Step level information
+            - arm {dict}  -- Arm level information
+            - dose {dict} -- Dose level information
+            - level {str}  -- (e.g. step, arm, dose)
+
+        :return: {dict}
+        """
+        return {
+            'protocol_no': self.trial[s.trial_protocol_no_col],
+            'accrual_status': self.accrual_status,
+            'level': kwargs['level'],
+            'step_code': kwargs['step'][s.trial_step_code_col] if 'step' in kwargs else None,
+            'arm_code': kwargs['arm'][s.trial_arm_code_col] if 'arm' in kwargs else None,
+            'dose_code': kwargs['dose'][s.trial_dose_code_col] if 'dose' in kwargs else None
+        }

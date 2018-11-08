@@ -21,7 +21,12 @@ class TestQueryUtilitiesShared(unittest.TestCase):
 
         self.db = get_db(mongo_uri=s.MONGO_URI, mongo_dbname=s.MONGO_DBNAME)
         self.data_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../', 'data'))
-        self.proj = {kn.sample_id_col: 1}
+        self.proj = {
+            '_id': 0,
+            kn.sample_id_col: 1,
+            kn.mrn_col: 1,
+            kn.vital_status_col: 1
+        }
 
         # test data
         self.test_case_lung = {
@@ -897,14 +902,20 @@ class TestQueryUtilitiesShared(unittest.TestCase):
 
         return doc
 
-    def _find(self, query, table='testSamples'):
-        return self.db[table].find_one(query, self.proj)
+    def _find(self, query, proj=None, table='testSamples'):
+        if proj is None:
+            proj = self.proj
 
-    def _findall(self, query, table='testSamples'):
-        return list(self.db[table].find(query, self.proj))
+        return self.db[table].find_one(query, proj)
 
-    def _findalls(self, query, table='testSamples'):
-        return [i[kn.sample_id_col] for i in self._findall(query=query, table=table)]
+    def _findall(self, query, proj=None, table='testSamples'):
+        if proj is None:
+            proj = self.proj
+
+        return list(self.db[table].find(query, proj))
+
+    def _findalls(self, query, proj=None, table='testSamples'):
+        return [i[kn.sample_id_col] for i in self._findall(query=query, proj=proj, table=table)]
 
     @staticmethod
     def _print(query):

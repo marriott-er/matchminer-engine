@@ -18,18 +18,33 @@ class TestTrialUtils(TestQueryUtilitiesShared):
         match_trees = t.parse_match_trees_from_trial()
         assert t.accrual_status == s.match_accrual_status_open_val
         assert len(match_trees) == 1, len(match_trees)
-        assert match_trees[0].trial_level == s.trial_step_col, match_trees[0].trial_level
+        assert match_trees[0].trial_info['protocol_no'] == '10-113'
+        assert match_trees[0].trial_info['accrual_status'] == s.match_accrual_status_open_val
+        assert match_trees[0].trial_info['level'] == s.trial_step_col
+        assert match_trees[0].trial_info['step_code'] == '1'
+        assert match_trees[0].trial_info['arm_code'] is None
+        assert match_trees[0].trial_info['dose_code'] is None
 
         # closed trial with one arm-level match tree
         t = TrialUtils(trial=self.load_trial('10-114'))
         match_trees = t.parse_match_trees_from_trial()
         assert t.accrual_status == s.match_accrual_status_closed_val
         assert len(match_trees) == 1, len(match_trees)
-        assert match_trees[0].trial_level == s.trial_arm_col, match_trees[0].trial_level
+        assert match_trees[0].trial_info['protocol_no'] == '10-114'
+        assert match_trees[0].trial_info['accrual_status'] == s.match_accrual_status_closed_val
+        assert match_trees[0].trial_info['level'] == s.trial_arm_col
+        assert match_trees[0].trial_info['step_code'] == '1'
+        assert match_trees[0].trial_info['arm_code'] == '1'
+        assert match_trees[0].trial_info['dose_code'] is None
 
         # unspecified accrual status trial with two dose-level match trees
         t = TrialUtils(trial=self.load_trial('00-005'))
         match_trees = t.parse_match_trees_from_trial()
         assert t.accrual_status == s.match_accrual_status_open_val
         assert len(match_trees) == 2, len(match_trees)
-        assert match_trees[0].trial_level == s.trial_dose_col, match_trees[0].trial_level
+        assert match_trees[0].trial_info['protocol_no'] == '00-005'
+        assert match_trees[0].trial_info['accrual_status'] == s.match_accrual_status_open_val
+        assert match_trees[0].trial_info['level'] == s.trial_dose_col
+        assert match_trees[0].trial_info['step_code'] == '1'
+        assert match_trees[0].trial_info['arm_code'] == 'DOSE'
+        assert match_trees[0].trial_info['dose_code'] == '1'

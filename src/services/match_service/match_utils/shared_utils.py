@@ -40,6 +40,9 @@ class SharedUtils(object):
         :param trial_matches_df: {Pandas dataframe}
         :return: {null}
         """
+        if trial_matches_df is None:
+            return
+
         logging.info('Adding trial matches to database')
 
         if len(trial_matches_df.index) > 0:

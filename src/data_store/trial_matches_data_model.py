@@ -9,6 +9,7 @@ trial_level_allowed_vals = ['step', 'arm', 'dose']
 # Match reasons schemas
 mutation_reasons_schema = {
     kn.mr_reason_level_col: {'type': 'string', 'required': True, 'allowed': ['gene', 'exon', 'wildcard', 'variant']},
+    kn.mr_inclusion_criteria_col: {'type': 'boolean', 'required': True},
     kn.hugo_symbol_col: {'type': 'string', 'required': True},
     kn.transcript_exon_col: {'type': 'integer'},
     kn.variant_class_col: {'type': 'string'},

@@ -12,9 +12,9 @@ class TestMatchEngine(TestQueryUtilitiesShared):
 
         self.db.testSamples.insert_many(self.test_cases)
 
-    def tearDown(self):
-        self.db.testSamples.drop()
-        self.db[s.sample_collection_name].drop()
+    # def tearDown(self):
+    #     self.db.testSamples.drop()
+    #     self.db[s.sample_collection_name].drop()
 
     @staticmethod
     def _set_up_matchengine(trial):
@@ -41,7 +41,7 @@ class TestMatchEngine(TestQueryUtilitiesShared):
 
     def test_convert_match_tree_to_digraph(self):
 
-        me = MatchEngine(match_tree=self.simple_mutation_match_tree, trial_level=s.trial_arm_col)
+        me = MatchEngine(match_tree=self.simple_mutation_match_tree, trial_info={})
         me.convert_match_tree_to_digraph()
         assert me.match_tree_nx is not None
         assert me.match_tree_nx.node[1] == {'type': 'and'}
@@ -51,16 +51,17 @@ class TestMatchEngine(TestQueryUtilitiesShared):
     def test_create_mongo_query_from_match_tree(self):
 
         # oncotree diagnosis
-        me = MatchEngine(match_tree=self.simple_mutation_match_tree, trial_level=s.trial_arm_col)
+        me = MatchEngine(match_tree=self.simple_mutation_match_tree, trial_info={})
         me.convert_match_tree_to_digraph()
         me.create_mongo_query_from_match_tree()
         res1 = self._findalls(me.query)
-        # self._print(me.query)
+        self._print(me.query)
         assert len(res1) == 1, res1
         assert res1 == ['TEST-SAMPLE-BRAF-V600E'], res1
+        assert False
 
         # all solid tumors expansion
-        me = MatchEngine(match_tree=self.all_solid_tumor_match_tree, trial_level=s.trial_arm_col)
+        me = MatchEngine(match_tree=self.all_solid_tumor_match_tree, trial_info={})
         me.convert_match_tree_to_digraph()
         me.create_mongo_query_from_match_tree()
         res2 = self._findalls(me.query)
@@ -69,7 +70,7 @@ class TestMatchEngine(TestQueryUtilitiesShared):
         assert res2 == ['TEST-SAMPLE-BRAF-V600E'], res2
 
         # gender
-        me = MatchEngine(match_tree=self.all_male_match_tree, trial_level=s.trial_arm_col)
+        me = MatchEngine(match_tree=self.all_male_match_tree, trial_info={})
         me.convert_match_tree_to_digraph()
         me.create_mongo_query_from_match_tree()
         res3 = self._findalls(me.query)
@@ -78,7 +79,7 @@ class TestMatchEngine(TestQueryUtilitiesShared):
         assert res3 == ['TEST-SAMPLE-BRAF-V600E'], res3
 
         # gender and all liquid tumor expansion
-        me = MatchEngine(match_tree=self.all_female_match_tree, trial_level=s.trial_arm_col)
+        me = MatchEngine(match_tree=self.all_female_match_tree, trial_info={})
         me.convert_match_tree_to_digraph()
         me.create_mongo_query_from_match_tree()
         res4 = self._findalls(me.query)
@@ -87,7 +88,7 @@ class TestMatchEngine(TestQueryUtilitiesShared):
         assert res4 == ['TEST-SAMPLE-BRAF-NON-V600E'], res4
 
         # pediatric cnv
-        me = MatchEngine(match_tree=self.pediatric_cnv_match_tree, trial_level=s.trial_arm_col)
+        me = MatchEngine(match_tree=self.pediatric_cnv_match_tree, trial_info={})
         me.convert_match_tree_to_digraph()
         me.create_mongo_query_from_match_tree()
         res5 = self._findalls(me.query)
@@ -98,9 +99,9 @@ class TestMatchEngine(TestQueryUtilitiesShared):
     def test_search_for_matching_records(self):
 
         self.db[s.sample_collection_name].insert_many(self.test_cases)
-        me = MatchEngine(match_tree=self.pediatric_cnv_match_tree, trial_level=s.trial_arm_col)
+        me = MatchEngine(match_tree=self.pediatric_cnv_match_tree, trial_info={})
         me.convert_match_tree_to_digraph()
         me.create_mongo_query_from_match_tree()
-        samples = me.search_for_matching_records()
+        me.search_for_matching_records()
         # self._print(me.query)
-        assert samples == [{kn.sample_id_col: 'TEST-SAMPLE-BRAF-CNV-HETERO-DEL'}]
+        assert me.matched_samples == [{kn.sample_id_col: 'TEST-SAMPLE-BRAF-CNV-HETERO-DEL'}]

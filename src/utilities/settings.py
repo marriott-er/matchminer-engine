@@ -90,6 +90,9 @@ trial_accrual_status_open_val = 'open to accrual'
 trial_step_col = 'step'
 trial_arm_col = 'arm'
 trial_dose_col = 'dose_level'
+trial_step_code_col = 'step_code'
+trial_arm_code_col = 'arm_code'
+trial_dose_code_col = 'level_code'
 trial_match_tree_col = 'match'
 
 # trial clinical criteria settings

@@ -1,6 +1,10 @@
+import logging
+
 from src.services.match_service.match_utils.shared_utils import SharedUtils
 from src.services.match_service.match_utils.trial_utils import TrialUtils
 from src.services.match_service.match_utils.trial_match_utils import TrialMatchUtils
+
+logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s', )
 
 
 def main():
@@ -23,11 +27,14 @@ def main():
             matchengine.create_mongo_query_from_match_tree()
 
             # find matching records
-            trial_matches = matchengine.search_for_matching_records()
+            matchengine.search_for_matching_records()
 
-            # sort trial matches
-            trial_match_utils = TrialMatchUtils(trial_matches=trial_matches)
+            # create trial matches records
+            trial_match_utils = TrialMatchUtils(matched_samples=matchengine.matched_samples)
+            trial_match_utils.create_trial_match_records()
             trial_matches_df = trial_match_utils.sort_trial_matches()
 
             # save results
             utils.add_trial_matches(trial_matches_df=trial_matches_df)
+
+    logging.info('DONE')

@@ -1,25 +1,31 @@
+import logging
 import networkx as nx
 
 from src.utilities import settings as s
 from src.utilities.utilities import get_db
 from src.data_store import key_names as kn
+from src.services.match_service.match_utils.sort import add_sort_order
 from src.services.match_service.match_utils.matchengine import matchengine_utils as me_utils
 from src.services.match_service.query_utils.clinical_queries import ClinicalQueries
 from src.services.match_service.query_utils.genomic_queries import GenomicQueries
 
+logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s', )
+
 
 class MatchEngine(ClinicalQueries, GenomicQueries):
 
-    def __init__(self, match_tree, trial_level):
+    def __init__(self, match_tree, trial_info):
         ClinicalQueries.__init__(self)
         GenomicQueries.__init__(self)
 
-        self.trial_level = trial_level
+        self.trial_info = trial_info
         self.match_tree = match_tree
         self.match_tree_nx = None
         self.db = get_db()
         self.query = {}
         self.proj = {kn.sample_id_col: 1, '_id': 0}
+        self.matched_samples = []
+        self.trial_matches = None
 
     def convert_match_tree_to_digraph(self):
         """
@@ -198,6 +204,40 @@ class MatchEngine(ClinicalQueries, GenomicQueries):
         """
         Search for any sample records that match the constructed query
 
-        :return: {dict}
+        :return: {null}
         """
-        return list(self.db[s.sample_collection_name].find(self.query, self.proj))
+        self.matched_samples = list(self.db[s.sample_collection_name].find(self.query, self.proj))
+        logging.info('%d samples matched' % len(self.matched_samples))
+
+    def create_trial_match_records(self):
+        """
+        Create trial match records from matched samples,
+        including clinical and genomic reasons for each match
+
+        :return: {null}
+        """
+        for sample in self.matched_samples:
+
+            trial_match_doc = {
+                kn.tm_sample_id_col: sample[kn.sample_id_col],
+                kn.tm_trial_protocol_no_col: self.trial_info['protocol_no'],
+                kn.tm_mrn_col: sample[kn.mrn_col],
+                kn.tm_vital_status_col: sample[kn.vital_status_col],
+                kn.tm_trial_accrual_status_col: self.trial_info['accrual_status'],
+                kn.tm_sort_order_col: 0,
+                kn.tm_match_reasons_col: []
+            }
+
+
+    def sort_trial_matches(self):
+        """
+        Sort trial matches.
+
+        :return: {Pandas dataframe}
+        """
+        # todo unit test
+        if self.trial_matches is None:
+            return
+
+        logging.info('Sorting trial matches')
+        return add_sort_order(self.trial_matches)
