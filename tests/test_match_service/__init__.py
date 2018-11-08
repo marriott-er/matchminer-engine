@@ -3,6 +3,7 @@ import json
 import yaml
 import unittest
 import pandas as pd
+import datetime as dt
 
 from src.utilities import settings as s
 s.MONGO_URI = 'mongodb://localhost:27017'
@@ -33,6 +34,9 @@ class TestQueryUtilitiesShared(unittest.TestCase):
         }
         self.test_case_braf_v600e = {
             kn.sample_id_col: 'TEST-SAMPLE-BRAF-V600E',
+            kn.oncotree_primary_diagnosis_name_col: 'Leiomyosarcoma',
+            kn.birth_date_col: dt.datetime(year=1900, day=1, month=1),
+            kn.gender_col: 'Male',
             kn.mutation_list_col: [{
                 kn.hugo_symbol_col: 'BRAF',
                 kn.protein_change_col: 'p.V600E',
@@ -41,6 +45,9 @@ class TestQueryUtilitiesShared(unittest.TestCase):
         }
         self.test_case_braf_non_v600e = {
             kn.sample_id_col: 'TEST-SAMPLE-BRAF-NON-V600E',
+            kn.oncotree_primary_diagnosis_name_col: 'Hodgkin Lymphoma',
+            kn.birth_date_col: dt.datetime(year=1900, day=1, month=1),
+            kn.gender_col: 'Female',
             kn.mutation_list_col: [{
                 kn.hugo_symbol_col: 'BRAF',
                 kn.protein_change_col: 'p.V600X',
@@ -49,12 +56,16 @@ class TestQueryUtilitiesShared(unittest.TestCase):
         }
         self.test_case_braf_generic_cnv = {
             kn.sample_id_col: 'TEST-SAMPLE-BRAF-GENERIC-CNV',
+            kn.oncotree_primary_diagnosis_name_col: 'Hodgkin Lymphoma',
+            kn.birth_date_col: dt.datetime(year=1900, day=1, month=1),
             kn.cnv_list_col: [{
                 kn.hugo_symbol_col: 'BRAF'
             }]
         }
         self.test_case_braf_cnv_hetero_del = {
             kn.sample_id_col: 'TEST-SAMPLE-BRAF-CNV-HETERO-DEL',
+            kn.oncotree_primary_diagnosis_name_col: 'Hodgkin Lymphoma',
+            kn.birth_date_col: dt.datetime.today() - dt.timedelta(days=360),
             kn.cnv_list_col: [{
                 kn.hugo_symbol_col: 'BRAF',
                 kn.cnv_call_col: s.cnv_call_hetero_del
@@ -776,6 +787,70 @@ class TestQueryUtilitiesShared(unittest.TestCase):
                 }
             ]
         }
+        self.all_solid_tumor_match_tree = {
+            'and': [
+                {
+                    'genomic': {
+                        'hugo_symbol': 'BRAF',
+                        'variant_category': 'Mutation'
+                    }
+                },
+                {
+                    'clinical': {
+                        'age_numerical': '>=18',
+                        'oncotree_primary_diagnosis': '_SOLID_'
+                    }
+                }
+            ]
+        }
+        self.all_male_match_tree = {
+            'and': [
+                {
+                    'genomic': {
+                        'hugo_symbol': 'BRAF',
+                        'variant_category': 'Mutation'
+                    }
+                },
+                {
+                    'clinical': {
+                        'gender': 'Male',
+                        'oncotree_primary_diagnosis': '_SOLID_'
+                    }
+                }
+            ]
+        }
+        self.all_female_match_tree = {
+            'and': [
+                {
+                    'genomic': {
+                        'hugo_symbol': 'BRAF',
+                        'variant_category': 'Mutation'
+                    }
+                },
+                {
+                    'clinical': {
+                        'gender': 'Female',
+                        'oncotree_primary_diagnosis': '_LIQUID_'
+                    }
+                }
+            ]
+        }
+        self.pediatric_cnv_match_tree = {
+            'and': [
+                {
+                    'genomic': {
+                        'hugo_symbol': 'BRAF',
+                        'variant_category': 'Copy Number Variation'
+                    }
+                },
+                {
+                    'clinical': {
+                        'age_numerical': '<18',
+                        'oncotree_primary_diagnosis': 'Hodgkin Lymphoma'
+                    }
+                }
+            ]
+        }
 
     def add_test_trials(self):
         """
@@ -827,6 +902,9 @@ class TestQueryUtilitiesShared(unittest.TestCase):
 
     def _findall(self, query, table='testSamples'):
         return list(self.db[table].find(query, self.proj))
+
+    def _findalls(self, query, table='testSamples'):
+        return [i[kn.sample_id_col] for i in self._findall(query=query, table=table)]
 
     @staticmethod
     def _print(query):

@@ -19,7 +19,7 @@ class MatchEngine(ClinicalQueries, GenomicQueries):
         self.match_tree_nx = None
         self.db = get_db()
         self.query = {}
-        self.proj = {}
+        self.proj = {kn.sample_id_col: 1, '_id': 0}
 
     def convert_match_tree_to_digraph(self):
         """
@@ -96,7 +96,6 @@ class MatchEngine(ClinicalQueries, GenomicQueries):
         :param node: {digraph node}
         :return: {dict}
         """
-        # todo unit test
         query = {'$and': []}
         criteria = sorted(node['value'].keys())
 
@@ -132,7 +131,6 @@ class MatchEngine(ClinicalQueries, GenomicQueries):
         :param node: {digraph node}
         :return: {dict}
         """
-        # todo unit test
         criteria = sorted(node['value'].keys())
 
         # gene level query
