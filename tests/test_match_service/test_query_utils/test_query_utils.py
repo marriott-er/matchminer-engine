@@ -19,9 +19,9 @@ class TestQueryUtils(TestQueryUtilitiesShared):
 
         # inclusion query
         inclusion_query = {kn.mutation_list_col: {'$elemMatch': {kn.hugo_symbol_col: {'$eq': 'BRAF'}}}}
-        q1 = self.q.handle_exclusion_queries(query=inclusion_query,
-                                             variant_category=s.variant_category_mutation_val,
-                                             include=True)
+        q1 = self.q.augment_exclusion_queries(query=inclusion_query,
+                                              variant_category=s.variant_category_mutation_val,
+                                              include=True)
         res1 = self._findall(q1)
         assert len(res1) == 2, res1
         assert sorted([i[kn.sample_id_col] for i in res1]) == sorted(['TEST-SAMPLE-BRAF-V600E',
@@ -29,9 +29,9 @@ class TestQueryUtils(TestQueryUtilitiesShared):
 
         # exclusion query
         exclusion_query = {kn.mutation_list_col: {'$elemMatch': {kn.hugo_symbol_col: {'$ne': 'BRAF'}}}}
-        q2 = self.q.handle_exclusion_queries(query=exclusion_query,
-                                             variant_category=s.variant_category_mutation_val,
-                                             include=False)
+        q2 = self.q.augment_exclusion_queries(query=exclusion_query,
+                                              variant_category=s.variant_category_mutation_val,
+                                              include=False)
         res2 = self._findall(q2)
         assert len(res2) == 2, res2
         assert sorted([i[kn.sample_id_col] for i in res2]) == sorted(['TEST-SAMPLE-EGFR',

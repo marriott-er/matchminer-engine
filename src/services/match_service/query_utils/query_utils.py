@@ -21,30 +21,34 @@ class QueryUtils(object):
             s.variant_category_cnv_val: kn.cnv_call_col
         }
 
-    def handle_exclusion_queries(self, query, variant_category, include):
+    @staticmethod
+    def create_inclusion_query(variant_category, key, val):
         """
-        Update MongoDB query with additional parameters if it is an exclusion criteria
+        Create MongoDB query that inclusively matches the given data
 
-        :param query: {dict}
-        :param variant_category: {str} (MUTATION, CNV, SV)
-        :param include: {bool}
+        :param variant_category: {str}
+        :param key: {str}
+        :param val: {any type}
         :return: {dict}
         """
-        if include:
-            return query
-        else:
-            return {'$or': [query, self.create_no_variants_query(variant_category=variant_category)]}
+        # todo unit test
+        return {variant_category: {'$elemMatch': {key: val}}}
 
-    def create_no_variants_query(self, variant_category):
+    @staticmethod
+    def create_exclusion_query(variant_category, key, val):
         """
-        Create MongoDB query that matches samples without any variants in the specified variant category.
+        Create MongoDB query that exclusively matches the given data
 
-        :param variant_category: {str} (MUTATION, CNV, SV, WT)
+        :param variant_category: {str}
+        :param key: {str}
+        :param val: {any type}
         :return: {dict}
         """
+        # todo unit test
         return {
             '$or': [
-                {self.variant_category_dict[variant_category]: []},
-                {self.variant_category_dict[variant_category]: {'$exists': False}}
+                {variant_category: {'$not': {'$elemMatch': {key: val}}}},
+                {variant_category: []},
+                {variant_category: {'$exists': False}}
             ]
         }

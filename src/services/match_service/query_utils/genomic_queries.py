@@ -12,6 +12,10 @@ class GenomicQueries(QueryUtils, GenomicUtils):
         QueryUtils.__init__(self)
         GenomicUtils.__init__(self)
 
+        self.inclusion_dict = {
+            True: self.create_inclusion_query,
+            False: self.create_exclusion_query
+        }
         self.variant_level_query_dict = {
             True: self.create_variant_level_inclusion_query,
             False: self.create_variant_level_exclusion_query
@@ -26,16 +30,9 @@ class GenomicQueries(QueryUtils, GenomicUtils):
         :param include: {bool}
         :return: {dict}
         """
-        query = {
-            self.variant_category_dict[variant_category]: {
-                '$elemMatch': {
-                    kn.hugo_symbol_col: {self.inclusion_dict[include]: gene_name}
-                }
-            }
-        }
-        return self.handle_exclusion_queries(query=query,
-                                             variant_category=variant_category,
-                                             include=include)
+        return self.inclusion_dict[include](variant_category=self.variant_category_dict[variant_category],
+                                            key=kn.hugo_symbol_col,
+                                            val=gene_name)
 
     def create_variant_level_inclusion_query(self, variant_category, gene_name, variant_val):
         """
@@ -149,7 +146,7 @@ class GenomicQueries(QueryUtils, GenomicUtils):
             subquery = {kn.sv_comment_col: {'$not': gene_name_regex}}
 
         query = {kn.sv_list_col: {'$elemMatch': subquery}}
-        return self.handle_exclusion_queries(query=query, variant_category=s.variant_category_sv_val, include=include)
+        return self.augment_exclusion_queries(query=query, variant_category=s.variant_category_sv_val, include=include)
 
     @staticmethod
     def create_mutational_signature_query(signature_type, signature_val):

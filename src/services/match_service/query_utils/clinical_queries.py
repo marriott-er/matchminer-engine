@@ -44,4 +44,4 @@ class ClinicalQueries(QueryUtils, ClinicalUtils):
         :param gender: {str} (e.g. "Male", "Female")
         :return: {dict}
         """
-        return {kn.gender_col: {'$eq': gender}}
+        return {kn.gender_col: gender}

@@ -9,12 +9,42 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
         super(TestGenomicQueries, self).setUp()
 
         self.gq = GenomicQueries()
-        self.db.testSamples.insert_many(self.test_cases)
 
     def tearDown(self):
         self.db.testSamples.drop()
 
     def test_create_gene_level_mutation_query(self):
+
+        # -------- #
+        # MUTATION #
+        # -------- #
+        # set up
+        self.db.testSamples.insert_many([
+            self.test_case_braf_v600e,
+            self.test_case_braf_non_v600e,
+            self.test_case_tp53_r278w
+        ])
+
+        # create query
+        q1 = self.gq.create_gene_level_query(gene_name='BRAF',
+                                             variant_category=s.variant_category_mutation_val,
+                                             include=True)
+        eq1 = self.gq.create_gene_level_query(gene_name='BRAF',
+                                              variant_category=s.variant_category_mutation_val,
+                                              include=False)
+        res1 = self._findalls(q1)
+        eres1 = self._findalls(eq1)
+        self._print(q1)
+        self._print(eq1)
+
+        # assertions
+        assert res1 == ['TEST-SAMPLE-BRAF-NON-V600E', 'TEST-SAMPLE-BRAF-V600E'], res1
+        assert eres1 == ['TEST-SAMPLE-TP53-R278W'], eres1
+
+        # clean up
+        self.db.testSamples.drop()
+        return
+
 
         # BRAF Mutation (inclusion)
         q1 = self.gq.create_gene_level_query(gene_name='BRAF',

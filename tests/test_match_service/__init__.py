@@ -55,20 +55,22 @@ class TestQueryUtilitiesShared(unittest.TestCase):
         }
         self.test_case_braf_v600e = {
             kn.sample_id_col: 'TEST-SAMPLE-BRAF-V600E',
-            kn.oncotree_primary_diagnosis_name_col: 'Leiomyosarcoma',
-            kn.birth_date_col: dt.datetime(year=1900, day=1, month=1),
-            kn.gender_col: 'Male',
             kn.mutation_list_col: [{
                 kn.hugo_symbol_col: 'BRAF',
                 kn.protein_change_col: 'p.V600E',
                 kn.ref_residue_col: 'p.V600'
             }]
         }
+        self.test_case_tp53_r278w = {
+            kn.sample_id_col: 'TEST-SAMPLE-TP53-R278W',
+            kn.mutation_list_col: [{
+                kn.hugo_symbol_col: 'TP53',
+                kn.protein_change_col: 'p.R278W',
+                kn.ref_residue_col: 'pp.R278'
+            }]
+        }
         self.test_case_braf_non_v600e = {
             kn.sample_id_col: 'TEST-SAMPLE-BRAF-NON-V600E',
-            kn.oncotree_primary_diagnosis_name_col: 'Hodgkin Lymphoma',
-            kn.birth_date_col: dt.datetime(year=1900, day=1, month=1),
-            kn.gender_col: 'Female',
             kn.mutation_list_col: [{
                 kn.hugo_symbol_col: 'BRAF',
                 kn.protein_change_col: 'p.V600X',
@@ -990,7 +992,7 @@ class TestQueryUtilitiesShared(unittest.TestCase):
         return list(self.db[table].find(query, proj))
 
     def _findalls(self, query, proj=None, table='testSamples'):
-        return [i[kn.sample_id_col] for i in self._findall(query=query, proj=proj, table=table)]
+        return sorted([i[kn.sample_id_col] for i in self._findall(query=query, proj=proj, table=table)])
 
     @staticmethod
     def _print(query):

@@ -15,10 +15,10 @@ class TestClinicalQueries(TestQueryUtilitiesShared):
     def test_create_oncotree_diagnosis_query(self):
 
         # set up
-        self.db.testSamples.insert_many(
+        self.db.testSamples.insert_many([
             self.test_case_lung,
             self.test_case_colon
-        )
+        ])
 
         # create query
         q1 = self.cq.create_oncotree_diagnosis_query(cancer_type='Lung', include=True)
