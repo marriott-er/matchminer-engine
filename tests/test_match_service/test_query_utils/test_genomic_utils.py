@@ -1,6 +1,6 @@
 import unittest
 
-from src.services.match_service.query_utils.genomic_utis import GenomicUtils
+from src.services.match_service.query_utils.genomic_utils import GenomicUtils
 from tests.test_match_service import *
 
 

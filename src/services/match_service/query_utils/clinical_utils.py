@@ -3,6 +3,7 @@ import networkx as nx
 import oncotreenx as ox
 
 from src.utilities import settings as s
+from src.data_store import key_names as kn
 
 
 class ClinicalUtils(object):
@@ -15,6 +16,8 @@ class ClinicalUtils(object):
             '>': '$lt',
             '<': '$gt'
         }
+
+        self.diagnosis_key = kn.oncotree_primary_diagnosis_name_col
 
     def _text_from_node(self, nodes):
         """

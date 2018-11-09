@@ -8,22 +8,24 @@ from src.services.match_service.match_utils.sort import add_sort_order
 from src.services.match_service.match_utils.matchengine import matchengine_utils as me_utils
 from src.services.match_service.query_utils.clinical_queries import ClinicalQueries
 from src.services.match_service.query_utils.genomic_queries import GenomicQueries
+from src.services.match_service.query_utils.proj_utils import ProjUtils
 
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s', )
 
 
-class MatchEngine(ClinicalQueries, GenomicQueries):
+class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
 
     def __init__(self, match_tree, trial_info):
         ClinicalQueries.__init__(self)
         GenomicQueries.__init__(self)
+        ProjUtils.__init__(self)
 
         self.trial_info = trial_info
         self.match_tree = match_tree
         self.match_tree_nx = None
         self.db = get_db()
         self.query = {}
-        self.proj = {kn.sample_id_col: 1, '_id': 0}
+
         self.matched_samples = []
         self.trial_matches = None
 
@@ -70,6 +72,8 @@ class MatchEngine(ClinicalQueries, GenomicQueries):
             # access node and its children
             node = self.match_tree_nx.node[node_id]
             children = [self.match_tree_nx.node[n] for n in self.match_tree_nx.successors(node_id)]
+            parent = self.match_tree_nx.successsors(self.match_tree_nx.predecessors(node_id)[0])
+            siblings = [self.match_tree_nx.node[n] for n in parent if n != node_id]
 
             # clinical nodes
             if node['type'] == 'clinical':
@@ -95,11 +99,12 @@ class MatchEngine(ClinicalQueries, GenomicQueries):
 
         self.query = self.match_tree_nx.node[1]['query']
 
-    def _assess_clinical_node(self, node):
+    def _assess_clinical_node(self, node, siblings):
         """
         Assess the given node and construct the appropriate MongoDB query.
 
         :param node: {digraph node}
+        :param siblings: {list of dict}
         :return: {dict}
         """
         query = {'$and': []}
@@ -110,6 +115,7 @@ class MatchEngine(ClinicalQueries, GenomicQueries):
 
         # diagnosis query
         if s.mt_diagnosis in criteria:
+
             cancer_type = node['value'][s.mt_diagnosis]
             include = me_utils.assess_inclusion(cancer_type)
             subquery = self.create_oncotree_diagnosis_query(cancer_type=me_utils.sanitize_exclusion_vals(cancer_type),
@@ -196,6 +202,9 @@ class MatchEngine(ClinicalQueries, GenomicQueries):
             for sig in s.mt_signature_cols:
                 sigtype, sigval = me_utils.normalize_signature_vals(signature_type=sig, signature_val=node['value'][sig])
                 return self.create_mutational_signature_query(signature_type=sigtype, signature_val=sigval)
+
+        # wildtype criteria
+        # todo build out wildtype criteria logic
 
         # low-coverage criteria
         # todo build out low coverage criteria logic

@@ -24,7 +24,7 @@ class ClinicalQueries(QueryUtils, ClinicalUtils):
         else:
             expanded_diagnoses = self.expand_oncotree_diagnosis(diagnosis=cancer_type)
 
-        return {kn.oncotree_primary_diagnosis_name_col: {self.list_inclusion_dict[include]: expanded_diagnoses}}
+        return {self.diagnosis_key: {self.list_inclusion_dict[include]: expanded_diagnoses}}
 
     def create_age_query(self, age):
         """

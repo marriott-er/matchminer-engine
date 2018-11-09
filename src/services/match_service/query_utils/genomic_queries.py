@@ -3,7 +3,7 @@ import re
 from src.utilities import settings as s
 from src.data_store import key_names as kn
 from src.services.match_service.query_utils.query_utils import QueryUtils
-from src.services.match_service.query_utils.genomic_utis import GenomicUtils
+from src.services.match_service.query_utils.genomic_utils import GenomicUtils
 
 
 class GenomicQueries(QueryUtils, GenomicUtils):

@@ -5,7 +5,6 @@ from src.data_store import key_names as kn
 class QueryUtils(object):
 
     def __init__(self):
-        self.inclusion_dict = {True: '$eq', False: '$ne'}
         self.list_inclusion_dict = {True: '$in', False: '$nin'}
         self.variant_category_dict = {
             s.variant_category_mutation_val: kn.mutation_list_col,

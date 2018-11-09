@@ -856,6 +856,65 @@ class TestQueryUtilitiesShared(unittest.TestCase):
                 }
             ]
         }
+        self.exclusion_tree = {
+            'and': [
+                {
+                    'or': [
+                        {
+                            'and': [
+                                {
+                                    'genomic': {
+                                        'hugo_symbol': 'BRAF',
+                                        'protein_change': 'p.V600E',
+                                        'variant_category': '!Mutation'
+                                    }
+                                },
+                                {
+                                    'genomic': {
+                                        'hugo_symbol': 'TP53',
+                                        'protein_change': 'p.R278W'
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            'and': [
+                                {
+                                    'genomic': {
+                                        'hugo_symbol': 'BRAF',
+                                        'protein_change': 'p.V600D',
+                                        'variant_category': '!Mutation'
+                                    }
+                                },
+                                {
+                                    'genomic': {
+                                        'hugo_symbol': 'TP53',
+                                        'protein_change': 'R278X'
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    'and': [
+                        {
+                            'clinical': {
+                                'age_numerical': '<18',
+                                'oncotree_primary_diagnosis': '_SOLID_'
+                            }
+                        },
+                        {
+                            'clinical': {
+                                'oncotree_primary_diagnosis': '!Melanoma'
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+
+
 
     def add_test_trials(self):
         """
