@@ -15,9 +15,6 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
 
     def test_create_gene_level_mutation_query(self):
 
-        # -------- #
-        # MUTATION #
-        # -------- #
         # set up
         self.db.testSamples.insert_many([
             self.test_case_braf_v600e,
@@ -45,34 +42,48 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
         self.db.testSamples.drop()
         return
 
+    def test_create_variant_level_mutation_query(self):
 
-        # BRAF Mutation (inclusion)
-        q1 = self.gq.create_gene_level_query(gene_name='BRAF',
-                                             variant_category=s.variant_category_mutation_val,
-                                             include=True)
-        res1 = self._findall(q1)
-        assert len(res1) == 3, res1
-        assert sorted([i[kn.sample_id_col] for i in res1]) == sorted(['TEST-SAMPLE-BRAF-V600E',
-                                                                      'TEST-SAMPLE-BRAF-NON-V600E',
-                                                                      'TEST-SAMPLE-BRAF-EXON-20']), res1
+        # set up
+        self.db.testSamples.insert_many([
+            self.test_case_braf_v600e,
+            self.test_case_braf_non_v600e,
+            self.test_case_tp53_r278w,
+            self.test_case_erbb2_v600e,
+            self.test_case_no_mutation
+        ])
 
-        # BRAF Mutation (exclusion)
-        q2 = self.gq.create_gene_level_query(gene_name='BRAF',
-                                             variant_category=s.variant_category_mutation_val,
-                                             include=False)
-        res2 = self._findall(q2)
-        assert len(res2) == 11, res2
-        assert sorted([i[kn.sample_id_col] for i in res2]) == sorted(['TEST-SAMPLE-COLON',
-                                                                      'TEST-SAMPLE-LUNG',
-                                                                      'TEST-SAMPLE-EGFR',
-                                                                      'TEST-SAMPLE-NO-MUTATION',
-                                                                      'TEST-SAMPLE-BRAF-GENERIC-CNV',
-                                                                      'TEST-SAMPLE-BRAF-CNV-HETERO-DEL',
-                                                                      'TEST-SAMPLE-BRAF-CNV-GAIN',
-                                                                      'TEST-SAMPLE-NTRK1-SV',
-                                                                      'TEST-SAMPLE-NTRK2-SV',
-                                                                      'TEST-SAMPLE-MMR-DEFICIENT',
-                                                                      'TEST-SAMPLE-BRAF-WT']), res2
+        # BRAF V600E (inclusion)
+        q1 = self.gq.create_mutation_query(gene_name='BRAF', protein_change='p.V600E', include=True)
+        res1 = self._findalls(q1)
+        self._print(q1)
+        assert res1 == ['TEST-SAMPLE-BRAF-V600E'], res1
+
+        # BRAF V600E (exclusion)
+        q2 = self.gq.create_mutation_query(gene_name='BRAF', protein_change='p.V600E', include=False)
+        res2 = self._findalls(q2)
+        self._print(q2)
+        assert res2 == ['TEST-SAMPLE-BRAF-NON-V600E', 'TEST-SAMPLE-ERBB2-V600E',
+                        'TEST-SAMPLE-NO-MUTATION', 'TEST-SAMPLE-TP53-R278W'], res2
+
+        # BRAF V600D (inclusion)
+        q3 = self.gq.create_mutation_query(gene_name='BRAF', protein_change='p.V600D', include=True)
+        res3 = self._findall(q3)
+        assert len(res3) == 0, res3
+
+        # BRAF V600D (exclusion)
+        q4 = self.gq.create_mutation_query(gene_name='BRAF', protein_change='p.V600D', include=False)
+        res4 = self._findalls(q4)
+        assert res4 == ['TEST-SAMPLE-BRAF-NON-V600E', 'TEST-SAMPLE-BRAF-V600E', 'TEST-SAMPLE-ERBB2-V600E',
+                        'TEST-SAMPLE-NO-MUTATION', 'TEST-SAMPLE-TP53-R278W'], res4
+
+        # clean up
+        self.db.testSamples.drop()
+        return
+
+
+
+
 
     def test_create_gene_level_cnv_query(self):
 
@@ -134,55 +145,6 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
                                                                       'TEST-SAMPLE-BRAF-CNV-GAIN',
                                                                       'TEST-SAMPLE-BRAF-EXON-20']), res6
 
-    def test_create_mutation_query(self):
-
-        # BRAF V600E (inclusion)
-        q1 = self.gq.create_mutation_query(gene_name='BRAF', protein_change='p.V600E', include=True)
-        res1 = self._findall(q1)
-        assert len(res1) == 1, res1
-        assert res1[0][kn.sample_id_col] == 'TEST-SAMPLE-BRAF-V600E', res1
-
-        # BRAF V600E (exclusion)
-        q2 = self.gq.create_mutation_query(gene_name='BRAF', protein_change='p.V600E', include=False)
-        res2 = self._findall(q2)
-        assert len(res2) == 13, res2
-        assert sorted([i[kn.sample_id_col] for i in res2]) == sorted(['TEST-SAMPLE-BRAF-NON-V600E',
-                                                                      'TEST-SAMPLE-EGFR',
-                                                                      'TEST-SAMPLE-NO-MUTATION',
-                                                                      'TEST-SAMPLE-COLON',
-                                                                      'TEST-SAMPLE-LUNG',
-                                                                      'TEST-SAMPLE-BRAF-GENERIC-CNV',
-                                                                      'TEST-SAMPLE-BRAF-CNV-HETERO-DEL',
-                                                                      'TEST-SAMPLE-BRAF-CNV-GAIN',
-                                                                      'TEST-SAMPLE-NTRK1-SV',
-                                                                      'TEST-SAMPLE-NTRK2-SV',
-                                                                      'TEST-SAMPLE-MMR-DEFICIENT',
-                                                                      'TEST-SAMPLE-BRAF-WT',
-                                                                      'TEST-SAMPLE-BRAF-EXON-20']), res2
-
-        # BRAF V600D (inclusion)
-        q3 = self.gq.create_mutation_query(gene_name='BRAF', protein_change='p.V600D', include=True)
-        res3 = self._findall(q3)
-        assert len(res3) == 0, res3
-
-        # BRAF V600D (exclusion)
-        q4 = self.gq.create_mutation_query(gene_name='BRAF', protein_change='p.V600D', include=False)
-        res4 = self._findall(q4)
-        assert len(res4) == 14, res4
-        assert sorted([i[kn.sample_id_col] for i in res4]) == sorted(['TEST-SAMPLE-BRAF-V600E',
-                                                                      'TEST-SAMPLE-BRAF-NON-V600E',
-                                                                      'TEST-SAMPLE-EGFR',
-                                                                      'TEST-SAMPLE-NO-MUTATION',
-                                                                      'TEST-SAMPLE-COLON',
-                                                                      'TEST-SAMPLE-LUNG',
-                                                                      'TEST-SAMPLE-BRAF-GENERIC-CNV',
-                                                                      'TEST-SAMPLE-BRAF-CNV-HETERO-DEL',
-                                                                      'TEST-SAMPLE-BRAF-CNV-GAIN',
-                                                                      'TEST-SAMPLE-NTRK1-SV',
-                                                                      'TEST-SAMPLE-NTRK2-SV',
-                                                                      'TEST-SAMPLE-MMR-DEFICIENT',
-                                                                      'TEST-SAMPLE-BRAF-WT',
-                                                                      'TEST-SAMPLE-BRAF-EXON-20']), res4
 
     def test_create_cnv_query(self):
 

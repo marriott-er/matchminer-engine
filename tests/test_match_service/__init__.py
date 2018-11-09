@@ -55,11 +55,33 @@ class TestQueryUtilitiesShared(unittest.TestCase):
         }
         self.test_case_braf_v600e = {
             kn.sample_id_col: 'TEST-SAMPLE-BRAF-V600E',
-            kn.mutation_list_col: [{
-                kn.hugo_symbol_col: 'BRAF',
-                kn.protein_change_col: 'p.V600E',
-                kn.ref_residue_col: 'p.V600'
-            }]
+            kn.mutation_list_col: [
+                {
+                    kn.hugo_symbol_col: 'BRAF',
+                    kn.protein_change_col: 'p.V600E',
+                    kn.ref_residue_col: 'p.V600'
+                },
+                {
+                    kn.hugo_symbol_col: 'ERBB2',
+                    kn.protein_change_col: 'p.D769H',
+                    kn.ref_residue_col: 'p.D769'
+                }
+            ]
+        }
+        self.test_case_erbb2_v600e = {
+            kn.sample_id_col: 'TEST-SAMPLE-ERBB2-V600E',
+            kn.mutation_list_col: [
+                {
+                    kn.hugo_symbol_col: 'ERBB2',
+                    kn.protein_change_col: 'p.V600E',
+                    kn.ref_residue_col: 'p.V600'
+                },
+                {
+                    kn.hugo_symbol_col: 'BRAF',
+                    kn.protein_change_col: 'p.D769H',
+                    kn.ref_residue_col: 'p.D769'
+                }
+            ]
         }
         self.test_case_tp53_r278w = {
             kn.sample_id_col: 'TEST-SAMPLE-TP53-R278W',
@@ -77,6 +99,12 @@ class TestQueryUtilitiesShared(unittest.TestCase):
                 kn.ref_residue_col: 'p.V600'
             }]
         }
+        self.test_case_no_mutation = {
+            kn.sample_id_col: 'TEST-SAMPLE-NO-MUTATION',
+            kn.mutation_list_col: []
+        }
+
+
         self.test_case_braf_generic_cnv = {
             kn.sample_id_col: 'TEST-SAMPLE-BRAF-GENERIC-CNV',
             kn.oncotree_primary_diagnosis_name_col: 'Hodgkin Lymphoma',
@@ -106,10 +134,6 @@ class TestQueryUtilitiesShared(unittest.TestCase):
             kn.mutation_list_col: [{
                 kn.hugo_symbol_col: 'EGFR'
             }]
-        }
-        self.test_case_no_mutation = {
-            kn.sample_id_col: 'TEST-SAMPLE-NO-MUTATION',
-            kn.mutation_list_col: []
         }
         self.test_case_sv = {
             kn.sample_id_col: 'TEST-SAMPLE-NTRK1-SV',

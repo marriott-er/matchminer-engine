@@ -38,7 +38,7 @@ class GenomicQueries(QueryUtils, GenomicUtils):
         """
         Create MongoDB query that matches the specific variant specified.
 
-        :param variant_category: {str} (e.g. MUTATION, WILDCARD_MUTATION, CNV)
+        :param variant_category: {str} (e.g. MUTATION, EXON, WILDCARD_MUTATION, CNV)
         :param gene_name: {str}
         :param variant_val: {str}
         :return: {dict}
@@ -46,8 +46,8 @@ class GenomicQueries(QueryUtils, GenomicUtils):
         return {
             self.variant_category_dict[variant_category]: {
                 '$elemMatch': {
-                    kn.hugo_symbol_col: {'$eq': gene_name},
-                    self.variant_type_col_dict[variant_category]: {'$eq': variant_val}
+                    kn.hugo_symbol_col: gene_name,
+                    self.variant_type_col_dict[variant_category]: variant_val
                 }
             }
         }
