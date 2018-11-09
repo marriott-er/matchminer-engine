@@ -24,7 +24,7 @@ class ClinicalQueries(QueryUtils, ClinicalUtils):
         else:
             expanded_diagnoses = self.expand_oncotree_diagnosis(diagnosis=cancer_type)
 
-        return {self.diagnosis_key: {self.list_inclusion_dict[include]: expanded_diagnoses}}
+        return {kn.oncotree_primary_diagnosis_name_col: {self.list_inclusion_dict[include]: expanded_diagnoses}}
 
     def create_age_query(self, age):
         """
@@ -33,7 +33,6 @@ class ClinicalQueries(QueryUtils, ClinicalUtils):
         :param age: {str} (e.g. ">=17")
         :return: {dict}
         """
-        # todo unit test
         subquery = self.convert_age_to_birth_date_subquery(age_str=age)
         return {kn.birth_date_col: subquery}
 
@@ -45,5 +44,4 @@ class ClinicalQueries(QueryUtils, ClinicalUtils):
         :param gender: {str} (e.g. "Male", "Female")
         :return: {dict}
         """
-        # todo unit test
         return {kn.gender_col: {'$eq': gender}}

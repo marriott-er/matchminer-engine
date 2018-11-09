@@ -37,6 +37,22 @@ class TestQueryUtilitiesShared(unittest.TestCase):
             kn.sample_id_col: 'TEST-SAMPLE-COLON',
             kn.oncotree_primary_diagnosis_name_col: 'Colon'
         }
+        self.test_case_child = {
+            kn.sample_id_col: 'TEST-SAMPLE-CHILD',
+            kn.birth_date_col: dt.datetime.today() - dt.timedelta(days=360)
+        }
+        self.test_case_adult = {
+            kn.sample_id_col: 'TEST-SAMPLE-ADULT',
+            kn.birth_date_col: dt.datetime(year=1900, day=1, month=1)
+        }
+        self.test_case_male = {
+            kn.sample_id_col: 'TEST-SAMPLE-MALE',
+            kn.gender_col: 'Male'
+        }
+        self.test_case_female = {
+            kn.sample_id_col: 'TEST-SAMPLE-FEMALE',
+            kn.gender_col: 'Female'
+        }
         self.test_case_braf_v600e = {
             kn.sample_id_col: 'TEST-SAMPLE-BRAF-V600E',
             kn.oncotree_primary_diagnosis_name_col: 'Leiomyosarcoma',

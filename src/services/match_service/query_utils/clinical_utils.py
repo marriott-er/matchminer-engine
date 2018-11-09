@@ -17,8 +17,6 @@ class ClinicalUtils(object):
             '<': '$gt'
         }
 
-        self.diagnosis_key = kn.oncotree_primary_diagnosis_name_col
-
     def _text_from_node(self, nodes):
         """
         Get text string value from each oncotree node
