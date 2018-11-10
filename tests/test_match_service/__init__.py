@@ -74,12 +74,14 @@ class TestQueryUtilitiesShared(unittest.TestCase):
                 {
                     kn.hugo_symbol_col: 'ERBB2',
                     kn.protein_change_col: 'p.V600E',
-                    kn.ref_residue_col: 'p.V600'
+                    kn.ref_residue_col: 'p.V600',
+                    kn.transcript_exon_col: 19,
                 },
                 {
                     kn.hugo_symbol_col: 'BRAF',
                     kn.protein_change_col: 'p.D769H',
-                    kn.ref_residue_col: 'p.D769'
+                    kn.ref_residue_col: 'p.D769',
+                    kn.transcript_exon_col: 20,
                 }
             ]
         }
@@ -103,8 +105,20 @@ class TestQueryUtilitiesShared(unittest.TestCase):
             kn.sample_id_col: 'TEST-SAMPLE-NO-MUTATION',
             kn.mutation_list_col: []
         }
-
-
+        self.test_case_braf_exon_20 = {
+            kn.sample_id_col: 'TEST-SAMPLE-BRAF-EXON-20',
+            kn.mutation_list_col: [{
+                kn.hugo_symbol_col: 'BRAF',
+                kn.transcript_exon_col: 20
+            }]
+        }
+        self.test_case_braf_exon_19 = {
+            kn.sample_id_col: 'TEST-SAMPLE-BRAF-EXON-19',
+            kn.mutation_list_col: [{
+                kn.hugo_symbol_col: 'BRAF',
+                kn.transcript_exon_col: 19
+            }]
+        }
         self.test_case_braf_generic_cnv = {
             kn.sample_id_col: 'TEST-SAMPLE-BRAF-GENERIC-CNV',
             kn.oncotree_primary_diagnosis_name_col: 'Hodgkin Lymphoma',
@@ -129,12 +143,11 @@ class TestQueryUtilitiesShared(unittest.TestCase):
                 kn.cnv_call_col: s.cnv_call_gain
             }]
         }
-        self.test_case_egfr = {
-            kn.sample_id_col: 'TEST-SAMPLE-EGFR',
-            kn.mutation_list_col: [{
-                kn.hugo_symbol_col: 'EGFR'
-            }]
+        self.test_case_no_cnv = {
+            kn.sample_id_col: 'TEST-SAMPLE-NO-CNV',
+            kn.cnv_list_col: []
         }
+
         self.test_case_sv = {
             kn.sample_id_col: 'TEST-SAMPLE-NTRK1-SV',
             kn.sv_list_col: [{
@@ -157,19 +170,12 @@ class TestQueryUtilitiesShared(unittest.TestCase):
                 kn.hugo_symbol_col: 'BRAF'
             }]
         }
-        self.test_case_braf_exon_20 = {
-            kn.sample_id_col: 'TEST-SAMPLE-BRAF-EXON-20',
-            kn.mutation_list_col: [{
-                kn.hugo_symbol_col: 'BRAF',
-                kn.transcript_exon_col: 20
-            }]
-        }
+
         self.test_cases = [
             self.test_case_lung,
             self.test_case_colon,
             self.test_case_braf_v600e,
             self.test_case_braf_non_v600e,
-            self.test_case_egfr,
             self.test_case_no_mutation,
             self.test_case_braf_generic_cnv,
             self.test_case_braf_cnv_hetero_del,

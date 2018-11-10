@@ -105,38 +105,62 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
         # clean up
         self.db.testSamples.drop()
 
+    def test_create_exon_query(self):
 
+        # set up
+        self.db.testSamples.insert_many([
+            self.test_case_braf_exon_19,
+            self.test_case_braf_exon_20,
+            self.test_case_erbb2_v600e,
+            self.test_case_no_mutation
+        ])
 
+        # BRAF exon 20 (inclusion)
+        q1 = self.gq.create_exon_query(gene_name='BRAF', exon=20, include=True)
+        res1 = self._findalls(q1)
+        self._print(q1)
+        assert res1 == ['TEST-SAMPLE-BRAF-EXON-20', 'TEST-SAMPLE-ERBB2-V600E'], res1
+
+        # BRAF exon 20 (exclusion)
+        q2 = self.gq.create_exon_query(gene_name='BRAF', exon=20, include=False)
+        res2 = self._findalls(q2)
+        self._print(q2)
+        assert res2 == ['TEST-SAMPLE-BRAF-EXON-19', 'TEST-SAMPLE-NO-MUTATION'], res2
+
+        # clean up
+        self.db.testSamples.drop()
 
     def test_create_gene_level_cnv_query(self):
 
+        # set up
+        self.db.testSamples.insert_many([
+            self.test_case_braf_generic_cnv,
+            self.test_case_braf_cnv_hetero_del,
+            self.test_case_braf_cnv_gain,
+            self.test_case_no_cnv,
+            self.test_case_braf_v600e
+        ])
+
         # BRAF any CNV (inclusion)
-        q3 = self.gq.create_gene_level_query(gene_name='BRAF',
+        q1 = self.gq.create_gene_level_query(gene_name='BRAF',
                                              variant_category=s.variant_category_cnv_val,
                                              include=True)
-        res3 = self._findall(q3)
-        assert len(res3) == 3, res3
-        assert sorted([i[kn.sample_id_col] for i in res3]) == sorted(['TEST-SAMPLE-BRAF-GENERIC-CNV',
-                                                                      'TEST-SAMPLE-BRAF-CNV-HETERO-DEL',
-                                                                      'TEST-SAMPLE-BRAF-CNV-GAIN']), res3
+        res1 = self._findalls(q1)
+        self._print(q1)
+        assert res1 == ['TEST-SAMPLE-BRAF-CNV-GAIN', 'TEST-SAMPLE-BRAF-CNV-HETERO-DEL',
+                        'TEST-SAMPLE-BRAF-GENERIC-CNV'], res1
 
         # BRAF any CNV (exclusion)
-        q4 = self.gq.create_gene_level_query(gene_name='BRAF',
+        q2 = self.gq.create_gene_level_query(gene_name='BRAF',
                                              variant_category=s.variant_category_cnv_val,
                                              include=False)
-        res4 = self._findall(q4)
-        assert len(res4) == 11, res4
-        assert sorted([i[kn.sample_id_col] for i in res4]) == sorted(['TEST-SAMPLE-BRAF-V600E',
-                                                                      'TEST-SAMPLE-BRAF-NON-V600E',
-                                                                      'TEST-SAMPLE-COLON',
-                                                                      'TEST-SAMPLE-LUNG',
-                                                                      'TEST-SAMPLE-EGFR',
-                                                                      'TEST-SAMPLE-NO-MUTATION',
-                                                                      'TEST-SAMPLE-NTRK1-SV',
-                                                                      'TEST-SAMPLE-NTRK2-SV',
-                                                                      'TEST-SAMPLE-MMR-DEFICIENT',
-                                                                      'TEST-SAMPLE-BRAF-WT',
-                                                                      'TEST-SAMPLE-BRAF-EXON-20']), res4
+        res2 = self._findalls(q2)
+        self._print(q2)
+        assert res2 == ['TEST-SAMPLE-BRAF-V600E', 'TEST-SAMPLE-NO-CNV'], res2
+
+        # clean up
+        self.db.testSamples.drop()
+
 
     def test_create_gene_level_wt_query(self):
 
@@ -237,31 +261,7 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
         res2 = self._findall(q2)
         assert len(res2) == 0, res2
 
-    def test_create_exon_query(self):
 
-        # BRAF exon 20 (inclusion)
-        q1 = self.gq.create_exon_query(gene_name='BRAF', exon=20, include=True)
-        res1 = self._findall(q1)
-        assert len(res1) == 1, res1
-        assert res1[0][kn.sample_id_col] == 'TEST-SAMPLE-BRAF-EXON-20', res1
-
-        # BRAF exon 20 (exclusion)
-        q2 = self.gq.create_exon_query(gene_name='BRAF', exon=20, include=False)
-        res2 = self._findall(q2)
-        assert len(res2) == 13, res2
-        assert sorted([i[kn.sample_id_col] for i in res2]) == sorted(['TEST-SAMPLE-BRAF-V600E',
-                                                                      'TEST-SAMPLE-BRAF-NON-V600E',
-                                                                      'TEST-SAMPLE-EGFR',
-                                                                      'TEST-SAMPLE-NO-MUTATION',
-                                                                      'TEST-SAMPLE-COLON',
-                                                                      'TEST-SAMPLE-LUNG',
-                                                                      'TEST-SAMPLE-BRAF-GENERIC-CNV',
-                                                                      'TEST-SAMPLE-BRAF-CNV-GAIN',
-                                                                      'TEST-SAMPLE-BRAF-CNV-HETERO-DEL',
-                                                                      'TEST-SAMPLE-NTRK1-SV',
-                                                                      'TEST-SAMPLE-NTRK2-SV',
-                                                                      'TEST-SAMPLE-BRAF-WT',
-                                                                      'TEST-SAMPLE-MMR-DEFICIENT']), res2
 
     def test_create_low_coverage_query(self):
         pass
