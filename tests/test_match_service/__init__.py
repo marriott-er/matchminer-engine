@@ -163,17 +163,18 @@ class TestQueryUtilitiesShared(unittest.TestCase):
             kn.sample_id_col: 'TEST-SAMPLE-NO-SV',
             kn.sv_list_col: []
         }
-
-        self.test_case_mmr_deficient = {
-            kn.sample_id_col: 'TEST-SAMPLE-MMR-DEFICIENT',
-            kn.mmr_status_col: s.mmr_status_deficient_val
-        }
         self.test_case_braf_wt = {
             kn.sample_id_col: 'TEST-SAMPLE-BRAF-WT',
             kn.wt_genes_col: [{
                 kn.hugo_symbol_col: 'BRAF'
             }]
         }
+
+        self.test_case_mmr_deficient = {
+            kn.sample_id_col: 'TEST-SAMPLE-MMR-DEFICIENT',
+            kn.mmr_status_col: s.mmr_status_deficient_val
+        }
+
 
         self.test_cases = [
             self.test_case_lung,

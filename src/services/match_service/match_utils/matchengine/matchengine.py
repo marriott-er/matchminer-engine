@@ -72,8 +72,6 @@ class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
             # access node and its children
             node = self.match_tree_nx.node[node_id]
             children = [self.match_tree_nx.node[n] for n in self.match_tree_nx.successors(node_id)]
-            parent = self.match_tree_nx.successsors(self.match_tree_nx.predecessors(node_id)[0])
-            siblings = [self.match_tree_nx.node[n] for n in parent if n != node_id]
 
             # clinical nodes
             if node['type'] == 'clinical':
@@ -99,7 +97,7 @@ class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
 
         self.query = self.match_tree_nx.node[1]['query']
 
-    def _assess_clinical_node(self, node, siblings):
+    def _assess_clinical_node(self, node):
         """
         Assess the given node and construct the appropriate MongoDB query.
 

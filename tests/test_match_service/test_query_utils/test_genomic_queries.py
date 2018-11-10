@@ -212,37 +212,26 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
 
     def test_create_gene_level_wt_query(self):
 
+        # set up
+        self.db.testSamples.insert_many([
+            self.test_case_braf_wt
+        ])
+
         # BRAF WT (inclusion)
-        q5 = self.gq.create_gene_level_query(gene_name='BRAF',
+        q1 = self.gq.create_gene_level_query(gene_name='BRAF',
                                              variant_category=s.variant_category_wt_val,
                                              include=True)
-        res5 = self._findall(q5)
-        assert len(res5) == 1, res5
-        assert res5[0][kn.sample_id_col] == 'TEST-SAMPLE-BRAF-WT', res5[0][kn.sample_id_col]
+        res1 = self._findalls(q1)
+        self._print(q1)
+        assert res1 == ['TEST-SAMPLE-BRAF-WT']
 
         # BRAF ST (exclusion)
-        q6 = self.gq.create_gene_level_query(gene_name='BRAF',
+        q2 = self.gq.create_gene_level_query(gene_name='BRAF',
                                              variant_category=s.variant_category_wt_val,
                                              include=False)
-        res6 = self._findall(q6)
-        assert len(res6) == 13, res6
-        assert sorted([i[kn.sample_id_col] for i in res6]) == sorted(['TEST-SAMPLE-BRAF-V600E',
-                                                                      'TEST-SAMPLE-BRAF-NON-V600E',
-                                                                      'TEST-SAMPLE-COLON',
-                                                                      'TEST-SAMPLE-LUNG',
-                                                                      'TEST-SAMPLE-EGFR',
-                                                                      'TEST-SAMPLE-NO-MUTATION',
-                                                                      'TEST-SAMPLE-NTRK1-SV',
-                                                                      'TEST-SAMPLE-NTRK2-SV',
-                                                                      'TEST-SAMPLE-MMR-DEFICIENT',
-                                                                      'TEST-SAMPLE-BRAF-GENERIC-CNV',
-                                                                      'TEST-SAMPLE-BRAF-CNV-HETERO-DEL',
-                                                                      'TEST-SAMPLE-BRAF-CNV-GAIN',
-                                                                      'TEST-SAMPLE-BRAF-EXON-20']), res6
-
-
-
-
+        res2 = self._findall(q2)
+        self._print(q2)
+        assert res2 == []
 
     def test_create_mutational_signature_query(self):
 
