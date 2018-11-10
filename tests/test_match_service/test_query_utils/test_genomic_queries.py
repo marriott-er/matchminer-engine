@@ -161,6 +161,54 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
         # clean up
         self.db.testSamples.drop()
 
+    def test_create_cnv_query(self):
+
+        # set up
+        self.db.testSamples.insert_many([
+            self.test_case_braf_cnv_hetero_del,
+            self.test_case_braf_cnv_gain,
+            self.test_case_no_cnv,
+            self.test_case_braf_v600e
+        ])
+
+        # BRAF CNV Heterozygous deletion (inclusion)
+        q1 = self.gq.create_cnv_query(gene_name='BRAF', cnv_call=s.cnv_call_hetero_del, include=True)
+        res1 = self._findalls(q1)
+        self._print(q1)
+        assert res1 == ['TEST-SAMPLE-BRAF-CNV-HETERO-DEL'], res1
+
+        # BRAF CNV Heterozygous deletion (exclusion)
+        q2 = self.gq.create_cnv_query(gene_name='BRAF', cnv_call=s.cnv_call_hetero_del, include=False)
+        res2 = self._findalls(q2)
+        self._print(q2)
+        assert res2 == ['TEST-SAMPLE-BRAF-CNV-GAIN', 'TEST-SAMPLE-NO-CNV', 'TEST-SAMPLE-BRAF-V600E'], res2
+
+        # clean up
+        self.db.testSamples.drop()
+
+    def test_create_sv_query(self):
+
+        # set up
+        self.db.testSamples.insert_many([
+            self.test_case_sv,
+            self.test_case_sv_2,
+            self.test_case_no_sv
+        ])
+
+        # BRAF SV (inclusion)
+        q1 = self.gq.create_sv_query(gene_name='NTRK1', include=True)
+        res1 = self._findalls(q1)
+        self._print(q1)
+        assert res1 == ['TEST-SAMPLE-NTRK1-SV'], res1
+
+        # BRAF SV (exclusion)
+        q2 = self.gq.create_sv_query(gene_name='NTRK1', include=False)
+        res2 = self._findalls(q2)
+        self._print(q2)
+        assert res2 == ['TEST-SAMPLE-NO-SV', 'TEST-SAMPLE-NTRK2-SV'], res2
+
+        # clean up
+        self.db.testSamples.drop()
 
     def test_create_gene_level_wt_query(self):
 
@@ -193,58 +241,8 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
                                                                       'TEST-SAMPLE-BRAF-EXON-20']), res6
 
 
-    def test_create_cnv_query(self):
-
-        # BRAF CNV Heterozygous deletion (inclusion)
-        q1 = self.gq.create_cnv_query(gene_name='BRAF', cnv_call=s.cnv_call_hetero_del, include=True)
-        res1 = self._findall(q1)
-        assert len(res1) == 1, res1
-        assert res1[0][kn.sample_id_col] == 'TEST-SAMPLE-BRAF-CNV-HETERO-DEL', res1
-
-        # BRAF CNV Heterozygous deletion (exclusion)
-        q2 = self.gq.create_cnv_query(gene_name='BRAF', cnv_call=s.cnv_call_hetero_del, include=False)
-        res2 = self._findall(q2)
-        assert len(res2) == 13, res2
-        assert sorted([i[kn.sample_id_col] for i in res2]) == sorted(['TEST-SAMPLE-BRAF-V600E',
-                                                                      'TEST-SAMPLE-BRAF-NON-V600E',
-                                                                      'TEST-SAMPLE-EGFR',
-                                                                      'TEST-SAMPLE-NO-MUTATION',
-                                                                      'TEST-SAMPLE-COLON',
-                                                                      'TEST-SAMPLE-LUNG',
-                                                                      'TEST-SAMPLE-BRAF-GENERIC-CNV',
-                                                                      'TEST-SAMPLE-BRAF-CNV-GAIN',
-                                                                      'TEST-SAMPLE-NTRK1-SV',
-                                                                      'TEST-SAMPLE-NTRK2-SV',
-                                                                      'TEST-SAMPLE-MMR-DEFICIENT',
-                                                                      'TEST-SAMPLE-BRAF-WT',
-                                                                      'TEST-SAMPLE-BRAF-EXON-20']), res2
 
 
-    def test_create_sv_query(self):
-
-        # BRAF SV (inclusion)
-        q1 = self.gq.create_sv_query(gene_name='NTRK1', include=True)
-        res1 = self._findall(q1)
-        assert len(res1) == 1, res1
-        assert res1[0][kn.sample_id_col] == 'TEST-SAMPLE-NTRK1-SV', res1
-
-        # BRAF SV (exclusion)
-        q2 = self.gq.create_sv_query(gene_name='NTRK1', include=False)
-        res2 = self._findall(q2)
-        assert len(res2) == 13, res2
-        assert sorted([i[kn.sample_id_col] for i in res2]) == sorted(['TEST-SAMPLE-BRAF-V600E',
-                                                                      'TEST-SAMPLE-BRAF-NON-V600E',
-                                                                      'TEST-SAMPLE-EGFR',
-                                                                      'TEST-SAMPLE-NO-MUTATION',
-                                                                      'TEST-SAMPLE-COLON',
-                                                                      'TEST-SAMPLE-LUNG',
-                                                                      'TEST-SAMPLE-BRAF-GENERIC-CNV',
-                                                                      'TEST-SAMPLE-BRAF-CNV-GAIN',
-                                                                      'TEST-SAMPLE-BRAF-CNV-HETERO-DEL',
-                                                                      'TEST-SAMPLE-NTRK2-SV',
-                                                                      'TEST-SAMPLE-MMR-DEFICIENT',
-                                                                      'TEST-SAMPLE-BRAF-WT',
-                                                                      'TEST-SAMPLE-BRAF-EXON-20']), res2
 
     def test_create_mutational_signature_query(self):
 

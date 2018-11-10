@@ -147,7 +147,6 @@ class TestQueryUtilitiesShared(unittest.TestCase):
             kn.sample_id_col: 'TEST-SAMPLE-NO-CNV',
             kn.cnv_list_col: []
         }
-
         self.test_case_sv = {
             kn.sample_id_col: 'TEST-SAMPLE-NTRK1-SV',
             kn.sv_list_col: [{
@@ -160,6 +159,11 @@ class TestQueryUtilitiesShared(unittest.TestCase):
                 kn.sv_comment_col: 'This sample has a NTRK2 fusion'
             }]
         }
+        self.test_case_no_sv = {
+            kn.sample_id_col: 'TEST-SAMPLE-NO-SV',
+            kn.sv_list_col: []
+        }
+
         self.test_case_mmr_deficient = {
             kn.sample_id_col: 'TEST-SAMPLE-MMR-DEFICIENT',
             kn.mmr_status_col: s.mmr_status_deficient_val

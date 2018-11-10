@@ -140,13 +140,9 @@ class GenomicQueries(QueryUtils, GenomicUtils):
         :return: {dict}
         """
         gene_name_regex = self.regex_compile_gene_name(gene_name)
-        if include:
-            subquery = {kn.sv_comment_col: gene_name_regex}
-        else:
-            subquery = {kn.sv_comment_col: {'$not': gene_name_regex}}
-
-        query = {kn.sv_list_col: {'$elemMatch': subquery}}
-        return self.augment_exclusion_queries(query=query, variant_category=s.variant_category_sv_val, include=include)
+        return self.inclusion_dict[include](variant_category=kn.sv_list_col,
+                                            key=kn.sv_comment_col,
+                                            val=gene_name_regex)
 
     @staticmethod
     def create_mutational_signature_query(signature_type, signature_val):
