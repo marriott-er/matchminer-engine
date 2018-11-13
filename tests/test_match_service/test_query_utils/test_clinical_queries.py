@@ -4,6 +4,8 @@ from tests.test_match_service import TestQueryUtilitiesShared
 from src.services.match_service.query_utils.clinical_queries import ClinicalQueries
 from src.services.match_service.query_utils.proj_utils import ProjUtils
 
+import datetime as dt
+
 
 class TestClinicalQueries(TestQueryUtilitiesShared):
     def setUp(self):
@@ -68,11 +70,28 @@ class TestClinicalQueries(TestQueryUtilitiesShared):
         self._print(q1)
         self._print(q2)
 
+        # projections
+        age_dt = dt.datetime.today() - dt.timedelta(days=360)
+        p1 = self.p.create_clinical_proj(include=True, keys=[s.mt_diagnosis, s.mt_age])
+        p2 = self.p.create_clinical_proj(include=False, keys=[s.mt_diagnosis, s.mt_age], vals=['Lung', age_dt])
+
         # assertions
         assert res1 is not None
         assert res2 is not None
         assert res1 == {kn.sample_id_col: 'TEST-SAMPLE-ADULT'}, res1
         assert res2 == {kn.sample_id_col: 'TEST-SAMPLE-CHILD'}, res2
+        assert p1 == {
+            '_id': 0,
+            kn.sample_id_col: 1,
+            kn.mrn_col: 1,
+            kn.vital_status_col: 1,
+            self.p.diagnosis_key: 1,
+            self.p.age_key: 1
+        }, p1
+        assert p2 == {self.p.exclusion_key: {
+            self.p.diagnosis_key: 'Lung',
+            self.p.age_key: age_dt
+        }}, p2
 
         # clean up
         self.db.testSamples.drop()
@@ -93,11 +112,27 @@ class TestClinicalQueries(TestQueryUtilitiesShared):
         self._print(q1)
         self._print(q2)
 
+        # projections
+        p1 = self.p.create_clinical_proj(include=True, keys=[s.mt_diagnosis, s.mt_gender])
+        p2 = self.p.create_clinical_proj(include=False, keys=[s.mt_diagnosis, s.mt_gender], vals=['Lung', 'Female'])
+
         # assertions
         assert res1 is not None
         assert res2 is not None
         assert res1 == {kn.sample_id_col: 'TEST-SAMPLE-MALE'}, res1
         assert res2 == {kn.sample_id_col: 'TEST-SAMPLE-FEMALE'}, res2
+        assert p1 == {
+            '_id': 0,
+            kn.sample_id_col: 1,
+            kn.mrn_col: 1,
+            kn.vital_status_col: 1,
+            self.p.diagnosis_key: 1,
+            self.p.gender_key: 1
+        }, p1
+        assert p2 == {self.p.exclusion_key: {
+            self.p.diagnosis_key: 'Lung',
+            self.p.gender_key: 'Female'
+        }}, p2
 
         # clean up
         self.db.testSamples.drop()
