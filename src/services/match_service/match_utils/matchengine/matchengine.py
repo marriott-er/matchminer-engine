@@ -348,10 +348,11 @@ class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
                                             and i not in node['matched_results']])
 
             # add exclusion reasons
-            for er in ['genomic_exclusion_reasons', 'clinical_exclusion_reasons']:
-                if er in child:
-                    if child[er] not in node[er]:
-                        node[er].append(child[er])
+            for result in node['matched_results'][:]:
+                for er in ['genomic_exclusion_reasons', 'clinical_exclusion_reasons']:
+                    if er in child:
+                        if child[er] not in result[er]:
+                            result[er].append(child[er])
 
         return node
 
