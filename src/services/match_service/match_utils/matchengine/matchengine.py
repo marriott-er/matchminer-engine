@@ -13,12 +13,11 @@ from src.services.match_service.query_utils.proj_utils import ProjUtils
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s', )
 
 
-class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
+class MatchEngine(ClinicalQueries, GenomicQueries):
 
     def __init__(self, match_tree, trial_info):
         ClinicalQueries.__init__(self)
         GenomicQueries.__init__(self)
-        ProjUtils.__init__(self)
 
         self.trial_info = trial_info
         self.match_tree = match_tree
@@ -73,24 +72,33 @@ class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
             node = self.match_tree_nx.node[node_id]
             children = [self.match_tree_nx.node[n] for n in self.match_tree_nx.successors(node_id)]
 
+            print
+            print node_id
+
             # clinical nodes
             if node['type'] == 'clinical':
                 node['query'] = self._assess_clinical_node(node=node)
+                # todo create clinical projection
+                # todo save results as list of dict
 
             # genomic nodes
             elif node['type'] == 'genomic':
                 node['query'] = self._assess_genomic_node(node=node)
+                # todo create genomic projection
+                # todo save results as list of dict
 
             # join child queries with "and"
             elif node['type'] == 'and':
                 node['query'] = {'$and': []}
                 for child in children:
                     node['query']['$and'].append(child['query'])
+                    # todo use set.intersection_update to update matches
 
             elif node['type'] == 'or':
                 node['query'] = {'$or': []}
                 for child in children:
                     node['query']['$or'].append(child['query'])
+                    # todo use set.update to update matches
 
             else:
                 raise ValueError('match tree node must be of type "clinical", "genomic", "and", or "or')
@@ -143,11 +151,16 @@ class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
         """
         criteria = sorted(node['value'].keys())
 
+        include = True
+        variant_category = None
+        if s.mt_variant_category in node['value']:
+            variant_category = me_utils.sanitize_exclusion_vals(node['value'][s.mt_variant_category])
+            variant_category = me_utils.normalize_variant_category_val(variant_category)
+            include = me_utils.assess_inclusion(node_value=node['value'][s.mt_variant_category])
+
         # gene level query
         if criteria == [s.mt_hugo_symbol, s.mt_variant_category]:
             gene_name = node['value'][s.mt_hugo_symbol]
-            variant_category = me_utils.normalize_variant_category_val(node['value'][s.mt_variant_category])
-            include = me_utils.assess_inclusion(node_value=variant_category)
 
             # Structural Variants
             if variant_category == s.variant_category_sv_val:
@@ -156,14 +169,12 @@ class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
             # Mutations and CNVs
             else:
                 return self.create_gene_level_query(gene_name=gene_name,
-                                                    variant_category=me_utils.sanitize_exclusion_vals(variant_category),
+                                                    variant_category=variant_category,
                                                     include=include)
         # variant-level mutation criteria
         elif s.mt_protein_change in criteria:
             gene_name = node['value'][s.mt_hugo_symbol]
             protein_change = node['value'][s.mt_protein_change]
-            variant_category = me_utils.normalize_variant_category_val(node['value'][s.mt_variant_category])
-            include = me_utils.assess_inclusion(node_value=variant_category)
             return self.create_mutation_query(gene_name=gene_name,
                                               protein_change=protein_change,
                                               include=include)
@@ -171,8 +182,6 @@ class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
         elif s.mt_wc_protein_change in criteria:
             gene_name = node['value'][s.mt_hugo_symbol]
             protein_change = node['value'][s.mt_wc_protein_change]
-            variant_category = me_utils.normalize_variant_category_val(node['value'][s.mt_variant_category])
-            include = me_utils.assess_inclusion(node_value=variant_category)
             return self.create_wildcard_query(gene_name=gene_name,
                                               protein_change=protein_change,
                                               include=include)
@@ -180,17 +189,15 @@ class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
         elif s.mt_exon in criteria:
             gene_name = node['value'][s.mt_hugo_symbol]
             exon = node['value'][s.mt_exon]
-            variant_category = me_utils.normalize_variant_category_val(node['value'][s.mt_variant_category])
-            include = me_utils.assess_inclusion(node_value=variant_category)
+            variant_class = node['value'][s.mt_variant_class] if s.mt_variant_class in node['value'] else None
             return self.create_exon_query(gene_name=gene_name,
                                           exon=exon,
+                                          variant_class=variant_class,
                                           include=include)
         # cnv criteria
         elif s.mt_cnv_call in criteria:
             gene_name = node['value'][s.mt_hugo_symbol]
             cnv_call = node['value'][s.mt_cnv_call]
-            variant_category = me_utils.normalize_variant_category_val(node['value'][s.mt_variant_category])
-            include = me_utils.assess_inclusion(node_value=variant_category)
             return self.create_cnv_query(gene_name=gene_name,
                                          cnv_call=cnv_call,
                                          include=include)

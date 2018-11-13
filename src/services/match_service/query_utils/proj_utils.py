@@ -10,8 +10,14 @@ class ProjUtils(ClinicalUtils, GenomicUtils):
         ClinicalUtils.__init__(self)
         GenomicUtils.__init__(self)
 
-        self.proj_col_dict = {
-            s.mt_diagnosis: self.diagnosis_key
+        self.clinical_inclusion_dict = {
+            True: self.create_clinical_inclusion_proj,
+            False: self.create_clinical_exclusion_proj
+        }
+        self.clinical_proj_dict = {
+            s.mt_diagnosis: self.diagnosis_key,
+            s.mt_age: self.age_key,
+            s.mt_gender: self.gender_key
         }
         self.proj = {
             '_id': 0,
@@ -19,12 +25,41 @@ class ProjUtils(ClinicalUtils, GenomicUtils):
             kn.mrn_col: 1,
             kn.vital_status_col: 1
         }
+        self.exclusion_key = 'ne'
 
-    def create_clinical_proj(self, key):
+    def create_clinical_proj(self, include=True, **kwargs):
         """
         Create MongoDB projection to return only the matching diagnosis from the sample record.
 
-        :param key {str}
+        :param include {bool}
+        :param kwargs
         :return: {null}
         """
-        self.proj[self.proj_col_dict[key]] = 1
+        return self.clinical_inclusion_dict[include](**kwargs)
+
+    def create_clinical_inclusion_proj(self, **kwargs):
+        """
+        Create MongoDB projection to return only the matching diagnosis from the sample record.
+
+        :param kwargs:
+            - key {str]
+
+        :return: {null}
+        """
+        proj = self.proj.copy()
+        for key in kwargs['keys']:
+            proj[self.clinical_proj_dict[key]] = 1
+
+        return proj
+
+    def create_clinical_exclusion_proj(self, **kwargs):
+        """
+        Return indicator that matching records matched because they lacked the specified criteria
+
+        :param kwargs:
+            - keys {list str}
+            - vals {list any type}
+
+        :return: {null}
+        """
+        return {self.exclusion_key: {self.clinical_proj_dict[k]: v for k, v in zip(kwargs['keys'], kwargs['vals'])}}

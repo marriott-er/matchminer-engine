@@ -103,6 +103,7 @@ mt_gender = 'gender'
 # trial genomic criteria settings
 mt_hugo_symbol = 'hugo_symbol'
 mt_variant_category = 'variant_category'
+mt_variant_class = 'variant_classification'
 mt_protein_change = 'protein_change'
 mt_wc_protein_change = 'wildcard_protein_change'
 mt_exon = 'exon'

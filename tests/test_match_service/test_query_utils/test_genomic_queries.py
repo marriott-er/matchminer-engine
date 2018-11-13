@@ -128,8 +128,7 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
         q2 = self.gq.create_exon_query(gene_name='BRAF', exon=20, include=False)
         res2 = self._findalls(q2)
         self._print(q2)
-        assert res2 == ['TEST-SAMPLE-EXON-WRONG-EXON',
-                        'TEST-SAMPLE-EXON-WRONG-GENE', 'TEST-SAMPLE-NO-MUTATION'], res2
+        assert res2 == ['TEST-SAMPLE-EXON-WRONG-EXON', 'TEST-SAMPLE-EXON-WRONG-GENE', 'TEST-SAMPLE-NO-MUTATION'], res2
 
         # BRAF exon 20 In Frame Insertion (inclusion)
         q3 = self.gq.create_exon_query(gene_name='BRAF', exon=20, variant_class='In_Frame_Ins', include=True)

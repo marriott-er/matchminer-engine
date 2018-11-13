@@ -40,7 +40,37 @@ class TestMatchEngine(TestQueryUtilitiesShared):
         self._print(matchengine.query)
 
     def test_complex_conversion(self):
-        pass
+
+        me = MatchEngine(match_tree=self.complex_match_tree, trial_info={})
+        me.convert_match_tree_to_digraph()
+        print me.match_tree_nx.node[1]
+        print me.match_tree_nx.node[2]
+        print me.match_tree_nx.node[3]
+        print me.match_tree_nx.node[4]
+        print me.match_tree_nx.node[5]
+        print me.match_tree_nx.node[6]
+        print me.match_tree_nx.node[7]
+        print me.match_tree_nx.node[8]
+        print me.match_tree_nx.node[9]
+        print me.match_tree_nx.node[10]
+        print me.match_tree_nx.node[11]
+        print me.match_tree_nx.node[12]
+        print me.match_tree_nx.node[13]
+        print me.match_tree_nx.node[14]
+        print me.match_tree_nx.node[15]
+        print me.match_tree_nx.node[16]
+        print me.match_tree_nx.node[17]
+        print me.match_tree_nx.node[18]
+        print me.match_tree_nx.node[19]
+        print me.match_tree_nx.node[20]
+        print me.match_tree_nx.node[21]
+        print me.match_tree_nx.node[22]
+        print me.match_tree_nx.node[23]
+        print me.match_tree_nx.node[24]
+        print me.match_tree_nx.node[25]
+        print me.match_tree_nx.node[26]
+
+        me.create_mongo_query_from_match_tree()
 
     def test_convert_match_tree_to_digraph(self):
 

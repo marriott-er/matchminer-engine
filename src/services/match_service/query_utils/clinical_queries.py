@@ -24,7 +24,7 @@ class ClinicalQueries(QueryUtils, ClinicalUtils):
         else:
             expanded_diagnoses = self.expand_oncotree_diagnosis(diagnosis=cancer_type)
 
-        return {kn.oncotree_primary_diagnosis_name_col: {self.list_inclusion_dict[include]: expanded_diagnoses}}
+        return {self.diagnosis_key: {self.list_inclusion_dict[include]: expanded_diagnoses}}
 
     def create_age_query(self, age):
         """
@@ -34,14 +34,13 @@ class ClinicalQueries(QueryUtils, ClinicalUtils):
         :return: {dict}
         """
         subquery = self.convert_age_to_birth_date_subquery(age_str=age)
-        return {kn.birth_date_col: subquery}
+        return {self.age_key: subquery}
 
-    @staticmethod
-    def create_gender_query(gender):
+    def create_gender_query(self, gender):
         """
         Create MongoDB query to find records by gender
 
         :param gender: {str} (e.g. "Male", "Female")
         :return: {dict}
         """
-        return {kn.gender_col: gender}
+        return {self.gender_key: gender}
