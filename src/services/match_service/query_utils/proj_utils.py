@@ -35,7 +35,12 @@ class ProjUtils(ClinicalUtils, GenomicUtils):
         :param kwargs
         :return: {null}
         """
-        return self.clinical_inclusion_dict[include](**kwargs)
+        proj = self.proj.copy()
+        subproj = self.clinical_inclusion_dict[include](**kwargs)
+        for k, v in proj.iteritems():
+            subproj[k] = v
+
+        return proj
 
     def create_clinical_inclusion_proj(self, **kwargs):
         """
@@ -46,11 +51,7 @@ class ProjUtils(ClinicalUtils, GenomicUtils):
 
         :return: {null}
         """
-        proj = self.proj.copy()
-        for key in kwargs['keys']:
-            proj[self.clinical_proj_dict[key]] = 1
-
-        return proj
+        return {self.clinical_proj_dict[k]: 1 for k in kwargs['keys']}
 
     def create_clinical_exclusion_proj(self, **kwargs):
         """
@@ -62,4 +63,4 @@ class ProjUtils(ClinicalUtils, GenomicUtils):
 
         :return: {null}
         """
-        return {self.exclusion_key: {self.clinical_proj_dict[k]: v for k, v in zip(kwargs['keys'], kwargs['vals'])}}
+        return {self.clinical_proj_dict[k]: v for k, v in zip(kwargs['keys'], kwargs['vals'])}

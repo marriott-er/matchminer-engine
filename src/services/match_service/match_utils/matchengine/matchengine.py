@@ -13,17 +13,19 @@ from src.services.match_service.query_utils.proj_utils import ProjUtils
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s', )
 
 
-class MatchEngine(ClinicalQueries, GenomicQueries):
+class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
 
     def __init__(self, match_tree, trial_info):
         ClinicalQueries.__init__(self)
         GenomicQueries.__init__(self)
+        ProjUtils.__init__(self)
 
         self.trial_info = trial_info
         self.match_tree = match_tree
         self.match_tree_nx = None
         self.db = get_db()
         self.query = {}
+        self.proj_dict = {True: 'inclusion_reason', False: 'exclusion_reasons'}
 
         self.matched_samples = []
         self.trial_matches = None
@@ -72,13 +74,10 @@ class MatchEngine(ClinicalQueries, GenomicQueries):
             node = self.match_tree_nx.node[node_id]
             children = [self.match_tree_nx.node[n] for n in self.match_tree_nx.successors(node_id)]
 
-            print
-            print node_id
-
             # clinical nodes
             if node['type'] == 'clinical':
-                node['query'] = self._assess_clinical_node(node=node)
-                # todo create clinical projection
+                node['query'], proj, include = self._assess_clinical_node(node=node)
+                node[self.proj_dict[include]] = proj
                 # todo save results as list of dict
 
             # genomic nodes
@@ -110,16 +109,17 @@ class MatchEngine(ClinicalQueries, GenomicQueries):
         Assess the given node and construct the appropriate MongoDB query.
 
         :param node: {digraph node}
-        :param siblings: {list of dict}
-        :return: {dict}
+        :return: {tuple} (MongoDB query, projection, {bool}}
         """
         query = {'$and': []}
+        proj_info = []
         criteria = sorted(node['value'].keys())
 
         if s.mt_diagnosis not in node['value']:
             raise ValueError('%s column must be included for all clinical nodes' % s.mt_diagnosis)
 
         # diagnosis query
+        include = True
         if s.mt_diagnosis in criteria:
 
             cancer_type = node['value'][s.mt_diagnosis]
@@ -127,20 +127,28 @@ class MatchEngine(ClinicalQueries, GenomicQueries):
             subquery = self.create_oncotree_diagnosis_query(cancer_type=me_utils.sanitize_exclusion_vals(cancer_type),
                                                             include=include)
             query['$and'].append(subquery)
+            proj_info.append({s.mt_diagnosis: cancer_type})
 
         # age query
         if s.mt_age in criteria:
             age = node['value'][s.mt_age]
             subquery = self.create_age_query(age=age)
             query['$and'].append(subquery)
+            proj_info.append({s.mt_age: age})
 
         # gender query
         if s.mt_gender in criteria:
             gender = node['value'][s.mt_gender]
             subquery = self.create_gender_query(gender=gender)
             query['$and'].append(subquery)
+            proj_info.append({s.mt_gender: gender})
 
-        return query
+        # clinical projection
+        proj = self.create_clinical_proj(include=include,
+                                         keys=[i.keys() for i in proj_info],
+                                         vals=[i.values() for i in proj_info])
+
+        return query, proj, include
 
     def _assess_genomic_node(self, node):
         """
