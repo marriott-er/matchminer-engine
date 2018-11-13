@@ -20,6 +20,10 @@ class GenomicQueries(QueryUtils, GenomicUtils):
             True: self.create_variant_level_inclusion_query,
             False: self.create_variant_level_exclusion_query
         }
+        self.exon_query_dict = {
+            True: self.create_exon_inclusion_query,
+            False: self.create_exon_exclusion_query
+        }
 
     def create_gene_level_query(self, gene_name, variant_category, include=True):
         """
@@ -104,18 +108,78 @@ class GenomicQueries(QueryUtils, GenomicUtils):
                                                       gene_name=gene_name,
                                                       variant_val=protein_change)
 
-    def create_exon_query(self, gene_name, exon, include=True):
+    def create_exon_query(self, gene_name, exon, variant_class=None, include=True):
         """
         Create MongoDB query to find samples with mutations in the given exon.
 
         :param gene_name: {str}
         :param exon: {int}
+        :param variant_class: {str or null}
         :param include: {bool}
         :return: {dict}
         """
-        return self.variant_level_query_dict[include](variant_category=s.variant_category_exon_val,
-                                                      gene_name=gene_name,
-                                                      variant_val=exon)
+        return self.exon_query_dict[include](gene_name=gene_name,
+                                             exon=exon,
+                                             variant_class=variant_class)
+
+    @staticmethod
+    def create_exon_inclusion_query(gene_name, exon, variant_class=None):
+        """
+        Create MongoDB query that matches the specific variant specified.
+
+        :param gene_name: {str}
+        :param exon: {int}
+        :param variant_class: {str or null}
+        :return: {dict}
+        """
+        query = {
+            kn.mutation_list_col: {
+                '$elemMatch': {
+                    kn.hugo_symbol_col: gene_name,
+                    kn.transcript_exon_col: exon
+                }
+            }
+        }
+        if variant_class is not None:
+            query[kn.mutation_list_col]['$elemMatch'][kn.variant_class_col] = variant_class
+
+        return query
+
+    def create_exon_exclusion_query(self, gene_name, exon, variant_class=None):
+        """
+        Create MongoDB query that matches the specific variant specified.
+
+        :param gene_name: {str}
+        :param exon: {int}
+        :param variant_class: {str or null}
+        :return: {dict}
+        """
+        exclude_query = {
+            kn.mutation_list_col: {
+                '$elemMatch': {
+                    kn.hugo_symbol_col: {'$eq': gene_name},
+                    kn.transcript_exon_col: {'$ne': exon}
+                }
+            }
+        }
+        query = {'$or': [
+            self.create_gene_level_query(gene_name=gene_name,
+                                         variant_category=s.variant_category_exon_val,
+                                         include=False),
+            exclude_query
+        ]}
+        if variant_class is not None:
+            query['$or'].append({
+                kn.mutation_list_col: {
+                    '$elemMatch': {
+                        kn.hugo_symbol_col: {'$eq': gene_name},
+                        kn.transcript_exon_col: {'$eq': exon},
+                        kn.variant_class_col: {'$ne': variant_class}
+                    }
+                }
+            })
+
+        return query
 
     def create_cnv_query(self, gene_name, cnv_call, include=True):
         """
@@ -153,7 +217,7 @@ class GenomicQueries(QueryUtils, GenomicUtils):
         :param signature_val: {str}
         :return: {dict}
         """
-        return {signature_type: {'$eq': signature_val}}
+        return {signature_type: signature_val}
 
     def create_low_coverage_query(self, gene_name, low_coverage_type, include=True):
         """

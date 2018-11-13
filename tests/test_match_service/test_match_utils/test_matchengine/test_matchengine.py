@@ -39,6 +39,9 @@ class TestMatchEngine(TestQueryUtilitiesShared):
         print 'query'
         self._print(matchengine.query)
 
+    def test_complex_conversion(self):
+        pass
+
     def test_convert_match_tree_to_digraph(self):
 
         me = MatchEngine(match_tree=self.simple_mutation_match_tree, trial_info={})

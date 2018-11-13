@@ -109,23 +109,40 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
 
         # set up
         self.db.testSamples.insert_many([
-            self.test_case_braf_exon_19,
+            self.test_case_exon_wrong_exon,
+            self.test_case_exon_wrong_gene,
+            self.test_case_exon_wrong_variant_class,
             self.test_case_braf_exon_20,
-            self.test_case_erbb2_v600e,
-            self.test_case_no_mutation
+            self.test_case_no_mutation,
+            self.test_case_erbb2_v600e
         ])
 
         # BRAF exon 20 (inclusion)
         q1 = self.gq.create_exon_query(gene_name='BRAF', exon=20, include=True)
         res1 = self._findalls(q1)
         self._print(q1)
-        assert res1 == ['TEST-SAMPLE-BRAF-EXON-20', 'TEST-SAMPLE-ERBB2-V600E'], res1
+        assert res1 == ['TEST-SAMPLE-BRAF-EXON-20', 'TEST-SAMPLE-ERBB2-V600E',
+                        'TEST-SAMPLE-EXON-WRONG-VARIANT-CLASS'], res1
 
         # BRAF exon 20 (exclusion)
         q2 = self.gq.create_exon_query(gene_name='BRAF', exon=20, include=False)
         res2 = self._findalls(q2)
         self._print(q2)
-        assert res2 == ['TEST-SAMPLE-BRAF-EXON-19', 'TEST-SAMPLE-NO-MUTATION'], res2
+        assert res2 == ['TEST-SAMPLE-EXON-WRONG-EXON',
+                        'TEST-SAMPLE-EXON-WRONG-GENE', 'TEST-SAMPLE-NO-MUTATION'], res2
+
+        # BRAF exon 20 In Frame Insertion (inclusion)
+        q3 = self.gq.create_exon_query(gene_name='BRAF', exon=20, variant_class='In_Frame_Ins', include=True)
+        res3 = self._findalls(q3)
+        self._print(q3)
+        assert res3 == ['TEST-SAMPLE-BRAF-EXON-20'], res3
+
+        # BRAF exon 20 In Frame Insertion (exclusion)
+        q4 = self.gq.create_exon_query(gene_name='BRAF', exon=20, variant_class='In_Frame_Ins', include=False)
+        res4 = self._findalls(q4)
+        self._print(q4)
+        assert res4 == ['TEST-SAMPLE-ERBB2-V600E', 'TEST-SAMPLE-EXON-WRONG-EXON', 'TEST-SAMPLE-EXON-WRONG-GENE',
+                        'TEST-SAMPLE-EXON-WRONG-VARIANT-CLASS', 'TEST-SAMPLE-NO-MUTATION'], res4
 
         # clean up
         self.db.testSamples.drop()
@@ -233,22 +250,30 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
         self._print(q2)
         assert res2 == []
 
+        # clean up
+        self.db.testSamples.drop()
+
     def test_create_mutational_signature_query(self):
+
+        # set up
+        self.db.testSamples.insert(self.test_case_mmr_deficient)
 
         # MMR Deficient (inclusion)
         q1 = self.gq.create_mutational_signature_query(signature_type=kn.mmr_status_col,
                                                        signature_val=s.mmr_status_deficient_val)
-        res1 = self._findall(q1)
-        assert len(res1) == 1, res1
-        assert res1[0][kn.sample_id_col] == 'TEST-SAMPLE-MMR-DEFICIENT', res1
+        res1 = self._findalls(q1)
+        self._print(q1)
+        assert res1 == ['TEST-SAMPLE-MMR-DEFICIENT'], res1
 
         # MMR Deficient (exclusion)
         q2 = self.gq.create_mutational_signature_query(signature_type=kn.mmr_status_col,
                                                        signature_val=s.mmr_status_proficient_val)
         res2 = self._findall(q2)
+        self._print(q2)
         assert len(res2) == 0, res2
 
-
+        # clean up
+        self.db.testSamples.drop()
 
     def test_create_low_coverage_query(self):
         pass
