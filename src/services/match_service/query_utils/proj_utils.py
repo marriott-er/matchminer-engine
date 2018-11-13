@@ -119,7 +119,9 @@ class ProjUtils(ClinicalUtils, GenomicUtils):
         """
         proj = {}
         for k, v in zip(kwargs['keys'], kwargs['vals']):
-            if k in self.genomic_proj_dict:
+            if v is None:
+                continue
+            elif k in self.genomic_proj_dict:
                 proj[self.genomic_proj_dict[k]] = v
             else:
                 proj[k] = v

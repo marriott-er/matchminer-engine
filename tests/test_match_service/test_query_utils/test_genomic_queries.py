@@ -214,8 +214,8 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
         vc = self.gq.variant_category_dict[s.variant_category_mutation_val]
         p1 = self.p.create_genomic_proj(include=True, query=q1)
         p2 = self.p.create_genomic_proj(include=False,
-                                        keys=[vc, self.p.hugo_symbol_key, self.p.transcript_exon_key],
-                                        vals=[s.variant_category_mutation_val, 'BRAF', 20])
+                                        keys=[vc, self.p.hugo_symbol_key, self.p.transcript_exon_key, self.p.variant_class_key],
+                                        vals=[s.variant_category_mutation_val, 'BRAF', 20, None])
         p3 = self.p.create_genomic_proj(include=True, query=q3)
         p4 = self.p.create_genomic_proj(include=False,
                                         keys=[vc, self.p.hugo_symbol_key, self.p.transcript_exon_key, self.p.variant_class_key],

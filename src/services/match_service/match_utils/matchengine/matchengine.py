@@ -82,8 +82,8 @@ class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
 
             # genomic nodes
             elif node['type'] == 'genomic':
-                node['query'] = self._assess_genomic_node(node=node)
-                # todo create genomic projection
+                node['query'], proj, include = self._assess_genomic_node(node=node)
+                node['genomic_%s' % self.proj_dict[include]] = proj
                 # todo save results as list of dict
 
             # join child queries with "and"
@@ -159,12 +159,14 @@ class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
         """
         criteria = sorted(node['value'].keys())
 
+        vc = None
         include = True
         variant_category = None
         if s.mt_variant_category in node['value']:
             variant_category = me_utils.sanitize_exclusion_vals(node['value'][s.mt_variant_category])
             variant_category = me_utils.normalize_variant_category_val(variant_category)
             include = me_utils.assess_inclusion(node_value=node['value'][s.mt_variant_category])
+            vc = self.variant_category_dict[variant_category]
 
         # gene level query
         if criteria == [s.mt_hugo_symbol, s.mt_variant_category]:
@@ -172,52 +174,104 @@ class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
 
             # Structural Variants
             if variant_category == s.variant_category_sv_val:
-                return self.create_sv_query(gene_name=gene_name, include=include)
+                query = self.create_sv_query(gene_name=gene_name, include=include)
+                proj = self.create_genomic_proj(include=include,
+                                                query=query,
+                                                keys=[vc, self.hugo_symbol_key],
+                                                vals=[variant_category, gene_name])
+                return query, proj, include
 
             # Mutations and CNVs
             else:
-                return self.create_gene_level_query(gene_name=gene_name,
-                                                    variant_category=variant_category,
-                                                    include=include)
+                query = self.create_gene_level_query(gene_name=gene_name,
+                                                     variant_category=variant_category,
+                                                     include=include)
+
+                proj = self.create_genomic_proj(include=include,
+                                                query=query,
+                                                keys=[vc, self.hugo_symbol_key],
+                                                vals=[variant_category, gene_name])
+                return query, proj, include
+
         # variant-level mutation criteria
         elif s.mt_protein_change in criteria:
             gene_name = node['value'][s.mt_hugo_symbol]
             protein_change = node['value'][s.mt_protein_change]
-            return self.create_mutation_query(gene_name=gene_name,
-                                              protein_change=protein_change,
-                                              include=include)
+
+            query = self.create_mutation_query(gene_name=gene_name,
+                                               protein_change=protein_change,
+                                               include=include)
+
+            proj = self.create_genomic_proj(include=include,
+                                            query=query,
+                                            keys=[vc, self.hugo_symbol_key, self.protein_change_key],
+                                            vals=[variant_category, gene_name, protein_change])
+            return query, proj, include
+
         # wildcard-level mutation criteria
         elif s.mt_wc_protein_change in criteria:
             gene_name = node['value'][s.mt_hugo_symbol]
             protein_change = node['value'][s.mt_wc_protein_change]
-            return self.create_wildcard_query(gene_name=gene_name,
-                                              protein_change=protein_change,
-                                              include=include)
+
+            query = self.create_wildcard_query(gene_name=gene_name,
+                                               protein_change=protein_change,
+                                               include=include)
+
+            proj = self.create_genomic_proj(include=include,
+                                            query=query,
+                                            keys=[vc, self.hugo_symbol_key, self.ref_residue_key],
+                                            vals=[variant_category, gene_name, protein_change])
+            return query, proj, include
+
         # exon-level mutation criteria
         elif s.mt_exon in criteria:
             gene_name = node['value'][s.mt_hugo_symbol]
             exon = node['value'][s.mt_exon]
             variant_class = node['value'][s.mt_variant_class] if s.mt_variant_class in node['value'] else None
-            return self.create_exon_query(gene_name=gene_name,
-                                          exon=exon,
-                                          variant_class=variant_class,
-                                          include=include)
+
+            query = self.create_exon_query(gene_name=gene_name,
+                                           exon=exon,
+                                           variant_class=variant_class,
+                                           include=include)
+
+            proj = self.create_genomic_proj(include=include,
+                                            query=query,
+                                            keys=[vc, self.hugo_symbol_key, self.transcript_exon_key, self.variant_class_key],
+                                            vals=[variant_category, gene_name, exon, variant_class])
+            return query, proj, include
+
         # cnv criteria
         elif s.mt_cnv_call in criteria:
             gene_name = node['value'][s.mt_hugo_symbol]
             cnv_call = node['value'][s.mt_cnv_call]
-            return self.create_cnv_query(gene_name=gene_name,
-                                         cnv_call=cnv_call,
-                                         include=include)
+
+            query = self.create_cnv_query(gene_name=gene_name,
+                                          cnv_call=cnv_call,
+                                          include=include)
+
+            proj = self.create_genomic_proj(include=include,
+                                            query=query,
+                                            keys=[vc, self.hugo_symbol_key, self.cnv_call_key],
+                                            vals=[variant_category, gene_name, cnv_call])
+            return query, proj, include
 
         # mutational signature criteria
         elif any([criterion in s.mt_signature_cols for criterion in criteria]):
             for sig in s.mt_signature_cols:
                 sigtype, sigval = me_utils.normalize_signature_vals(signature_type=sig, signature_val=node['value'][sig])
-                return self.create_mutational_signature_query(signature_type=sigtype, signature_val=sigval)
+                query = self.create_mutational_signature_query(signature_type=sigtype, signature_val=sigval)
+                proj = self.create_genomic_proj(include=True, query=query)
+                return query, proj, True
 
         # wildtype criteria
-        # todo build out wildtype criteria logic
+        elif s.mt_wildtype and node['value'][s.mt_wildtype] is True:
+            gene_name = node['value'][s.mt_hugo_symbol]
+            query = self.create_gene_level_query(gene_name=gene_name,
+                                                 variant_category=s.variant_category_wt_val,
+                                                 include=True)
+
+            proj = self.create_genomic_proj(include=True, query=query)
+            return query, proj, True
 
         # low-coverage criteria
         # todo build out low coverage criteria logic
