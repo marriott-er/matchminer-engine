@@ -4,6 +4,8 @@ from tests.test_match_service import TestQueryUtilitiesShared
 from src.services.match_service.match_utils.trial_utils import TrialUtils
 from src.services.match_service.match_utils.matchengine.matchengine import MatchEngine
 
+import datetime as dt
+
 
 class TestMatchEngine(TestQueryUtilitiesShared):
 
@@ -12,9 +14,9 @@ class TestMatchEngine(TestQueryUtilitiesShared):
 
         self.db.testSamples.insert_many(self.test_cases)
 
-    # def tearDown(self):
-    #     self.db.testSamples.drop()
-    #     self.db[s.sample_collection_name].drop()
+    def tearDown(self):
+        self.db.testSamples.drop()
+        self.db[s.sample_collection_name].drop()
 
     @staticmethod
     def _set_up_matchengine(trial):
@@ -34,43 +36,31 @@ class TestMatchEngine(TestQueryUtilitiesShared):
         self._print(matchengine.match_tree)
 
         matchengine.convert_match_tree_to_digraph()
-        matchengine.create_mongo_query_from_match_tree()
+        matchengine.traverse_match_tree()
         print
         print 'query'
         self._print(matchengine.query)
 
     def test_complex_conversion(self):
 
+        # set up matching records
+        doc = {
+            kn.sample_id_col: 'MATCHES-COMPLEX-TREE-01',
+            kn.mrn_col: '01',
+            kn.vital_status_col: 'alive',
+            kn.oncotree_primary_diagnosis_name_col: 'Lung Adenocarcinoma',
+            kn.birth_date_col: dt.datetime(year=1900, day=1, month=1),
+            kn.mutation_list_col: [
+                {kn.hugo_symbol_col: 'EGFR', kn.transcript_exon_col: 19, kn.variant_class_col: 'In_Frame_Del'}
+            ]
+        }
+        self.db[s.sample_collection_name].insert_many([doc])
+
+        # find matches
         me = MatchEngine(match_tree=self.complex_match_tree, trial_info={})
         me.convert_match_tree_to_digraph()
-        print me.match_tree_nx.node[1]
-        print me.match_tree_nx.node[2]
-        print me.match_tree_nx.node[3]
-        print me.match_tree_nx.node[4]
-        print me.match_tree_nx.node[5]
-        print me.match_tree_nx.node[6]
-        print me.match_tree_nx.node[7]
-        print me.match_tree_nx.node[8]
-        print me.match_tree_nx.node[9]
-        print me.match_tree_nx.node[10]
-        print me.match_tree_nx.node[11]
-        print me.match_tree_nx.node[12]
-        print me.match_tree_nx.node[13]
-        print me.match_tree_nx.node[14]
-        print me.match_tree_nx.node[15]
-        print me.match_tree_nx.node[16]
-        print me.match_tree_nx.node[17]
-        print me.match_tree_nx.node[18]
-        print me.match_tree_nx.node[19]
-        print me.match_tree_nx.node[20]
-        print me.match_tree_nx.node[21]
-        print me.match_tree_nx.node[22]
-        print me.match_tree_nx.node[23]
-        print me.match_tree_nx.node[24]
-        print me.match_tree_nx.node[25]
-        print me.match_tree_nx.node[26]
-
-        me.create_mongo_query_from_match_tree()
+        me.traverse_match_tree()
+        # self._print(me.matched_results)
 
     def test_convert_match_tree_to_digraph(self):
 
@@ -81,60 +71,61 @@ class TestMatchEngine(TestQueryUtilitiesShared):
         assert me.match_tree_nx.node[2] == {'type': 'genomic', 'value': self.simple_mutation_match_tree['and'][0]['genomic']}
         assert me.match_tree_nx.node[3] == {'type': 'clinical', 'value': self.simple_mutation_match_tree['and'][1]['clinical']}
 
-    def test_create_mongo_query_from_match_tree(self):
+    def test_intersect_results(self):
 
-        # oncotree diagnosis
-        me = MatchEngine(match_tree=self.simple_mutation_match_tree, trial_info={})
-        me.convert_match_tree_to_digraph()
-        me.create_mongo_query_from_match_tree()
-        res1 = self._findalls(me.query)
-        self._print(me.query)
-        assert len(res1) == 1, res1
-        assert res1 == ['TEST-SAMPLE-BRAF-V600E'], res1
-        assert False
+        children = [
+            {
+                'type': 'genomic',
+                'genomic_exclusion_reasons': {
+                    'hugoSymbol': 'BRAF',
+                    'proteinChange': 'p.V600E',
+                    'mutations': 'MUTATION'
+                },
+                'matched_results': [
+                    {
+                        'mrn': '01',
+                        'sampleId': 'MATCHES-COMPLEX-TREE-01',
+                        'vitalStatus': 'alive'
+                    }
+                ]
+            },
+            {
+                'type': 'genomic',
+                'genomic_exclusion_reasons': {
+                    'hugoSymbol': 'BRAF',
+                    'proteinChange': 'p.V600D',
+                    'mutations': 'MUTATION'
+                },
+                'matched_results': [
+                    {
+                        'mrn': '01',
+                        'sampleId': 'MATCHES-COMPLEX-TREE-01',
+                        'vitalStatus': 'alive'
+                    }
+                ]
+            }
+        ]
+        node = {'type': 'and'}
 
-        # all solid tumors expansion
-        me = MatchEngine(match_tree=self.all_solid_tumor_match_tree, trial_info={})
-        me.convert_match_tree_to_digraph()
-        me.create_mongo_query_from_match_tree()
-        res2 = self._findalls(me.query)
-        # self._print(me.query)
-        assert len(res2) == 1, res2
-        assert res2 == ['TEST-SAMPLE-BRAF-V600E'], res2
-
-        # gender
-        me = MatchEngine(match_tree=self.all_male_match_tree, trial_info={})
-        me.convert_match_tree_to_digraph()
-        me.create_mongo_query_from_match_tree()
-        res3 = self._findalls(me.query)
-        # self._print(me.query)
-        assert len(res3) == 1, res3
-        assert res3 == ['TEST-SAMPLE-BRAF-V600E'], res3
-
-        # gender and all liquid tumor expansion
-        me = MatchEngine(match_tree=self.all_female_match_tree, trial_info={})
-        me.convert_match_tree_to_digraph()
-        me.create_mongo_query_from_match_tree()
-        res4 = self._findalls(me.query)
-        # self._print(me.query)
-        assert len(res4) == 1, res4
-        assert res4 == ['TEST-SAMPLE-BRAF-NON-V600E'], res4
-
-        # pediatric cnv
-        me = MatchEngine(match_tree=self.pediatric_cnv_match_tree, trial_info={})
-        me.convert_match_tree_to_digraph()
-        me.create_mongo_query_from_match_tree()
-        res5 = self._findalls(me.query)
-        # self._print(me.query)
-        assert len(res5) == 1, res5
-        assert res5 == ['TEST-SAMPLE-BRAF-CNV-HETERO-DEL'], res5
-
-    def test_search_for_matching_records(self):
-
-        self.db[s.sample_collection_name].insert_many(self.test_cases)
-        me = MatchEngine(match_tree=self.pediatric_cnv_match_tree, trial_info={})
-        me.convert_match_tree_to_digraph()
-        me.create_mongo_query_from_match_tree()
-        me.search_for_matching_records()
-        # self._print(me.query)
-        assert me.matched_samples == [{kn.sample_id_col: 'TEST-SAMPLE-BRAF-CNV-HETERO-DEL'}]
+        me = MatchEngine(match_tree=self.complex_match_tree, trial_info={})
+        node = me._intersect_results(node=node, children=children)
+        self._print(node)
+        assert node['matched_results'] == [{
+            kn.mrn_col: '01',
+            kn.sample_id_col: 'MATCHES-COMPLEX-TREE-01',
+            kn.vital_status_col: 'alive'
+        }]
+        assert node['genomic_exclusion_reasons'] == [
+            {
+                kn.hugo_symbol_col: 'BRAF',
+                kn.protein_change_col: 'p.V600E',
+                kn.mutation_list_col: 'MUTATION'
+            },
+            {
+                kn.hugo_symbol_col: 'BRAF',
+                kn.protein_change_col: 'p.V600D',
+                kn.mutation_list_col: 'MUTATION'
+            }
+        ]
+        assert node['clinical_exclusion_reasons'] == []
+        assert node['type'] == 'and'

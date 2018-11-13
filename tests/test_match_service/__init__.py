@@ -1127,7 +1127,7 @@ class TestQueryUtilitiesShared(unittest.TestCase):
                             'genomic': {
                                 'exon': 14,
                                 'hugo_symbol': 'MET',
-                                'variant_category': 'Mutation',
+                                'variant_category': '!Mutation',
                                 'variant_classification': 'In_Frame_Del'
                             }
                         },

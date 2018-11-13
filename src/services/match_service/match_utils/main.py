@@ -23,11 +23,8 @@ def main():
             # create match tree
             matchengine.convert_match_tree_to_digraph()
 
-            # crate mongo query from match tree
-            matchengine.create_mongo_query_from_match_tree()
-
-            # find matching records
-            matchengine.search_for_matching_records()
+            # crate mongo query from match tree and find matching records
+            matchengine.traverse_match_tree()
 
             # create trial matches records
             trial_match_utils = TrialMatchUtils(matched_samples=matchengine.matched_samples)

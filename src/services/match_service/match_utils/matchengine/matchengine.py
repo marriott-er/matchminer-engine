@@ -24,10 +24,9 @@ class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
         self.match_tree = match_tree
         self.match_tree_nx = None
         self.db = get_db()
-        self.query = {}
-        self.proj_dict = {True: 'inclusion_reason', False: 'exclusion_reasons'}
+        self.proj_dict = {True: 'inclusion_reasons', False: 'exclusion_reasons'}
 
-        self.matched_samples = []
+        self.matched_results = []
         self.trial_matches = None
 
     def convert_match_tree_to_digraph(self):
@@ -61,7 +60,7 @@ class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
 
         self.match_tree_nx.remove_node(0)
 
-    def create_mongo_query_from_match_tree(self):
+    def traverse_match_tree(self):
         """
         Construct a MongoDB query that represents the match tree
 
@@ -74,35 +73,87 @@ class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
             node = self.match_tree_nx.node[node_id]
             children = [self.match_tree_nx.node[n] for n in self.match_tree_nx.successors(node_id)]
 
+            print
+            print node_id
+            print node
+
             # clinical nodes
             if node['type'] == 'clinical':
                 node['query'], proj, include = self._assess_clinical_node(node=node)
                 node['clinical_%s' % self.proj_dict[include]] = proj
-                # todo save results as list of dict
+                node['matched_results'] = self.search_for_matching_records(node=node)
+                import json
+                print json.dumps(node, indent=4, default=str)
+                print
 
             # genomic nodes
             elif node['type'] == 'genomic':
                 node['query'], proj, include = self._assess_genomic_node(node=node)
                 node['genomic_%s' % self.proj_dict[include]] = proj
+                node['matched_results'] = self.search_for_matching_records(node=node)
+                import json
+                print json.dumps(node, indent=4, default=str)
+                print
                 # todo save results as list of dict
 
             # join child queries with "and"
             elif node['type'] == 'and':
-                node['query'] = {'$and': []}
+
+                node['matched_results'] = []
+                matched_sample_ids = set(i[kn.sample_id_col] for i in children[0]['matched_results'])
                 for child in children:
-                    node['query']['$and'].append(child['query'])
-                    # todo use set.intersection_update to update matches
+
+                    # intersect results
+                    child_matched_sample_ids = set(i[kn.sample_id_col] for i in child['matched_results'])
+                    matched_sample_ids.intersection_update(child_matched_sample_ids)
+                    combined_matched_results = node['matched_results'] + child['matched_results']
+                    node['matched_results'] = [i for i in combined_matched_results
+                                               if i[kn.sample_id_col] in matched_sample_ids]
+
+                    if 'genomic_exclusion_reasons' in child:
+                        print child['genomic_exclusion_reasons']
+
+                    # save exclusion reasons
+                    for result in node['matched_results']:
+                        for er in ['clinical_exclusion_reasons', 'genomic_exclusion_reasons']:
+                            if er not in result:
+                                result[er] = []
+
+                            if er in child and len(child[er]) > 0 and child[er] not in result[er]:
+                                for er_ in child[er]:
+                                    if er_ not in result[er]:
+                                        result[er].append(er_)
+
 
             elif node['type'] == 'or':
-                node['query'] = {'$or': []}
+
+                node['matched_results'] = []
+                matched_sample_ids = set(i[kn.sample_id_col] for i in children[0]['matched_results'])
                 for child in children:
-                    node['query']['$or'].append(child['query'])
-                    # todo use set.update to update matches
+
+                    # intersect results
+                    child_matched_sample_ids = set(i[kn.sample_id_col] for i in child['matched_results'])
+                    matched_sample_ids.update(child_matched_sample_ids)
+                    combined_matched_results = node['matched_results'] + child['matched_results']
+                    node['matched_results'] = [i for i in combined_matched_results
+                                               if i[kn.sample_id_col] in matched_sample_ids]
+
+                    # save exclusion reasons
+                    for result in node['matched_results']:
+                        for er in ['clinical_exclusion_reasons', 'genomic_exclusion_reasons']:
+                            if er not in result:
+                                result[er] = []
+
+                            if er in child and len(child[er]) > 0 and child[er] not in result[er]:
+                                for er_ in child[er]:
+                                    if er_ not in result[er]:
+                                        result[er].append(er_)
+
 
             else:
                 raise ValueError('match tree node must be of type "clinical", "genomic", "and", or "or')
 
-        self.query = self.match_tree_nx.node[1]['query']
+        self.matched_results = node['matched_results']
 
     def _assess_clinical_node(self, node):
         """
@@ -145,8 +196,8 @@ class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
 
         # clinical projection
         proj = self.create_clinical_proj(include=include,
-                                         keys=[i.keys() for i in proj_info],
-                                         vals=[i.values() for i in proj_info])
+                                         keys=[i.keys()[0] for i in proj_info],
+                                         vals=[i.values()[0] for i in proj_info])
 
         return query, proj, include
 
@@ -264,7 +315,7 @@ class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
                 return query, proj, True
 
         # wildtype criteria
-        elif s.mt_wildtype and node['value'][s.mt_wildtype] is True:
+        elif s.mt_wildtype in node['value'] and node['value'][s.mt_wildtype] is True:
             gene_name = node['value'][s.mt_hugo_symbol]
             query = self.create_gene_level_query(gene_name=gene_name,
                                                  variant_category=s.variant_category_wt_val,
@@ -276,14 +327,49 @@ class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
         # low-coverage criteria
         # todo build out low coverage criteria logic
 
-    def search_for_matching_records(self):
+    def _intersect_results(self, node, children):
+        """
+        Intersect match results by sample Id.
+
+        :param node: {digraph node}
+        :return: {digraph node}
+        """
+        node['matched_results'] = []
+        node['clinical_exclusion_reasons'] = []
+        node['genomic_exclusion_reasons'] = []
+        intersection_dict = {'and': set.intersection_update, 'or': set.update}
+        matched_sample_ids = set(i[kn.sample_id_col] for i in children[0]['matched_results'])
+
+        for child in children:
+            child_matched_sample_ids = set(i[kn.sample_id_col] for i in child['matched_results'])
+            intersection_dict[node['type']](matched_sample_ids, child_matched_sample_ids)
+            node['matched_results'].extend([i for i in child['matched_results']
+                                            if i[kn.sample_id_col] in matched_sample_ids
+                                            and i not in node['matched_results']])
+
+            # add exclusion reasons
+            for er in ['genomic_exclusion_reasons', 'clinical_exclusion_reasons']:
+                if er in child:
+                    if child[er] not in node[er]:
+                        node[er].append(child[er])
+
+        return node
+
+    def search_for_matching_records(self, node):
         """
         Search for any sample records that match the constructed query
 
+        :param node: {digraph node}
         :return: {null}
         """
-        self.matched_samples = list(self.db[s.sample_collection_name].find(self.query, self.proj))
-        logging.info('%d samples matched' % len(self.matched_samples))
+        if 'genomic_inclusion_reasons' in node:
+            proj = node['genomic_inclusion_reasons']
+        elif 'clinical_inclusion_reasons' in node:
+            proj = node['clinical_inclusion_reasons']
+        else:
+            proj = self.proj.copy()
+
+        return list(self.db[s.sample_collection_name].find(node['query'], proj))
 
     def create_trial_match_records(self):
         """
@@ -303,7 +389,6 @@ class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
                 kn.tm_sort_order_col: 0,
                 kn.tm_match_reasons_col: []
             }
-
 
     def sort_trial_matches(self):
         """
