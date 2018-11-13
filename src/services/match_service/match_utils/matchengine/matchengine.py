@@ -77,7 +77,7 @@ class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
             # clinical nodes
             if node['type'] == 'clinical':
                 node['query'], proj, include = self._assess_clinical_node(node=node)
-                node[self.proj_dict[include]] = proj
+                node['clinical_%s' % self.proj_dict[include]] = proj
                 # todo save results as list of dict
 
             # genomic nodes

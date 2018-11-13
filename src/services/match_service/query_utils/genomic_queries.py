@@ -25,6 +25,21 @@ class GenomicQueries(QueryUtils, GenomicUtils):
             False: self.create_exon_exclusion_query
         }
 
+        self.variant_category_dict = {
+            s.variant_category_mutation_val: kn.mutation_list_col,
+            s.variant_category_wildcard_mutation_val: kn.mutation_list_col,
+            s.variant_category_exon_val: kn.mutation_list_col,
+            s.variant_category_cnv_val: kn.cnv_list_col,
+            s.variant_category_sv_val: kn.sv_list_col,
+            s.variant_category_wt_val: kn.wt_genes_col
+        }
+        self.variant_type_col_dict = {
+            s.variant_category_mutation_val: self.protein_change_key,
+            s.variant_category_wildcard_mutation_val: self.ref_residue_key,
+            s.variant_category_exon_val: self.transcript_exon_key,
+            s.variant_category_cnv_val: self.cnv_call_key
+        }
+
     def create_gene_level_query(self, gene_name, variant_category, include=True):
         """
         Create MongoDB query to find records by gene name and variant category
@@ -35,7 +50,7 @@ class GenomicQueries(QueryUtils, GenomicUtils):
         :return: {dict}
         """
         return self.inclusion_dict[include](variant_category=self.variant_category_dict[variant_category],
-                                            key=kn.hugo_symbol_col,
+                                            key=self.hugo_symbol_key,
                                             val=gene_name)
 
     def create_variant_level_inclusion_query(self, variant_category, gene_name, variant_val):
@@ -50,7 +65,7 @@ class GenomicQueries(QueryUtils, GenomicUtils):
         return {
             self.variant_category_dict[variant_category]: {
                 '$elemMatch': {
-                    kn.hugo_symbol_col: gene_name,
+                    self.hugo_symbol_key: gene_name,
                     self.variant_type_col_dict[variant_category]: variant_val
                 }
             }
@@ -68,7 +83,7 @@ class GenomicQueries(QueryUtils, GenomicUtils):
         exclude_query = {
             self.variant_category_dict[variant_category]: {
                 '$elemMatch': {
-                    kn.hugo_symbol_col: {'$eq': gene_name},
+                    self.hugo_symbol_key: {'$eq': gene_name},
                     self.variant_type_col_dict[variant_category]: {'$ne': variant_val}
                 }
             }
@@ -122,8 +137,7 @@ class GenomicQueries(QueryUtils, GenomicUtils):
                                              exon=exon,
                                              variant_class=variant_class)
 
-    @staticmethod
-    def create_exon_inclusion_query(gene_name, exon, variant_class=None):
+    def create_exon_inclusion_query(self, gene_name, exon, variant_class=None):
         """
         Create MongoDB query that matches the specific variant specified.
 
@@ -135,13 +149,13 @@ class GenomicQueries(QueryUtils, GenomicUtils):
         query = {
             kn.mutation_list_col: {
                 '$elemMatch': {
-                    kn.hugo_symbol_col: gene_name,
-                    kn.transcript_exon_col: exon
+                    self.hugo_symbol_key: gene_name,
+                    self.transcript_exon_key: exon
                 }
             }
         }
         if variant_class is not None:
-            query[kn.mutation_list_col]['$elemMatch'][kn.variant_class_col] = variant_class
+            query[kn.mutation_list_col]['$elemMatch'][self.variant_class_key] = variant_class
 
         return query
 
@@ -157,8 +171,8 @@ class GenomicQueries(QueryUtils, GenomicUtils):
         exclude_query = {
             kn.mutation_list_col: {
                 '$elemMatch': {
-                    kn.hugo_symbol_col: {'$eq': gene_name},
-                    kn.transcript_exon_col: {'$ne': exon}
+                    self.hugo_symbol_key: {'$eq': gene_name},
+                    self.transcript_exon_key: {'$ne': exon}
                 }
             }
         }
@@ -172,9 +186,9 @@ class GenomicQueries(QueryUtils, GenomicUtils):
             query['$or'].append({
                 kn.mutation_list_col: {
                     '$elemMatch': {
-                        kn.hugo_symbol_col: {'$eq': gene_name},
-                        kn.transcript_exon_col: {'$eq': exon},
-                        kn.variant_class_col: {'$ne': variant_class}
+                        self.hugo_symbol_key: {'$eq': gene_name},
+                        self.transcript_exon_key: {'$eq': exon},
+                        self.variant_class_key: {'$ne': variant_class}
                     }
                 }
             })
@@ -205,7 +219,7 @@ class GenomicQueries(QueryUtils, GenomicUtils):
         """
         gene_name_regex = self.regex_compile_gene_name(gene_name)
         return self.inclusion_dict[include](variant_category=kn.sv_list_col,
-                                            key=kn.sv_comment_col,
+                                            key=self.sv_comment_key,
                                             val=gene_name_regex)
 
     @staticmethod

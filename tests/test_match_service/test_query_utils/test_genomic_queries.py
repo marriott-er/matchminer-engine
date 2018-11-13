@@ -2,6 +2,7 @@ from src.utilities import settings as s
 from src.data_store import key_names as kn
 from tests.test_match_service import TestQueryUtilitiesShared
 from src.services.match_service.query_utils.genomic_queries import GenomicQueries
+from src.services.match_service.query_utils.proj_utils import ProjUtils
 
 
 class TestGenomicQueries(TestQueryUtilitiesShared):
@@ -9,6 +10,7 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
         super(TestGenomicQueries, self).setUp()
 
         self.gq = GenomicQueries()
+        self.p = ProjUtils()
 
     def tearDown(self):
         self.db.testSamples.drop()
@@ -34,9 +36,24 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
         self._print(q1)
         self._print(eq1)
 
+        # projections
+        vc = self.gq.variant_category_dict[s.variant_category_mutation_val]
+        p1 = self.p.create_genomic_proj(include=True, query=q1)
+        p2 = self.p.create_genomic_proj(include=False,
+                                        keys=[vc, self.p.hugo_symbol_key],
+                                        vals=[s.variant_category_mutation_val, 'BRAF'])
+
         # assertions
         assert res1 == ['TEST-SAMPLE-BRAF-NON-V600E', 'TEST-SAMPLE-BRAF-V600E'], res1
         assert eres1 == ['TEST-SAMPLE-TP53-R278W'], eres1
+        assert p1 == {
+            '_id': 0, kn.sample_id_col: 1, kn.mrn_col: 1, kn.vital_status_col: 1,
+            kn.mutation_list_col: q1[kn.mutation_list_col]
+        }, p1
+        assert p2 == {
+            self.p.hugo_symbol_key: 'BRAF',
+            kn.mutation_list_col: s.variant_category_mutation_val
+        }, p2
 
         # clean up
         self.db.testSamples.drop()
@@ -75,6 +92,36 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
         res4 = self._findalls(q4)
         assert res4 == ['TEST-SAMPLE-BRAF-NON-V600E', 'TEST-SAMPLE-BRAF-V600E', 'TEST-SAMPLE-ERBB2-V600E',
                         'TEST-SAMPLE-NO-MUTATION', 'TEST-SAMPLE-TP53-R278W'], res4
+
+        # projections
+        vc = self.gq.variant_category_dict[s.variant_category_mutation_val]
+        p1 = self.p.create_genomic_proj(include=True, query=q1)
+        p2 = self.p.create_genomic_proj(include=False,
+                                        keys=[vc, self.p.hugo_symbol_key, self.p.protein_change_key],
+                                        vals=[s.variant_category_mutation_val, 'BRAF', 'p.V600E'])
+        p3 = self.p.create_genomic_proj(include=True, query=q3)
+        p4 = self.p.create_genomic_proj(include=False,
+                                        keys=[vc, self.p.hugo_symbol_key, self.p.protein_change_key],
+                                        vals=[s.variant_category_mutation_val, 'BRAF', 'p.V600D'])
+
+        assert p1 == {
+            '_id': 0, kn.sample_id_col: 1, kn.mrn_col: 1, kn.vital_status_col: 1,
+            kn.mutation_list_col: q1[kn.mutation_list_col]
+        }, p1
+        assert p2 == {
+            self.p.hugo_symbol_key: 'BRAF',
+            self.p.protein_change_key: 'p.V600E',
+            kn.mutation_list_col: s.variant_category_mutation_val
+        }, p2
+        assert p3 == {
+            '_id': 0, kn.sample_id_col: 1, kn.mrn_col: 1, kn.vital_status_col: 1,
+            kn.mutation_list_col: q3[kn.mutation_list_col]
+        }, p3
+        assert p4 == {
+            self.p.hugo_symbol_key: 'BRAF',
+            self.p.protein_change_key: 'p.V600D',
+            kn.mutation_list_col: s.variant_category_mutation_val
+        }, p4
 
         # clean up
         self.db.testSamples.drop()
