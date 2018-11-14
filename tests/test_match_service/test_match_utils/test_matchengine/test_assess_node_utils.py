@@ -277,10 +277,82 @@ class TestAssessNodeUtils(TestQueryUtilitiesShared):
         assert node['variant_level'] == 'exon'
 
     def test_parse_cnv_call(self):
-        pass
+
+        # inclusive
+        node = {'value': {
+            s.mt_variant_category: s.mt_cnv_val,
+            s.mt_hugo_symbol: 'BRAF',
+            s.mt_cnv_call: s.mt_hetero_del_val}
+        }
+        self.a._parse_cnv_call(node=node)
+        assert 'query' in node
+        assert 'genomic_inclusion_reasons' in node
+        assert node['genomic_inclusion_reasons'][kn.cnv_list_col] == node['query'][kn.cnv_list_col]
+        assert node['variant_level'] == 'variant'
+
+        # exclusive sv
+        node = {'value': {
+            s.mt_variant_category: '!%s' % s.mt_cnv_val,
+            s.mt_hugo_symbol: 'BRAF',
+            s.mt_cnv_call: s.mt_hetero_del_val}
+        }
+        self.a._parse_cnv_call(node=node)
+        assert 'query' in node
+        assert 'genomic_exclusion_reasons' in node
+        assert node['genomic_exclusion_reasons'] == {
+            kn.variant_category_col: s.variant_category_cnv_val,
+            kn.hugo_symbol_col: 'BRAF',
+            kn.cnv_call_col: s.cnv_call_hetero_del
+        }, node['genomic_exclusion_reasons']
+        assert node['variant_level'] == 'variant'
 
     def test_parse_signature(self):
-        pass
+
+        # MMR Status
+        node = {'value': {s.mt_mmr_status: s.mt_mmr_deficient_val}}
+        self.a._parse_signature(node=node, criteria=[s.mt_mmr_status])
+        assert node['query'] == {kn.mmr_status_col: s.mmr_status_deficient_val}
+        assert node['genomic_inclusion_reasons'][kn.mmr_status_col] == s.mmr_status_deficient_val
+
+        # MS Status
+        node = {'value': {s.mt_ms_status: s.mt_msi_high_val}}
+        self.a._parse_signature(node=node, criteria=[s.mt_ms_status])
+        assert node['query'] == {kn.ms_status_col: s.ms_status_msih_val}
+        assert node['genomic_inclusion_reasons'][kn.ms_status_col] == s.ms_status_msih_val
+
+        # Tobacco Status
+        node = {'value': {s.mt_tobacco_status: 'Yes'}}
+        self.a._parse_signature(node=node, criteria=[s.mt_tobacco_status])
+        assert node['query'] == {kn.tobacco_status_col: 'Yes'}
+        assert node['genomic_inclusion_reasons'][kn.tobacco_status_col] == 'Yes'
+
+        # TMZ Status
+        node = {'value': {s.mt_tmz_status: 'Yes'}}
+        self.a._parse_signature(node=node, criteria=[s.mt_tmz_status])
+        assert node['query'] == {kn.tmz_status_col: 'Yes'}
+        assert node['genomic_inclusion_reasons'][kn.tmz_status_col] == 'Yes'
+
+        # polE Status
+        node = {'value': {s.mt_pole_status: 'Yes'}}
+        self.a._parse_signature(node=node, criteria=[s.mt_pole_status])
+        assert node['query'] == {kn.pole_status_col: 'Yes'}
+        assert node['genomic_inclusion_reasons'][kn.pole_status_col] == 'Yes'
+
+        # APOBEC Status
+        node = {'value': {s.mt_apobec_status: 'Yes'}}
+        self.a._parse_signature(node=node, criteria=[s.mt_apobec_status])
+        assert node['query'] == {kn.apobec_status_col: 'Yes'}
+        assert node['genomic_inclusion_reasons'][kn.apobec_status_col] == 'Yes'
+
+        # UVA Status
+        node = {'value': {s.mt_uva_status: 'Yes'}}
+        self.a._parse_signature(node=node, criteria=[s.mt_uva_status])
+        assert node['query'] == {kn.uva_status_col: 'Yes'}
+        assert node['genomic_inclusion_reasons'][kn.uva_status_col] == 'Yes'
 
     def test_parse_wildtype(self):
-        pass
+
+        node = {'value': {s.mt_hugo_symbol: 'BRAF', s.mt_wildtype: True}}
+        self.a._parse_wildtype(node=node)
+        assert node['query'] == {kn.wt_genes_col: {'$elemMatch': {kn.hugo_symbol_col: 'BRAF'}}}
+        assert node['genomic_inclusion_reasons'][kn.wt_genes_col] == node['query'][kn.wt_genes_col]

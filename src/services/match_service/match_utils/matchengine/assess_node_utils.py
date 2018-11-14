@@ -282,7 +282,6 @@ class AssessNodeUtils(ClinicalQueries, GenomicQueries, ProjUtils):
         :param node: {digraph node}
         :return: {digraph node}
         """
-        # todo unit test
         # parse node
         node['variant_level'] = 'exon'
         exon = node['value'][s.mt_exon]
@@ -317,12 +316,11 @@ class AssessNodeUtils(ClinicalQueries, GenomicQueries, ProjUtils):
         :param node: {digraph node}
         :return: {digraph node}
         """
-        # todo unit test
         # parse node
         node['variant_level'] = 'variant'
-        cnv_call = node['value'][s.mt_cnv_call]
         gene_name = node['value'][s.mt_hugo_symbol]
         variant_category, include = self._parse_variant_category(node=node)
+        cnv_call = me_utils.normalize_cnv_call_val(node['value'][s.mt_cnv_call])
 
         # query
         node['query'] = self.create_cnv_query(gene_name=gene_name,
@@ -350,7 +348,6 @@ class AssessNodeUtils(ClinicalQueries, GenomicQueries, ProjUtils):
         :param criteria: {list of str}
         :return: {digraph node}
         """
-        # todo unit test
         for sig in s.mt_signature_cols:
             if sig in criteria:
                 sigtype, sigval = me_utils.normalize_signature_vals(signature_type=sig, signature_val=node['value'][sig])
