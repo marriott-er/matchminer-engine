@@ -73,82 +73,19 @@ class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
             node = self.match_tree_nx.node[node_id]
             children = [self.match_tree_nx.node[n] for n in self.match_tree_nx.successors(node_id)]
 
-            print
-            print node_id
-            print node
-
             # clinical nodes
             if node['type'] == 'clinical':
-                node['query'], proj, include = self._assess_clinical_node(node=node)
-                node['clinical_%s' % self.proj_dict[include]] = proj
-                node['matched_results'] = self.search_for_matching_records(node=node)
-                import json
-                print json.dumps(node, indent=4, default=str)
-                print
+                node = self._assess_clinical_node(node=node)
+                node['matched_results'] = self._search_for_matching_records(node=node)
 
             # genomic nodes
             elif node['type'] == 'genomic':
-                node['query'], proj, include = self._assess_genomic_node(node=node)
-                node['genomic_%s' % self.proj_dict[include]] = proj
-                node['matched_results'] = self.search_for_matching_records(node=node)
-                import json
-                print json.dumps(node, indent=4, default=str)
-                print
-                # todo save results as list of dict
+                node = self._assess_genomic_node(node=node)
+                node['matched_results'] = self._search_for_matching_records(node=node)
 
             # join child queries with "and"
-            elif node['type'] == 'and':
-
-                node['matched_results'] = []
-                matched_sample_ids = set(i[kn.sample_id_col] for i in children[0]['matched_results'])
-                for child in children:
-
-                    # intersect results
-                    child_matched_sample_ids = set(i[kn.sample_id_col] for i in child['matched_results'])
-                    matched_sample_ids.intersection_update(child_matched_sample_ids)
-                    combined_matched_results = node['matched_results'] + child['matched_results']
-                    node['matched_results'] = [i for i in combined_matched_results
-                                               if i[kn.sample_id_col] in matched_sample_ids]
-
-                    if 'genomic_exclusion_reasons' in child:
-                        print child['genomic_exclusion_reasons']
-
-                    # save exclusion reasons
-                    for result in node['matched_results']:
-                        for er in ['clinical_exclusion_reasons', 'genomic_exclusion_reasons']:
-                            if er not in result:
-                                result[er] = []
-
-                            if er in child and len(child[er]) > 0 and child[er] not in result[er]:
-                                for er_ in child[er]:
-                                    if er_ not in result[er]:
-                                        result[er].append(er_)
-
-
-            elif node['type'] == 'or':
-
-                node['matched_results'] = []
-                matched_sample_ids = set(i[kn.sample_id_col] for i in children[0]['matched_results'])
-                for child in children:
-
-                    # intersect results
-                    child_matched_sample_ids = set(i[kn.sample_id_col] for i in child['matched_results'])
-                    matched_sample_ids.update(child_matched_sample_ids)
-                    combined_matched_results = node['matched_results'] + child['matched_results']
-                    node['matched_results'] = [i for i in combined_matched_results
-                                               if i[kn.sample_id_col] in matched_sample_ids]
-
-                    # save exclusion reasons
-                    for result in node['matched_results']:
-                        for er in ['clinical_exclusion_reasons', 'genomic_exclusion_reasons']:
-                            if er not in result:
-                                result[er] = []
-
-                            if er in child and len(child[er]) > 0 and child[er] not in result[er]:
-                                for er_ in child[er]:
-                                    if er_ not in result[er]:
-                                        result[er].append(er_)
-
+            elif node['type'] == 'and' or node['type'] == 'or':
+                node = self._intersect_results(node=node, children=children)
 
             else:
                 raise ValueError('match tree node must be of type "clinical", "genomic", "and", or "or')
@@ -195,11 +132,13 @@ class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
             proj_info.append({s.mt_gender: gender})
 
         # clinical projection
-        proj = self.create_clinical_proj(include=include,
-                                         keys=[i.keys()[0] for i in proj_info],
-                                         vals=[i.values()[0] for i in proj_info])
+        proj_keys = [i.keys()[0] for i in proj_info]
+        proj_vals = [i.values()[0] for i in proj_info]
+        node['clinical_%s' % self.proj_dict[include]] = self.create_clinical_proj(include=include,
+                                                                                  keys=proj_keys,
+                                                                                  vals=proj_vals)
 
-        return query, proj, include
+        node['query'] = query
 
     def _assess_genomic_node(self, node):
         """
@@ -221,148 +160,155 @@ class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
 
         # gene level query
         if criteria == [s.mt_hugo_symbol, s.mt_variant_category]:
+            node['variant_level'] = 'gene'
             gene_name = node['value'][s.mt_hugo_symbol]
 
             # Structural Variants
             if variant_category == s.variant_category_sv_val:
-                query = self.create_sv_query(gene_name=gene_name, include=include)
-                proj = self.create_genomic_proj(include=include,
-                                                query=query,
-                                                keys=[vc, self.hugo_symbol_key],
-                                                vals=[variant_category, gene_name])
-                return query, proj, include
+                node['query'] = self.create_sv_query(gene_name=gene_name, include=include)
+                node['genomic_%s' % self.proj_dict[include]] = \
+                    self.create_genomic_proj(include=include,
+                                             query=node['query'],
+                                             keys=[vc, self.hugo_symbol_key],
+                                             vals=[variant_category, gene_name])
+                return node
 
             # Mutations and CNVs
             else:
-                query = self.create_gene_level_query(gene_name=gene_name,
-                                                     variant_category=variant_category,
-                                                     include=include)
+                node['query'] = self.create_gene_level_query(gene_name=gene_name,
+                                                             variant_category=variant_category,
+                                                             include=include)
 
-                proj = self.create_genomic_proj(include=include,
-                                                query=query,
-                                                keys=[vc, self.hugo_symbol_key],
-                                                vals=[variant_category, gene_name])
-                return query, proj, include
+                node['genomic_%s' % self.proj_dict[include]] = \
+                    self.create_genomic_proj(include=include,
+                                             query=node['query'],
+                                             keys=[vc, self.hugo_symbol_key],
+                                             vals=[variant_category, gene_name])
+                return node
 
         # variant-level mutation criteria
         elif s.mt_protein_change in criteria:
+            node['variant_level'] = 'variant'
             gene_name = node['value'][s.mt_hugo_symbol]
             protein_change = node['value'][s.mt_protein_change]
 
-            query = self.create_mutation_query(gene_name=gene_name,
-                                               protein_change=protein_change,
-                                               include=include)
+            node['query'] = self.create_mutation_query(gene_name=gene_name,
+                                                       protein_change=protein_change,
+                                                       include=include)
 
-            proj = self.create_genomic_proj(include=include,
-                                            query=query,
-                                            keys=[vc, self.hugo_symbol_key, self.protein_change_key],
-                                            vals=[variant_category, gene_name, protein_change])
-            return query, proj, include
+            node['genomic_%s' % self.proj_dict[include]] = \
+                self.create_genomic_proj(include=include,
+                                         query=node['query'],
+                                         keys=[vc, self.hugo_symbol_key, self.protein_change_key],
+                                         vals=[variant_category, gene_name, protein_change])
+            return node
 
         # wildcard-level mutation criteria
         elif s.mt_wc_protein_change in criteria:
+            node['variant_level'] = 'wildcard'
             gene_name = node['value'][s.mt_hugo_symbol]
             protein_change = node['value'][s.mt_wc_protein_change]
 
-            query = self.create_wildcard_query(gene_name=gene_name,
-                                               protein_change=protein_change,
-                                               include=include)
+            node['query'] = self.create_wildcard_query(gene_name=gene_name,
+                                                       protein_change=protein_change,
+                                                       include=include)
 
-            proj = self.create_genomic_proj(include=include,
-                                            query=query,
-                                            keys=[vc, self.hugo_symbol_key, self.ref_residue_key],
-                                            vals=[variant_category, gene_name, protein_change])
-            return query, proj, include
+            node['genomic_%s' % self.proj_dict[include]] = \
+                self.create_genomic_proj(include=include,
+                                         query=node['query'],
+                                         keys=[vc, self.hugo_symbol_key, self.ref_residue_key],
+                                         vals=[variant_category, gene_name, protein_change])
+            return node
 
         # exon-level mutation criteria
         elif s.mt_exon in criteria:
+            node['variant_level'] = 'exon'
             gene_name = node['value'][s.mt_hugo_symbol]
             exon = node['value'][s.mt_exon]
             variant_class = node['value'][s.mt_variant_class] if s.mt_variant_class in node['value'] else None
 
-            query = self.create_exon_query(gene_name=gene_name,
-                                           exon=exon,
-                                           variant_class=variant_class,
-                                           include=include)
+            node['query'] = self.create_exon_query(gene_name=gene_name,
+                                                   exon=exon,
+                                                   variant_class=variant_class,
+                                                   include=include)
 
-            proj = self.create_genomic_proj(include=include,
-                                            query=query,
-                                            keys=[vc, self.hugo_symbol_key, self.transcript_exon_key, self.variant_class_key],
-                                            vals=[variant_category, gene_name, exon, variant_class])
-            return query, proj, include
+            node['genomic_%s' % self.proj_dict[include]] = \
+                self.create_genomic_proj(include=include,
+                                         query=node['query'],
+                                         keys=[vc, self.hugo_symbol_key, self.transcript_exon_key, self.variant_class_key],
+                                         vals=[variant_category, gene_name, exon, variant_class])
+            return node
 
         # cnv criteria
         elif s.mt_cnv_call in criteria:
             gene_name = node['value'][s.mt_hugo_symbol]
             cnv_call = node['value'][s.mt_cnv_call]
 
-            query = self.create_cnv_query(gene_name=gene_name,
-                                          cnv_call=cnv_call,
-                                          include=include)
+            node['query'] = self.create_cnv_query(gene_name=gene_name,
+                                                  cnv_call=cnv_call,
+                                                  include=include)
 
-            proj = self.create_genomic_proj(include=include,
-                                            query=query,
-                                            keys=[vc, self.hugo_symbol_key, self.cnv_call_key],
-                                            vals=[variant_category, gene_name, cnv_call])
-            return query, proj, include
+            node['genomic_%s' % self.proj_dict[include]] =\
+                self.create_genomic_proj(include=include,
+                                         query=node['query'],
+                                         keys=[vc, self.hugo_symbol_key, self.cnv_call_key],
+                                         vals=[variant_category, gene_name, cnv_call])
+            return node
 
         # mutational signature criteria
         elif any([criterion in s.mt_signature_cols for criterion in criteria]):
             for sig in s.mt_signature_cols:
                 sigtype, sigval = me_utils.normalize_signature_vals(signature_type=sig, signature_val=node['value'][sig])
-                query = self.create_mutational_signature_query(signature_type=sigtype, signature_val=sigval)
-                proj = self.create_genomic_proj(include=True, query=query)
-                return query, proj, True
+                node['query'] = self.create_mutational_signature_query(signature_type=sigtype, signature_val=sigval)
+                node['genomic_inclusion_reasons'] = self.create_genomic_proj(include=True, query=node['query'])
+                return node
 
         # wildtype criteria
         elif s.mt_wildtype in node['value'] and node['value'][s.mt_wildtype] is True:
             gene_name = node['value'][s.mt_hugo_symbol]
-            query = self.create_gene_level_query(gene_name=gene_name,
-                                                 variant_category=s.variant_category_wt_val,
-                                                 include=True)
+            node['query'] = self.create_gene_level_query(gene_name=gene_name,
+                                                         variant_category=s.variant_category_wt_val,
+                                                         include=True)
 
-            proj = self.create_genomic_proj(include=True, query=query)
-            return query, proj, True
+            node['genomic_inclusion_reasons'] = self.create_genomic_proj(include=True, query=node['query'])
+            return node
 
         # low-coverage criteria
         # todo build out low coverage criteria logic
+        else:
+            raise ValueError('This node does not match an expected format.')
 
-    def _intersect_results(self, node, children):
+    @staticmethod
+    def _intersect_results(node, children):
         """
         Intersect match results by sample Id.
 
         :param node: {digraph node}
         :return: {digraph node}
         """
-        node['matched_results'] = []
-        node['clinical_exclusion_reasons'] = []
-        node['genomic_exclusion_reasons'] = []
+
         intersection_dict = {'and': set.intersection_update, 'or': set.update}
         matched_sample_ids = set(i[kn.sample_id_col] for i in children[0]['matched_results'])
+        node['matched_results'] = children[0]['matched_results'][:]
 
         for child in children:
             child_matched_sample_ids = set(i[kn.sample_id_col] for i in child['matched_results'])
             intersection_dict[node['type']](matched_sample_ids, child_matched_sample_ids)
-            node['matched_results'].extend([i for i in child['matched_results']
-                                            if i[kn.sample_id_col] in matched_sample_ids
-                                            and i not in node['matched_results']])
-
-            # add exclusion reasons
-            for result in node['matched_results'][:]:
-                for er in ['genomic_exclusion_reasons', 'clinical_exclusion_reasons']:
-                    if er in child:
-                        if child[er] not in result[er]:
-                            result[er].append(child[er])
+            node['matched_results'] = [i for i in child['matched_results']
+                                       if i[kn.sample_id_col] in matched_sample_ids
+                                       and i not in node['matched_results']]
 
         return node
 
-    def search_for_matching_records(self, node):
+    def _search_for_matching_records(self, node):
         """
         Search for any sample records that match the constructed query
 
         :param node: {digraph node}
         :return: {null}
         """
+
+        # include inclusion reasons in projection
         if 'genomic_inclusion_reasons' in node:
             proj = node['genomic_inclusion_reasons']
         elif 'clinical_inclusion_reasons' in node:
@@ -370,7 +316,23 @@ class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
         else:
             proj = self.proj.copy()
 
-        return list(self.db[s.sample_collection_name].find(node['query'], proj))
+        # perform query
+        matches = list(self.db[s.sample_collection_name].find(node['query'], proj))
+
+        # add exclusion reasons to match results
+        for match in matches:
+            if kn.mutation_list_col in match:
+                for variant in match[kn.mutation_list_col]:
+                    variant[kn.mr_inclusion_criteria_col] = 'genomic_inclusion_reasons' in node
+                    if 'variant_level' in node:
+                        variant[kn.mr_reason_level_col] = node['variant_level']
+
+            elif 'genomic_exclusion_reasons' in node:
+                match['genomic_exclusion_reasons'] = node['genomic_exclusion_reasons']
+            elif 'clinical_exclusion_reasons' in node:
+                match['clinical_exclusion_reasons'] = node['clinical_exclusion_reasons']
+
+        return matches
 
     def create_trial_match_records(self):
         """

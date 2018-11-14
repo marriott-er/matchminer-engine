@@ -55,6 +55,7 @@ class TestQueryUtilitiesShared(unittest.TestCase):
         }
         self.test_case_braf_v600e = {
             kn.sample_id_col: 'TEST-SAMPLE-BRAF-V600E',
+            kn.oncotree_primary_diagnosis_name_col: 'Breast',
             kn.mutation_list_col: [
                 {
                     kn.hugo_symbol_col: 'BRAF',

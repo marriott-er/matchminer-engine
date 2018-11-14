@@ -71,6 +71,90 @@ class TestMatchEngine(TestQueryUtilitiesShared):
         assert me.match_tree_nx.node[2] == {'type': 'genomic', 'value': self.simple_mutation_match_tree['and'][0]['genomic']}
         assert me.match_tree_nx.node[3] == {'type': 'clinical', 'value': self.simple_mutation_match_tree['and'][1]['clinical']}
 
+    def test_search_for_matching_records(self):
+
+        self.db[s.sample_collection_name].insert_many([
+            self.test_case_lung,
+            self.test_case_colon,
+            self.test_case_braf_v600e
+        ])
+
+        # clinical inclusion
+        node = {
+            'type': 'clinical',
+            'query': {kn.oncotree_primary_diagnosis_name_col: 'Lung'},
+            'clinical_inclusion_reasons': {
+                '_id': 0, kn.sample_id_col: 1,
+                kn.oncotree_primary_diagnosis_name_col: 1
+            }
+        }
+        me = MatchEngine(match_tree=None, trial_info=None)
+        m = me._search_for_matching_records(node=node)
+        assert m == [{
+            kn.sample_id_col: 'TEST-SAMPLE-LUNG',
+            kn.oncotree_primary_diagnosis_name_col: 'Lung'
+        }], m
+
+        # clinical exclusion
+        node = {
+            'type': 'clinical',
+            'query': {kn.oncotree_primary_diagnosis_name_col: {'$ne': 'Lung'}},
+            'clinical_exclusion_reasons': {kn.oncotree_primary_diagnosis_name_col: 'Lung'}
+        }
+        me = MatchEngine(match_tree=None, trial_info=None)
+        m = me._search_for_matching_records(node=node)
+        assert m[0] == {
+            kn.sample_id_col: 'TEST-SAMPLE-COLON',
+            'clinical_exclusion_reasons': {
+                kn.oncotree_primary_diagnosis_name_col: 'Lung'
+            }
+        }, m[0]
+
+        # genomic inclusion
+        node = {
+            'type': 'genomic',
+            'query': {kn.mutation_list_col: {'$elemMatch': {kn.hugo_symbol_col: 'BRAF'}}},
+            'variant_level': 'gene',
+            'genomic_inclusion_reasons': {
+                '_id': 0, kn.sample_id_col: 1,
+                kn.oncotree_primary_diagnosis_name_col: 1,
+                kn.mutation_list_col: {'$elemMatch': {kn.hugo_symbol_col: 'BRAF'}}
+            }
+        }
+        me = MatchEngine(match_tree=None, trial_info=None)
+        m = me._search_for_matching_records(node=node)
+        assert m == [{
+            kn.sample_id_col: 'TEST-SAMPLE-BRAF-V600E',
+            kn.oncotree_primary_diagnosis_name_col: 'Breast',
+            kn.mutation_list_col: [{
+                kn.mr_inclusion_criteria_col: True,
+                kn.mr_reason_level_col: 'gene',
+                kn.hugo_symbol_col: 'BRAF',
+                kn.protein_change_col: 'p.V600E',
+                kn.ref_residue_col: 'p.V600'
+            }]
+        }], m
+
+        # genomic exclusion
+        node = {
+            'type': 'genomic',
+            'query': {kn.mutation_list_col: {'$not': {'$elemMatch': {kn.hugo_symbol_col: 'BRAF'}}}},
+            'variant_level': 'gene',
+            'genomic_exclusion_reasons': {
+                kn.hugo_symbol_col: 'BRAF',
+                kn.mutation_list_col: s.variant_category_mutation_val
+            }
+        }
+        me = MatchEngine(match_tree=None, trial_info=None)
+        m = me._search_for_matching_records(node=node)
+        assert m[1] == {
+            kn.sample_id_col: 'TEST-SAMPLE-COLON',
+            'genomic_exclusion_reasons': {
+                kn.hugo_symbol_col: 'BRAF',
+                kn.mutation_list_col: s.variant_category_mutation_val
+            }
+        }, m[1]
+
     def test_intersect_results(self):
 
         # AND #

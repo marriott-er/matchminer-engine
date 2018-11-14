@@ -18,11 +18,13 @@ mutation_reasons_schema = {
     kn.tier_col: {'type': 'integer', 'allowed': tier_allowed_vals, 'required': True}
 }
 cnv_reasons_schema = {
+    kn.mr_inclusion_criteria_col: {'type': 'boolean', 'required': True},
     kn.hugo_symbol_col: {'type': 'string', 'required': True},
     kn.cnv_call_col: {'type': 'string'},
     kn.actionability_col: {'type': 'string', 'required': True, 'nullable': True, 'allowed': actionability_allowed_vals}
 }
 sv_reasons_schema = {
+    kn.mr_inclusion_criteria_col: {'type': 'boolean', 'required': True},
     kn.sv_comment_col: {'type': 'string', 'required': True},
 }
 wt_reasons_schema = {
