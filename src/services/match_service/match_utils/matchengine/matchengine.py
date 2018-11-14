@@ -5,23 +5,24 @@ from src.utilities import settings as s
 from src.utilities.utilities import get_db
 from src.data_store import key_names as kn
 from src.services.match_service.match_utils.sort import add_sort_order
-from src.services.match_service.match_utils.matchengine import matchengine_utils as me_utils
 from src.services.match_service.match_utils.matchengine.assess_node_utils import AssessNodeUtils
+from src.services.match_service.match_utils.matchengine.intersect_results_utils import IntersectResultsUtils
 
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s', )
 
 
-class MatchEngine(AssessNodeUtils):
+class MatchEngine(AssessNodeUtils, IntersectResultsUtils):
 
     def __init__(self, match_tree, trial_info):
         AssessNodeUtils.__init__(self)
+        IntersectResultsUtils.__init__(self)
 
         self.trial_info = trial_info
         self.match_tree = match_tree
         self.match_tree_nx = None
         self.db = get_db()
 
-        self.matched_results = None
+        self.matches = None
         self.trial_matches = None
 
     def convert_match_tree_to_digraph(self):
@@ -71,22 +72,21 @@ class MatchEngine(AssessNodeUtils):
             # clinical nodes
             if node['type'] == 'clinical':
                 node = self.assess_clinical_node(node=node)
-                node['matched_results'] = self._search_for_matching_records(node=node)
+                node['matches'] = self._search_for_matching_records(node=node)
 
             # genomic nodes
             elif node['type'] == 'genomic':
                 node = self.assess_genomic_node(node=node)
-                print node
-                node['matched_results'] = self._search_for_matching_records(node=node)
+                node['matches'] = self._search_for_matching_records(node=node)
 
             # join child queries with "and"
             elif node['type'] == 'and' or node['type'] == 'or':
-                self._intersect_results(node=node, children=children)
+                self.intersect_results(node=node, children=children)
 
             else:
                 raise ValueError('match tree node must be of type "clinical", "genomic", "and", or "or')
 
-        self.matched_results = self.match_tree_nx.node[1]['matched_results']
+        self.matches = self.match_tree_nx.node[1]['matches']
 
     def _search_for_matching_records(self, node):
         """
@@ -122,75 +122,6 @@ class MatchEngine(AssessNodeUtils):
 
         return matches
 
-    @staticmethod
-    def _intersect_results(node, children):
-        """
-        Intersect match results by sample Id.
-
-        :param node: {digraph node}
-        :return: {digraph node}
-        """
-
-        print '----debug----'
-        print 'NODE', node
-
-        # todo this needs to be tested thoroughly
-        intersection_dict = {'and': set.intersection_update, 'or': set.update}
-        matched_sample_ids = set(i[kn.sample_id_col] for i in children[0]['matched_results'])
-        print 'INITIAL MATCHED SAMPLE IDS', matched_sample_ids
-        node['matched_results'] = children[0]['matched_results'][:]
-        print 'INITIAL MATCHED RESULTS', node['matched_results']
-
-        idx = 1
-
-        for child in children[1:]:
-            child_matched_sample_ids = set(i[kn.sample_id_col] for i in child['matched_results'])
-            print 'CHILD %d MATCHED RESULTS' % idx, child['matched_results']
-            intersection_dict[node['type']](matched_sample_ids, child_matched_sample_ids)
-
-            # keep existing matches
-            node['matched_results'] = [i for i in node['matched_results'] if i[kn.sample_id_col] in matched_sample_ids]
-            old_sample_ids = [i[kn.sample_id_col] for i in node['matched_results']]
-
-            # add new matches, appending novel reasons as they come
-            for child_match in child['matched_results'][:]:
-                if child_match[kn.sample_id_col] in matched_sample_ids:
-
-                    # update existing matches
-                    if child_match[kn.sample_id_col] in old_sample_ids:
-                        old_match = [i for i in node['matched_results']
-                                     if i[kn.sample_id_col] == child_match[kn.sample_id_col]][0]
-
-                        # preserve clinical and signature information
-                        clinical_keys = [kn.oncotree_primary_diagnosis_name_col, kn.birth_date_col, kn.gender_col]
-                        for key in clinical_keys + s.signature_cols:
-                            if key in child_match and key not in old_match:
-                                old_match[key] = child_match[key]
-
-                        # update genomic information
-                        genomic_keys = ['genomic_exclusion_reasons', 'clinical_exclusion_reasons',
-                                        kn.mutation_list_col, kn.cnv_list_col, kn.sv_list_col, kn.wt_genes_col]
-                        for key in genomic_keys:
-
-                            # add new reasons
-                            if key in child_match and key not in old_match:
-                                old_match[key] = [child_match[key].copy()]
-                            elif key in child_match and key in old_match:
-                                if isinstance(old_match[key], dict):
-                                    old_match[key] = [old_match[key].copy()]
-
-                                old_match[key].append(child_match[key].copy())
-
-                    # add new matches
-                    else:
-                        node['matched_results'].extend([i for i in child['matched_results']
-                                                        if i[kn.sample_id_col] in matched_sample_ids])
-
-            idx += 1
-
-        print 'FINAL MATCHED RESULTS', node['matched_results']
-        return node
-
     def create_trial_match_records(self):
         """
         Create trial match records from matched samples,
@@ -200,7 +131,7 @@ class MatchEngine(AssessNodeUtils):
         """
         # todo unit test
         trial_match_docs = []
-        for sample in self.match_tree_nx.node[1]['matched_results']:
+        for sample in self.matches:
 
             mut_reasons = []
             cnv_reasons = []

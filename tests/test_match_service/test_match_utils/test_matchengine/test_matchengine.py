@@ -60,7 +60,7 @@ class TestMatchEngine(TestQueryUtilitiesShared):
         me = MatchEngine(match_tree=self.complex_match_tree, trial_info={})
         me.convert_match_tree_to_digraph()
         me.traverse_match_tree()
-        self._print(me.matched_results)
+        self._print(me.matches)
 
     def test_convert_match_tree_to_digraph(self):
 
@@ -161,7 +161,7 @@ class TestMatchEngine(TestQueryUtilitiesShared):
         children = [
             {
                 'type': 'genomic',
-                'matched_results': [
+                'matches': [
                     {
                         'mrn': '01',
                         'sampleId': 'MATCHES-COMPLEX-TREE-01',
@@ -176,7 +176,7 @@ class TestMatchEngine(TestQueryUtilitiesShared):
             },
             {
                 'type': 'genomic',
-                'matched_results': [
+                'matches': [
                     {
                         'mrn': '01',
                         'sampleId': 'MATCHES-COMPLEX-TREE-01',
@@ -195,7 +195,7 @@ class TestMatchEngine(TestQueryUtilitiesShared):
         me = MatchEngine(match_tree=self.complex_match_tree, trial_info={})
         node = me._intersect_results(node=node, children=children)
         self._print(node)
-        assert node['matched_results'] == [{
+        assert node['matches'] == [{
             kn.mrn_col: '01',
             kn.sample_id_col: 'MATCHES-COMPLEX-TREE-01',
             kn.vital_status_col: 'alive',
