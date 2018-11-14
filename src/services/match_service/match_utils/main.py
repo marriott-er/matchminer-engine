@@ -27,9 +27,8 @@ def main():
             matchengine.traverse_match_tree()
 
             # create trial matches records
-            trial_match_utils = TrialMatchUtils(matched_samples=matchengine.matched_samples)
-            trial_match_utils.create_trial_match_records()
-            trial_matches_df = trial_match_utils.sort_trial_matches()
+            matchengine.create_trial_match_records()
+            trial_matches_df = matchengine.sort_trial_matches()
 
             # save results
             utils.add_trial_matches(trial_matches_df=trial_matches_df)

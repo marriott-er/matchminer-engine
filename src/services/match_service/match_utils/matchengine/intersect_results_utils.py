@@ -67,6 +67,7 @@ class IntersectResultsUtils(object):
         :param node: {digraph node}
         :return: {set}
         """
+        # todo unit test
         return set(i[kn.sample_id_col] for i in node['matches'])
 
     @staticmethod
@@ -77,6 +78,7 @@ class IntersectResultsUtils(object):
         :param node: {digraph node}
         :return: {list of dict}
         """
+        # todo unit test
         return node['matches'][:]
 
     @staticmethod
@@ -88,6 +90,7 @@ class IntersectResultsUtils(object):
         :param sample_ids: {set}
         :return: {list}
         """
+        # todo unit test
         return [i for i in node['matches'] if i[kn.sample_id_col] in sample_ids]
 
     @staticmethod
@@ -101,6 +104,7 @@ class IntersectResultsUtils(object):
         :param genomic: {bool}
         :return: {dict} (old_match)
         """
+        # todo unit test
         for key in keys:
             if key in child_match and key not in old_match:
                 old_match[key] = child_match[key]

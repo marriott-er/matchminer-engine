@@ -34,7 +34,6 @@ def normalize_variant_category_val(val):
     :param val: {str}
     :return: {str}
     """
-    # todo unit test
     variant_category_dict = {
         s.mt_cnv_val: s.variant_category_cnv_val,
         s.mt_mut_val: s.variant_category_mutation_val,
@@ -50,7 +49,6 @@ def normalize_cnv_call_val(val):
     :param val: {str}
     :return: {str}
     """
-    # todo unit test
     cnv_call_dict = {
         s.mt_high_amp_val: s.cnv_call_high_amp,
         s.mt_homo_del_val: s.cnv_call_homo_del,
@@ -68,7 +66,6 @@ def normalize_signature_vals(signature_type, signature_val):
     :param signature_val: {str} (e.g. (MMR-Deficient, MSI-H, etc.)
     :return: {tuple of str} (type, val)
     """
-    # todo unit test
     signature_type_dict = {
         s.mt_mmr_status: kn.mmr_status_col,
         s.mt_ms_status: kn.ms_status_col,
