@@ -278,8 +278,7 @@ class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
         else:
             raise ValueError('This node does not match an expected format.')
 
-    @staticmethod
-    def _intersect_results(node, children):
+    def _intersect_results(self, node, children):
         """
         Intersect match results by sample Id.
 
@@ -287,6 +286,7 @@ class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
         :return: {digraph node}
         """
 
+        # todo this needs to be tested thorougly
         intersection_dict = {'and': set.intersection_update, 'or': set.update}
         matched_sample_ids = set(i[kn.sample_id_col] for i in children[0]['matched_results'])
         node['matched_results'] = children[0]['matched_results'][:]
@@ -294,9 +294,37 @@ class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
         for child in children:
             child_matched_sample_ids = set(i[kn.sample_id_col] for i in child['matched_results'])
             intersection_dict[node['type']](matched_sample_ids, child_matched_sample_ids)
-            node['matched_results'] = [i for i in child['matched_results']
-                                       if i[kn.sample_id_col] in matched_sample_ids
-                                       and i not in node['matched_results']]
+
+            # todo can this be done with groupby?
+            # keep existing matches
+            node['matched_results'] = [i for i in node['matched_results'] if i[kn.sample_id_col] in matched_sample_ids]
+            old_sample_ids = [i[kn.sample_id_col] for i in node['matched_results']]
+
+            # add new matches, appending novel reasons as they come
+            for child_match in child['matched_results'][:]:
+                if child_match[kn.sample_id_col] in matched_sample_ids:
+
+                    # update existing matches
+                    if child_match[kn.sample_id_col] in old_sample_ids:
+                        old_match = [i for i in node['matched_results']
+                                     if i[kn.sample_id_col] == child_match[kn.sample_id_col]][0]
+                        all_keys = ['genomic_exclusion_reasons', 'clinical_exclusion_reasons',
+                                    kn.mutation_list_col, kn.cnv_list_col, kn.sv_list_col, kn.wt_genes_col]
+
+                        # todo add signatures
+                        for key in all_keys:
+                            if key in child_match:
+                                cm = child_match[key].copy()
+                                if isinstance(old_match[key], dict):
+                                    om = []
+
+                                om.append(cm)
+                                old_match[key] = om
+
+                    # add new matches
+                    else:
+                        node['matched_results'].extend([i for i in child['matched_results']
+                                                        if i[kn.sample_id_col] in matched_sample_ids])
 
         return node
 

@@ -161,31 +161,31 @@ class TestMatchEngine(TestQueryUtilitiesShared):
         children = [
             {
                 'type': 'genomic',
-                'genomic_exclusion_reasons': {
-                    'hugoSymbol': 'BRAF',
-                    'proteinChange': 'p.V600E',
-                    'mutations': 'MUTATION'
-                },
                 'matched_results': [
                     {
                         'mrn': '01',
                         'sampleId': 'MATCHES-COMPLEX-TREE-01',
-                        'vitalStatus': 'alive'
+                        'vitalStatus': 'alive',
+                        'genomic_exclusion_reasons': {
+                            'hugoSymbol': 'BRAF',
+                            'proteinChange': 'p.V600E',
+                            'mutations': 'MUTATION'
+                        },
                     }
                 ]
             },
             {
                 'type': 'genomic',
-                'genomic_exclusion_reasons': {
-                    'hugoSymbol': 'BRAF',
-                    'proteinChange': 'p.V600D',
-                    'mutations': 'MUTATION'
-                },
                 'matched_results': [
                     {
                         'mrn': '01',
                         'sampleId': 'MATCHES-COMPLEX-TREE-01',
-                        'vitalStatus': 'alive'
+                        'vitalStatus': 'alive',
+                        'genomic_exclusion_reasons': {
+                            'hugoSymbol': 'BRAF',
+                            'proteinChange': 'p.V600D',
+                            'mutations': 'MUTATION'
+                        },
                     }
                 ]
             }
@@ -198,19 +198,18 @@ class TestMatchEngine(TestQueryUtilitiesShared):
         assert node['matched_results'] == [{
             kn.mrn_col: '01',
             kn.sample_id_col: 'MATCHES-COMPLEX-TREE-01',
-            kn.vital_status_col: 'alive'
+            kn.vital_status_col: 'alive',
+            'genomic_exclusion_reasons': [
+                {
+                    kn.hugo_symbol_col: 'BRAF',
+                    kn.protein_change_col: 'p.V600E',
+                    kn.mutation_list_col: 'MUTATION'
+                },
+                {
+                    kn.hugo_symbol_col: 'BRAF',
+                    kn.protein_change_col: 'p.V600D',
+                    kn.mutation_list_col: 'MUTATION'
+                }
+            ]
         }]
-        assert node['genomic_exclusion_reasons'] == [
-            {
-                kn.hugo_symbol_col: 'BRAF',
-                kn.protein_change_col: 'p.V600E',
-                kn.mutation_list_col: 'MUTATION'
-            },
-            {
-                kn.hugo_symbol_col: 'BRAF',
-                kn.protein_change_col: 'p.V600D',
-                kn.mutation_list_col: 'MUTATION'
-            }
-        ]
-        assert node['clinical_exclusion_reasons'] == []
         assert node['type'] == 'and'
