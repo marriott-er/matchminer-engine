@@ -26,7 +26,7 @@ class IntersectResultsUtils(object):
         """
         # todo unit test
         matched_sample_ids = self._get_sample_ids(node=children[0])
-        node['matches'] = self._get_matches(node=children[0])
+        node['matches'] = children[0]['matches'][:]
         for child in children[1:]:
 
             # intersect/update current set of matched sample ids with child's
@@ -69,17 +69,6 @@ class IntersectResultsUtils(object):
         """
         # todo unit test
         return set(i[kn.sample_id_col] for i in node['matches'])
-
-    @staticmethod
-    def _get_matches(node):
-        """
-        Retrieve a list of matched records from the given node.
-
-        :param node: {digraph node}
-        :return: {list of dict}
-        """
-        # todo unit test
-        return node['matches'][:]
 
     @staticmethod
     def _filter_matches(node, sample_ids):
