@@ -81,7 +81,7 @@ class AssessNodeUtils(ClinicalQueries, GenomicQueries, ProjUtils):
         # cnv criteria
         elif s.mt_cnv_call in criteria:
             return self._parse_cnv_call(node=node)
-            
+
         # mutational signature criteria
         elif any([criterion in s.mt_signature_cols for criterion in criteria]):
             return self._parse_signature(node=node, criteria=criteria)
@@ -104,7 +104,6 @@ class AssessNodeUtils(ClinicalQueries, GenomicQueries, ProjUtils):
         :param proj_info {dict}
         :return: {null}
         """
-        # todo unit test
         cancer_type = node['value'][s.mt_diagnosis]
         include = me_utils.assess_inclusion(cancer_type)
         subquery = self.create_oncotree_diagnosis_query(cancer_type=me_utils.sanitize_exclusion_vals(cancer_type),
@@ -121,7 +120,6 @@ class AssessNodeUtils(ClinicalQueries, GenomicQueries, ProjUtils):
         :param proj_info: {dict}
         :return: {null}
         """
-        # todo unit test
         age = node['value'][s.mt_age]
         subquery = self.create_age_query(age=age)
         query['$and'].append(subquery)
@@ -136,7 +134,6 @@ class AssessNodeUtils(ClinicalQueries, GenomicQueries, ProjUtils):
         :param proj_info: {dict}
         :return: {null}
         """
-        # todo unit test
         gender = node['value'][s.mt_gender]
         subquery = self.create_gender_query(gender=gender)
         query['$and'].append(subquery)
@@ -150,7 +147,6 @@ class AssessNodeUtils(ClinicalQueries, GenomicQueries, ProjUtils):
         :param node: {digraph node}
         :return: {tuple} (variant_category {str}, include {bool})
         """
-        # todo unit test
         include = True
         variant_category = None
         if s.mt_variant_category in node['value']:
@@ -167,7 +163,6 @@ class AssessNodeUtils(ClinicalQueries, GenomicQueries, ProjUtils):
         :param node: {digraph node}
         :return: {digraph node}
         """
-        # todo unit test
         # parse node
         node['variant_level'] = 'gene'
         gene_name = node['value'][s.mt_hugo_symbol]
@@ -199,7 +194,6 @@ class AssessNodeUtils(ClinicalQueries, GenomicQueries, ProjUtils):
         :param node: {digraph node}
         :return: {digraph node}
         """
-        # todo unit test
         # parse node
         gene_name = node['value'][s.mt_hugo_symbol]
         variant_category, include = self._parse_variant_category(node=node)
