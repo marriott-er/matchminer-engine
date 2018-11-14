@@ -64,5 +64,5 @@ trial_matches_schema = {
     kn.tm_vital_status_col: {'type': 'string', 'required': True, 'allowed': vital_status_allowed_vals},
     kn.tm_trial_accrual_status_col: {'type': 'string', 'required': True, 'allowed': accrual_status_allowed_vals},
     kn.tm_sort_order_col: {'type': 'integer', 'required': True},
-    kn.tm_match_reasons_col: {'type': 'list', 'schema': {'type': 'dict', 'schmea': match_reasons_schema}}
+    kn.tm_match_reasons_col: {'type': 'dict', 'schema': match_reasons_schema}
 }

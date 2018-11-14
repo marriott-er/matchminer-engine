@@ -26,7 +26,6 @@ class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
         self.db = get_db()
         self.proj_dict = {True: 'inclusion_reasons', False: 'exclusion_reasons'}
 
-        self.matched_results = []
         self.trial_matches = None
 
     def convert_match_tree_to_digraph(self):
@@ -89,8 +88,6 @@ class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
 
             else:
                 raise ValueError('match tree node must be of type "clinical", "genomic", "and", or "or')
-
-        self.matched_results = node['matched_results']
 
     def _assess_clinical_node(self, node):
         """
@@ -278,7 +275,42 @@ class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
         else:
             raise ValueError('This node does not match an expected format.')
 
-    def _intersect_results(self, node, children):
+    def _search_for_matching_records(self, node):
+        """
+        Search for any sample records that match the constructed query
+
+        :param node: {digraph node}
+        :return: {null}
+        """
+
+        # include inclusion reasons in projection
+        if 'genomic_inclusion_reasons' in node:
+            proj = node['genomic_inclusion_reasons']
+        elif 'clinical_inclusion_reasons' in node:
+            proj = node['clinical_inclusion_reasons']
+        else:
+            proj = self.proj.copy()
+
+        # perform query
+        matches = list(self.db[s.sample_collection_name].find(node['query'], proj))
+
+        # add exclusion reasons to match results
+        for match in matches:
+            if kn.mutation_list_col in match:
+                for variant in match[kn.mutation_list_col]:
+                    variant[kn.mr_inclusion_criteria_col] = 'genomic_inclusion_reasons' in node
+                    if 'variant_level' in node:
+                        variant[kn.mr_reason_level_col] = node['variant_level']
+
+            elif 'genomic_exclusion_reasons' in node:
+                match['genomic_exclusion_reasons'] = node['genomic_exclusion_reasons']
+            elif 'clinical_exclusion_reasons' in node:
+                match['clinical_exclusion_reasons'] = node['clinical_exclusion_reasons']
+
+        return matches
+
+    @staticmethod
+    def _intersect_results(node, children):
         """
         Intersect match results by sample Id.
 
@@ -328,40 +360,6 @@ class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
 
         return node
 
-    def _search_for_matching_records(self, node):
-        """
-        Search for any sample records that match the constructed query
-
-        :param node: {digraph node}
-        :return: {null}
-        """
-
-        # include inclusion reasons in projection
-        if 'genomic_inclusion_reasons' in node:
-            proj = node['genomic_inclusion_reasons']
-        elif 'clinical_inclusion_reasons' in node:
-            proj = node['clinical_inclusion_reasons']
-        else:
-            proj = self.proj.copy()
-
-        # perform query
-        matches = list(self.db[s.sample_collection_name].find(node['query'], proj))
-
-        # add exclusion reasons to match results
-        for match in matches:
-            if kn.mutation_list_col in match:
-                for variant in match[kn.mutation_list_col]:
-                    variant[kn.mr_inclusion_criteria_col] = 'genomic_inclusion_reasons' in node
-                    if 'variant_level' in node:
-                        variant[kn.mr_reason_level_col] = node['variant_level']
-
-            elif 'genomic_exclusion_reasons' in node:
-                match['genomic_exclusion_reasons'] = node['genomic_exclusion_reasons']
-            elif 'clinical_exclusion_reasons' in node:
-                match['clinical_exclusion_reasons'] = node['clinical_exclusion_reasons']
-
-        return matches
-
     def create_trial_match_records(self):
         """
         Create trial match records from matched samples,
@@ -369,7 +367,24 @@ class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
 
         :return: {null}
         """
-        for sample in self.matched_samples:
+        # todo unit test
+        trial_match_docs = []
+        for sample in self.match_tree_nx.node[1]['matched_results']:
+
+            mut_reasons = []
+            cnv_reasons = []
+            sv_reasons = []
+            wt_reasons = []
+            # todo parse matched results
+            # todo add signatures
+            # todo add low coverage
+
+            match_reasons = {
+                kn.mr_trial_level_col: self.trial_info['level'],
+                kn.mr_trial_step_code_col: self.trial_info['step_code'],
+                kn.mr_trial_arm_code_col: self.trial_info['arm_code'] if 'arm_code' in self.trial_info else None,
+                kn.mr_trial_dose_code_col: self.trial_info['dose_code'] if 'dose_code' in self.trial_info else None,
+            }
 
             trial_match_doc = {
                 kn.tm_sample_id_col: sample[kn.sample_id_col],
@@ -378,8 +393,13 @@ class MatchEngine(ClinicalQueries, GenomicQueries, ProjUtils):
                 kn.tm_vital_status_col: sample[kn.vital_status_col],
                 kn.tm_trial_accrual_status_col: self.trial_info['accrual_status'],
                 kn.tm_sort_order_col: 0,
-                kn.tm_match_reasons_col: []
+                kn.tm_match_reasons_col: match_reasons
             }
+            trial_match_docs.append(trial_match_doc)
+
+        # todo add versioning
+        res = self.db.trial_match.insert_many(trial_match_docs)
+        logging.info('%s | %d trial matches added' % (self.trial_info['protocol_no'], len(res.inserted_ids)))
 
     def sort_trial_matches(self):
         """
