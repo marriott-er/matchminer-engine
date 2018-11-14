@@ -21,7 +21,6 @@ class AssessNodeUtils(ClinicalQueries, GenomicQueries, ProjUtils):
         :param node: {digraph node}
         :return: {digraph node}
         """
-        # todo unit test
         query = {'$and': []}
         proj_info = []
         criteria = sorted(node['value'].keys())
@@ -59,7 +58,6 @@ class AssessNodeUtils(ClinicalQueries, GenomicQueries, ProjUtils):
         :param node: {digraph node}
         :return: {digraph node}
         """
-        # todo unit test
         criteria = sorted(node['value'].keys())
 
         # gene level query (mutations, cnvs, and svs)
@@ -362,7 +360,6 @@ class AssessNodeUtils(ClinicalQueries, GenomicQueries, ProjUtils):
         :param node: {digraph node}
         :return: {digraph node}
         """
-        # todo unit test
         # parse node
         gene_name = node['value'][s.mt_hugo_symbol]
 
