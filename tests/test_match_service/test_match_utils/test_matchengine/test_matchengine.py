@@ -60,7 +60,7 @@ class TestMatchEngine(TestQueryUtilitiesShared):
         me = MatchEngine(match_tree=self.complex_match_tree, trial_info={})
         me.convert_match_tree_to_digraph()
         me.traverse_match_tree()
-        # self._print(me.matched_results)
+        self._print(me.matched_results)
 
     def test_convert_match_tree_to_digraph(self):
 

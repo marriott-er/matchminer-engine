@@ -124,6 +124,9 @@ class ProjUtils(ClinicalUtils, GenomicUtils):
             elif k in self.genomic_proj_dict:
                 proj[self.genomic_proj_dict[k]] = v
             else:
+                if k in [kn.mutation_list_col, kn.cnv_list_col, kn.sv_list_col, kn.wt_genes_col]:
+                    k = kn.variant_category_col
+
                 proj[k] = v
 
         return proj
