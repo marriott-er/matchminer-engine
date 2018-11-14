@@ -220,7 +220,6 @@ class AssessNodeUtils(ClinicalQueries, GenomicQueries, ProjUtils):
         :param node: {digraph node}
         :return: {digraph node}
         """
-        # todo unit test
         # parse node
         node['variant_level'] = 'variant'
         gene_name = node['value'][s.mt_hugo_symbol]
@@ -252,7 +251,6 @@ class AssessNodeUtils(ClinicalQueries, GenomicQueries, ProjUtils):
         :param node: {digraph node}
         :return: {digraph node}
         """
-        # todo unit test
         # parse node
         node['variant_level'] = 'wildcard'
         gene_name = node['value'][s.mt_hugo_symbol]

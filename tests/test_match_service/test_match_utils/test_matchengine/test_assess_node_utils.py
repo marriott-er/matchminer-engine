@@ -187,13 +187,94 @@ class TestAssessNodeUtils(TestQueryUtilitiesShared):
         assert node['variant_level'] == 'gene'
 
     def test_parse_variant_level(self):
-        pass
+
+        # inclusive
+        node = {'value': {
+            s.mt_variant_category: s.mt_mut_val,
+            s.mt_hugo_symbol: 'BRAF',
+            s.mt_protein_change: 'p.V600E'}
+        }
+        self.a._parse_variant_level(node=node)
+        assert 'query' in node
+        assert 'genomic_inclusion_reasons' in node
+        assert node['genomic_inclusion_reasons'][kn.mutation_list_col] == node['query'][kn.mutation_list_col]
+        assert node['variant_level'] == 'variant'
+
+        # exclusive sv
+        node = {'value': {
+            s.mt_variant_category: '!%s' % s.mt_mut_val,
+            s.mt_hugo_symbol: 'BRAF',
+            s.mt_protein_change: 'p.V600E'}
+        }
+        self.a._parse_variant_level(node=node)
+        assert 'query' in node
+        assert 'genomic_exclusion_reasons' in node
+        assert node['genomic_exclusion_reasons'] == {
+            kn.variant_category_col: s.variant_category_mutation_val,
+            kn.hugo_symbol_col: 'BRAF',
+            kn.protein_change_col: 'p.V600E'
+        }, node['genomic_exclusion_reasons']
+        assert node['variant_level'] == 'variant'
 
     def test_parse_wildcard_level(self):
-        pass
+
+        # inclusive
+        node = {'value': {
+            s.mt_variant_category: s.mt_mut_val,
+            s.mt_hugo_symbol: 'BRAF',
+            s.mt_wc_protein_change: 'p.V600'}
+        }
+        self.a._parse_wildcard_level(node=node)
+        assert 'query' in node
+        assert 'genomic_inclusion_reasons' in node
+        assert node['genomic_inclusion_reasons'][kn.mutation_list_col] == node['query'][kn.mutation_list_col]
+        assert node['variant_level'] == 'wildcard'
+
+        # exclusive sv
+        node = {'value': {
+            s.mt_variant_category: '!%s' % s.mt_mut_val,
+            s.mt_hugo_symbol: 'BRAF',
+            s.mt_wc_protein_change: 'p.V600'}
+        }
+        self.a._parse_wildcard_level(node=node)
+        assert 'query' in node
+        assert 'genomic_exclusion_reasons' in node
+        assert node['genomic_exclusion_reasons'] == {
+            kn.variant_category_col: s.variant_category_mutation_val,
+            kn.hugo_symbol_col: 'BRAF',
+            kn.ref_residue_col: 'p.V600'
+        }, node['genomic_exclusion_reasons']
+        assert node['variant_level'] == 'wildcard'
 
     def test_parse_exon_level(self):
-        pass
+
+        # inclusive
+        node = {'value': {
+            s.mt_variant_category: s.mt_mut_val,
+            s.mt_hugo_symbol: 'BRAF',
+            s.mt_exon: 20}
+        }
+        self.a._parse_exon_level(node=node)
+        assert 'query' in node
+        assert 'genomic_inclusion_reasons' in node
+        assert node['genomic_inclusion_reasons'][kn.mutation_list_col] == node['query'][kn.mutation_list_col]
+        assert node['variant_level'] == 'exon'
+
+        # exclusive sv
+        node = {'value': {
+            s.mt_variant_category: '!%s' % s.mt_mut_val,
+            s.mt_hugo_symbol: 'BRAF',
+            s.mt_exon: 20}
+        }
+        self.a._parse_exon_level(node=node)
+        assert 'query' in node
+        assert 'genomic_exclusion_reasons' in node
+        assert node['genomic_exclusion_reasons'] == {
+            kn.variant_category_col: s.variant_category_mutation_val,
+            kn.hugo_symbol_col: 'BRAF',
+            kn.transcript_exon_col: 20
+        }, node['genomic_exclusion_reasons']
+        assert node['variant_level'] == 'exon'
 
     def test_parse_cnv_call(self):
         pass
