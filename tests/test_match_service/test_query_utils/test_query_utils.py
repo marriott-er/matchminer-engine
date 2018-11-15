@@ -15,38 +15,22 @@ class TestQueryUtils(TestQueryUtilitiesShared):
     def tearDown(self):
         self.db.testSamples.drop()
 
-    def test_handle_exclusion_queries(self):
+    def test_create_inclusion_query(self):
 
-        # inclusion query
-        inclusion_query = {kn.mutation_list_col: {'$elemMatch': {kn.hugo_symbol_col: {'$eq': 'BRAF'}}}}
-        q1 = self.q.augment_exclusion_queries(query=inclusion_query,
-                                              variant_category=s.variant_category_mutation_val,
-                                              include=True)
-        res1 = self._findall(q1)
-        assert len(res1) == 2, res1
-        assert sorted([i[kn.sample_id_col] for i in res1]) == sorted(['TEST-SAMPLE-BRAF-V600E',
-                                                                      'TEST-SAMPLE-BRAF-NON-V600E']), res1
+        res = self.q.create_inclusion_query(variant_category=kn.mutation_list_col,
+                                            key=kn.hugo_symbol_col,
+                                            val='BRAF')
+        assert res == {kn.mutation_list_col: {'$elemMatch': {kn.hugo_symbol_col: 'BRAF'}}}
 
-        # exclusion query
-        exclusion_query = {kn.mutation_list_col: {'$elemMatch': {kn.hugo_symbol_col: {'$ne': 'BRAF'}}}}
-        q2 = self.q.augment_exclusion_queries(query=exclusion_query,
-                                              variant_category=s.variant_category_mutation_val,
-                                              include=False)
-        res2 = self._findall(q2)
-        assert len(res2) == 2, res2
-        assert sorted([i[kn.sample_id_col] for i in res2]) == sorted(['TEST-SAMPLE-EGFR',
-                                                                      'TEST-SAMPLE-NO-MUTATION']), res2
+    def test_create_exclusion_query(self):
 
-    def test_create_no_variants_query(self):
-
-        q1 = self.q.create_no_variants_query(variant_category=s.variant_category_mutation_val)
-        q2 = self.q.create_no_variants_query(variant_category=s.variant_category_cnv_val)
-        q3 = self.q.create_no_variants_query(variant_category=s.variant_category_sv_val)
-        res1 = self._findall(q1)
-        res2 = self._findall(q2)
-        res3 = self._findall(q3)
-
-        assert len(res1) == 1, res1
-        assert res1[0][kn.sample_id_col] == 'TEST-SAMPLE-NO-MUTATION', res1[0][kn.sample_id_col]
-        assert len(res2) == 0, res2
-        assert len(res3) == 0, res3
+        res = self.q.create_exclusion_query(variant_category=kn.mutation_list_col,
+                                            key=kn.hugo_symbol_col,
+                                            val='BRAF')
+        assert res == {
+            '$or': [
+                {kn.mutation_list_col: {'$not': {'$elemMatch': {kn.hugo_symbol_col: 'BRAF'}}}},
+                {kn.mutation_list_col: []},
+                {kn.mutation_list_col: {'$exists': False}}
+            ]
+        }

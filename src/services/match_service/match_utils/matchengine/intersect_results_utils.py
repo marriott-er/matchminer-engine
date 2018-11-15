@@ -45,7 +45,7 @@ class IntersectResultsUtils(object):
                     continue
 
                 # when the match already exists, we check the child's match to see if reasons need to be added
-                if child_match[kn.sample_id_col] in old_sample_ids:
+                if child_match[kn.sample_id_col] in old_sample_ids and node['type'] == 'and':
                     old_match = self._filter_matches(node=node, sample_ids=[child_sample_id])[0]
 
                     # update clinical and signature reasons

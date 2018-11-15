@@ -20,7 +20,7 @@ class TestSharedUtils(TestQueryUtilitiesShared):
 
         self.add_test_trials()
         res1 = self.s.find_trials()
-        assert len(res1) == 7, len(res1)
+        assert len(res1) == 10, len(res1)
         assert sorted(res1[0].keys()) == sorted([s.trial_protocol_no_col, s.trial_nct_id_col,
                                                  s.trial_treatment_list_col]), sorted(res1[0].keys())
 

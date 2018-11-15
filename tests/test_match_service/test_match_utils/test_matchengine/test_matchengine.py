@@ -23,29 +23,11 @@ class TestMatchEngine(TestQueryUtilitiesShared):
         t = TrialUtils(trial=trial)
         return t.parse_match_trees_from_trial()[0]
 
-    def test_proof_of_concept(self):
-
-        # todo NOTE: this isn't really a unit test
-
-        trial = self.load_trial(trial='10-113')
-        print trial
-        t = TrialUtils(trial=trial)
-        matchengines = t.parse_match_trees_from_trial()
-        matchengine = matchengines[0]
-        print 'match tree'
-        self._print(matchengine.match_tree)
-
-        matchengine.convert_match_tree_to_digraph()
-        matchengine.traverse_match_tree()
-        print
-        print 'query'
-        self._print(matchengine.query)
-
     def test_complex_conversion(self):
 
         # set up matching records
-        doc = {
-            kn.sample_id_col: 'MATCHES-COMPLEX-TREE-01',
+        doc1 = {
+            kn.sample_id_col: 'DEV-01',
             kn.mrn_col: '01',
             kn.vital_status_col: 'alive',
             kn.oncotree_primary_diagnosis_name_col: 'Lung Adenocarcinoma',
@@ -53,13 +35,194 @@ class TestMatchEngine(TestQueryUtilitiesShared):
             kn.mutation_list_col: [
                 {kn.hugo_symbol_col: 'EGFR', kn.transcript_exon_col: 19, kn.variant_class_col: 'In_Frame_Del'}
             ]
-        }
-        self.db[s.sample_collection_name].insert_many([doc])
+        }  # (y)
+        doc2 = {
+            kn.sample_id_col: 'DEV-02',
+            kn.mrn_col: '01',
+            kn.vital_status_col: 'alive',
+            kn.oncotree_primary_diagnosis_name_col: 'Lung Adenocarcinoma',
+            kn.birth_date_col: dt.datetime(year=1900, day=1, month=1),
+            kn.mutation_list_col: [
+                {
+                    kn.hugo_symbol_col: 'EGFR',
+                    kn.variant_category_col: s.variant_category_mutation_val,
+                    kn.protein_change_col: 'p.XXXX'
+                },
+                {
+                    kn.hugo_symbol_col: 'EGFR',
+                    kn.variant_category_col: s.variant_category_mutation_val,
+                    kn.protein_change_col: 'p.E709K'
+                }
+            ]
+        }  # (y)
+        doc3 = {
+            kn.sample_id_col: 'DEV-03',
+            kn.mrn_col: '01',
+            kn.vital_status_col: 'alive',
+            kn.oncotree_primary_diagnosis_name_col: 'Lung Adenocarcinoma',
+            kn.birth_date_col: dt.datetime(year=1900, day=1, month=1),
+            kn.mutation_list_col: [
+                {
+                    kn.hugo_symbol_col: 'EGFR',
+                    kn.variant_category_col: s.variant_category_mutation_val,
+                    kn.protein_change_col: 'p.XXXX'
+                },
+                {
+                    kn.hugo_symbol_col: 'EGFR',
+                    kn.variant_category_col: s.variant_category_mutation_val,
+                    kn.protein_change_col: 'p.E709K'
+                }
+            ],
+            kn.sv_list_col: [{kn.sv_comment_col: 'This contains an ALK SV'}]
+        }  # (n)
+        doc4 = {
+            kn.sample_id_col: 'DEV-04',
+            kn.mrn_col: '01',
+            kn.vital_status_col: 'alive',
+            kn.oncotree_primary_diagnosis_name_col: 'Melanoma',
+            kn.birth_date_col: dt.datetime(year=1900, day=1, month=1),
+            kn.mutation_list_col: [
+                {
+                    kn.hugo_symbol_col: 'EGFR',
+                    kn.variant_category_col: s.variant_category_mutation_val,
+                    kn.protein_change_col: 'p.XXXX'
+                },
+                {
+                    kn.hugo_symbol_col: 'EGFR',
+                    kn.variant_category_col: s.variant_category_mutation_val,
+                    kn.protein_change_col: 'p.E709K'
+                }
+            ]
+        }  # (n)
+        doc5 = {
+            kn.sample_id_col: 'DEV-05',
+            kn.mrn_col: '01',
+            kn.vital_status_col: 'alive',
+            kn.oncotree_primary_diagnosis_name_col: 'Lung Adenocarcinoma',
+            kn.birth_date_col: dt.datetime(year=1900, day=1, month=1),
+            kn.mutation_list_col: [
+                {
+                    kn.hugo_symbol_col: 'EGFR',
+                    kn.variant_category_col: s.variant_category_mutation_val,
+                    kn.protein_change_col: 'p.L833V'
+                },
+                {
+                    kn.hugo_symbol_col: 'EGFR',
+                    kn.variant_category_col: s.variant_category_mutation_val,
+                    kn.protein_change_col: 'p.E709K'
+                },
+                {
+                    kn.hugo_symbol_col: 'BRAF',
+                    kn.variant_category_col: s.variant_category_mutation_val,
+                    kn.protein_change_col: 'p.V600D'
+                }
+            ]
+        }  # (y)
+        doc6 = {
+            kn.sample_id_col: 'DEV-06',
+            kn.mrn_col: '01',
+            kn.vital_status_col: 'alive',
+            kn.oncotree_primary_diagnosis_name_col: 'Lung Adenocarcinoma',
+            kn.birth_date_col: dt.datetime(year=1900, day=1, month=1),
+            kn.mutation_list_col: [
+                {
+                    kn.hugo_symbol_col: 'EGFR',
+                    kn.variant_category_col: s.variant_category_mutation_val,
+                    kn.protein_change_col: 'p.XXXX'
+                },
+                {
+                    kn.hugo_symbol_col: 'EGFR',
+                    kn.variant_category_col: s.variant_category_mutation_val,
+                    kn.protein_change_col: 'p.E709K'
+                },
+                {
+                    kn.hugo_symbol_col: 'BRAF',
+                    kn.variant_category_col: s.variant_category_mutation_val,
+                    kn.protein_change_col: 'p.V600E'
+                }
+            ]
+        }  # (y)
+
+        self.db[s.sample_collection_name].insert_many([doc1, doc2, doc3, doc4, doc5, doc6])
 
         # find matches
         me = MatchEngine(match_tree=self.complex_match_tree, trial_info={})
         me.convert_match_tree_to_digraph()
         me.traverse_match_tree()
+        self._print(me.matches)
+        assert sorted(list(set([i[kn.sample_id_col] for i in me.matches]))) == ['DEV-01', 'DEV-02', 'DEV-05'], \
+            sorted([i[kn.sample_id_col] for i in me.matches])
+
+    def test_combination_match(self):
+
+        # set up matching records
+        doc1 = {
+            kn.sample_id_col: 'DEV-01',
+            kn.mrn_col: '01',
+            kn.vital_status_col: 'alive',
+            kn.oncotree_primary_diagnosis_name_col: 'Lung Adenocarcinoma',
+            kn.birth_date_col: dt.datetime(year=1900, day=1, month=1),
+            kn.mutation_list_col: [
+                {
+                    kn.hugo_symbol_col: 'EGFR',
+                    kn.variant_category_col: s.variant_category_mutation_val,
+                    kn.protein_change_col: 'p.E709K'
+                },
+                {
+                    kn.hugo_symbol_col: 'BRAF',
+                    kn.variant_category_col: s.variant_category_mutation_val,
+                    kn.protein_change_col: 'p.V600E'
+                }
+            ]
+        }
+        doc2 = {
+            kn.sample_id_col: 'DEV-02',
+            kn.mrn_col: '01',
+            kn.vital_status_col: 'alive',
+            kn.oncotree_primary_diagnosis_name_col: 'Lung Adenocarcinoma',
+            kn.birth_date_col: dt.datetime(year=1900, day=1, month=1),
+            kn.mutation_list_col: [
+                {
+                    kn.hugo_symbol_col: 'BRAF',
+                    kn.variant_category_col: s.variant_category_mutation_val,
+                    kn.protein_change_col: 'p.V600E'
+                }
+            ]
+        }
+        doc3 = {
+            kn.sample_id_col: 'DEV-03',
+            kn.mrn_col: '01',
+            kn.vital_status_col: 'alive',
+            kn.oncotree_primary_diagnosis_name_col: 'Lung Adenocarcinoma',
+            kn.birth_date_col: dt.datetime(year=1900, day=1, month=1),
+            kn.mutation_list_col: [
+                {
+                    kn.hugo_symbol_col: 'EGFR',
+                    kn.variant_category_col: s.variant_category_mutation_val,
+                    kn.protein_change_col: 'p.E709K'
+                }
+            ]
+        }
+
+        self.db[s.sample_collection_name].insert_many([doc1, doc2, doc3])
+
+        # find matches
+        me = MatchEngine(match_tree=self.simple_and_tree, trial_info={})
+        me.convert_match_tree_to_digraph()
+        me.traverse_match_tree()
+        print '---AND---'
+        self._print(me.matches)
+
+        me = MatchEngine(match_tree=self.simple_or_tree, trial_info={})
+        me.convert_match_tree_to_digraph()
+        me.traverse_match_tree()
+        print '\n---OR---'
+        self._print(me.matches)
+
+        me = MatchEngine(match_tree=self.complex_or_tree, trial_info={})
+        me.convert_match_tree_to_digraph()
+        me.traverse_match_tree()
+        print '\n---COMPLEX OR---'
         self._print(me.matches)
 
     def test_convert_match_tree_to_digraph(self):
@@ -154,62 +317,3 @@ class TestMatchEngine(TestQueryUtilitiesShared):
                 kn.mutation_list_col: s.variant_category_mutation_val
             }]
         }, m[1]
-
-    def test_intersect_results(self):
-
-        # AND #
-        children = [
-            {
-                'type': 'genomic',
-                'matches': [
-                    {
-                        'mrn': '01',
-                        'sampleId': 'MATCHES-COMPLEX-TREE-01',
-                        'vitalStatus': 'alive',
-                        'genomic_exclusion_reasons': {
-                            'hugoSymbol': 'BRAF',
-                            'proteinChange': 'p.V600E',
-                            'mutations': 'MUTATION'
-                        },
-                    }
-                ]
-            },
-            {
-                'type': 'genomic',
-                'matches': [
-                    {
-                        'mrn': '01',
-                        'sampleId': 'MATCHES-COMPLEX-TREE-01',
-                        'vitalStatus': 'alive',
-                        'genomic_exclusion_reasons': {
-                            'hugoSymbol': 'BRAF',
-                            'proteinChange': 'p.V600D',
-                            'mutations': 'MUTATION'
-                        },
-                    }
-                ]
-            }
-        ]
-        node = {'type': 'and'}
-
-        me = MatchEngine(match_tree=self.complex_match_tree, trial_info={})
-        node = me._intersect_results(node=node, children=children)
-        self._print(node)
-        assert node['matches'] == [{
-            kn.mrn_col: '01',
-            kn.sample_id_col: 'MATCHES-COMPLEX-TREE-01',
-            kn.vital_status_col: 'alive',
-            'genomic_exclusion_reasons': [
-                {
-                    kn.hugo_symbol_col: 'BRAF',
-                    kn.protein_change_col: 'p.V600E',
-                    kn.mutation_list_col: 'MUTATION'
-                },
-                {
-                    kn.hugo_symbol_col: 'BRAF',
-                    kn.protein_change_col: 'p.V600D',
-                    kn.mutation_list_col: 'MUTATION'
-                }
-            ]
-        }]
-        assert node['type'] == 'and'

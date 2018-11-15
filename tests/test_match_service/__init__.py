@@ -851,14 +851,14 @@ class TestQueryUtilitiesShared(unittest.TestCase):
             'and': [
                 {
                     'genomic': {
-                        'hugo_symbol': 'BRAF',
-                        'variant_category': 'Mutation'
+                        s.mt_hugo_symbol: 'BRAF',
+                        s.mt_variant_category: 'Mutation'
                     }
                 },
                 {
                     'clinical': {
-                        'age_numerical': '>=18',
-                        'oncotree_primary_diagnosis': 'Leiomyosarcoma'
+                        s.mt_age: '>=18',
+                        s.mt_diagnosis: 'Leiomyosarcoma'
                     }
                 }
             ]
@@ -867,14 +867,14 @@ class TestQueryUtilitiesShared(unittest.TestCase):
             'and': [
                 {
                     'genomic': {
-                        'hugo_symbol': 'BRAF',
-                        'variant_category': 'Mutation'
+                        s.mt_hugo_symbol: 'BRAF',
+                        s.mt_variant_category: 'Mutation'
                     }
                 },
                 {
                     'clinical': {
-                        'age_numerical': '>=18',
-                        'oncotree_primary_diagnosis': '_SOLID_'
+                        s.mt_age: '>=18',
+                        s.mt_diagnosis: '_SOLID_'
                     }
                 }
             ]
@@ -883,14 +883,14 @@ class TestQueryUtilitiesShared(unittest.TestCase):
             'and': [
                 {
                     'genomic': {
-                        'hugo_symbol': 'BRAF',
-                        'variant_category': 'Mutation'
+                        s.mt_hugo_symbol: 'BRAF',
+                        s.mt_variant_category: 'Mutation'
                     }
                 },
                 {
                     'clinical': {
-                        'gender': 'Male',
-                        'oncotree_primary_diagnosis': '_SOLID_'
+                        s.mt_gender: 'Male',
+                        s.mt_diagnosis: '_SOLID_'
                     }
                 }
             ]
@@ -899,14 +899,14 @@ class TestQueryUtilitiesShared(unittest.TestCase):
             'and': [
                 {
                     'genomic': {
-                        'hugo_symbol': 'BRAF',
-                        'variant_category': 'Mutation'
+                        s.mt_hugo_symbol: 'BRAF',
+                        s.mt_variant_category: 'Mutation'
                     }
                 },
                 {
                     'clinical': {
-                        'gender': 'Female',
-                        'oncotree_primary_diagnosis': '_LIQUID_'
+                        s.mt_gender: 'Female',
+                        s.mt_diagnosis: '_LIQUID_'
                     }
                 }
             ]
@@ -915,14 +915,14 @@ class TestQueryUtilitiesShared(unittest.TestCase):
             'and': [
                 {
                     'genomic': {
-                        'hugo_symbol': 'BRAF',
-                        'variant_category': 'Copy Number Variation'
+                        s.mt_hugo_symbol: 'BRAF',
+                        s.mt_variant_category: 'Copy Number Variation'
                     }
                 },
                 {
                     'clinical': {
-                        'age_numerical': '<18',
-                        'oncotree_primary_diagnosis': 'Hodgkin Lymphoma'
+                        s.mt_age: '<18',
+                        s.mt_diagnosis: 'Hodgkin Lymphoma'
                     }
                 }
             ]
@@ -935,15 +935,15 @@ class TestQueryUtilitiesShared(unittest.TestCase):
                             'and': [
                                 {
                                     'genomic': {
-                                        'hugo_symbol': 'BRAF',
-                                        'protein_change': 'p.V600E',
-                                        'variant_category': '!Mutation'
+                                        s.mt_hugo_symbol: 'BRAF',
+                                        s.mt_protein_change: 'p.V600E',
+                                        s.mt_variant_category: '!Mutation'
                                     }
                                 },
                                 {
                                     'genomic': {
-                                        'hugo_symbol': 'TP53',
-                                        'protein_change': 'p.R278W'
+                                        s.mt_hugo_symbol: 'TP53',
+                                        s.mt_protein_change: 'p.R278W'
                                     }
                                 }
                             ]
@@ -952,15 +952,15 @@ class TestQueryUtilitiesShared(unittest.TestCase):
                             'and': [
                                 {
                                     'genomic': {
-                                        'hugo_symbol': 'BRAF',
-                                        'protein_change': 'p.V600D',
-                                        'variant_category': '!Mutation'
+                                        s.mt_hugo_symbol: 'BRAF',
+                                        s.mt_protein_change: 'p.V600D',
+                                        s.mt_variant_category: '!Mutation'
                                     }
                                 },
                                 {
                                     'genomic': {
-                                        'hugo_symbol': 'TP53',
-                                        'protein_change': 'R278X'
+                                        s.mt_hugo_symbol: 'TP53',
+                                        s.mt_protein_change: 'R278X'
                                     }
                                 }
                             ]
@@ -971,13 +971,13 @@ class TestQueryUtilitiesShared(unittest.TestCase):
                     'and': [
                         {
                             'clinical': {
-                                'age_numerical': '<18',
-                                'oncotree_primary_diagnosis': '_SOLID_'
+                                s.mt_age: '<18',
+                                s.mt_diagnosis: '_SOLID_'
                             }
                         },
                         {
                             'clinical': {
-                                'oncotree_primary_diagnosis': '!Melanoma'
+                                s.mt_diagnosis: '!Melanoma'
                             }
                         }
                     ]
@@ -994,166 +994,252 @@ class TestQueryUtilitiesShared(unittest.TestCase):
                                 {
                                     'genomic': {
                                         'exon': 19,
-                                        'hugo_symbol': 'EGFR',
-                                        'variant_category': 'Mutation',
-                                        'variant_classification': 'In_Frame_Del'
+                                        s.mt_hugo_symbol: 'EGFR',
+                                        s.mt_variant_category: 'Mutation',
+                                        s.mt_variant_class: 'In_Frame_Del'
                                     }
                                 },
                                 {
                                     'genomic': {
                                         'exon': 19,
-                                        'hugo_symbol': 'EGFR',
-                                        'variant_category': 'Mutation',
-                                        'variant_classification': 'In_Frame_Ins'
+                                        s.mt_hugo_symbol: 'EGFR',
+                                        s.mt_variant_category: 'Mutation',
+                                        s.mt_variant_class: 'In_Frame_Ins'
                                     }
                                 },
                                 {
                                     'genomic': {
-                                        'hugo_symbol': 'EGFR',
-                                        'variant_category': 'Mutation',
-                                        'protein_change': 'p.E709K'
+                                        s.mt_hugo_symbol: 'EGFR',
+                                        s.mt_variant_category: 'Mutation',
+                                        s.mt_protein_change: 'p.E709K'
                                     }
                                 },
                                 {
                                     'genomic': {
-                                        'hugo_symbol': 'EGFR',
-                                        'variant_category': 'Mutation',
-                                        'protein_change': 'p.G719S'
+                                        s.mt_hugo_symbol: 'EGFR',
+                                        s.mt_variant_category: 'Mutation',
+                                        s.mt_protein_change: 'p.G719S'
                                     }
                                 },
                                 {
                                     'genomic': {
-                                        'hugo_symbol': 'EGFR',
-                                        'variant_category': 'Mutation',
-                                        'protein_change': 'p.G719A'
+                                        s.mt_hugo_symbol: 'EGFR',
+                                        s.mt_variant_category: 'Mutation',
+                                        s.mt_protein_change: 'p.G719A'
                                     }
                                 },
                                 {
                                     'genomic': {
-                                        'hugo_symbol': 'EGFR',
-                                        'variant_category': 'Mutation',
-                                        'protein_change': 'p.G719D'
+                                        s.mt_hugo_symbol: 'EGFR',
+                                        s.mt_variant_category: 'Mutation',
+                                        s.mt_protein_change: 'p.G719D'
                                     }
                                 },
                                 {
                                     'genomic': {
-                                        'hugo_symbol': 'EGFR',
-                                        'variant_category': 'Mutation',
-                                        'protein_change': 'p.G719C'
+                                        s.mt_hugo_symbol: 'EGFR',
+                                        s.mt_variant_category: 'Mutation',
+                                        s.mt_protein_change: 'p.G719C'
                                     }
                                 },
                                 {
                                     'genomic': {
-                                        'hugo_symbol': 'EGFR',
-                                        'variant_category': 'Mutation',
-                                        'protein_change': 'p.L747P'
+                                        s.mt_hugo_symbol: 'EGFR',
+                                        s.mt_variant_category: 'Mutation',
+                                        s.mt_protein_change: 'p.L747P'
                                     }
                                 },
                                 {
                                     'genomic': {
-                                        'hugo_symbol': 'EGFR',
-                                        'variant_category': 'Mutation',
-                                        'protein_change': 'p.A750P'
+                                        s.mt_hugo_symbol: 'EGFR',
+                                        s.mt_variant_category: 'Mutation',
+                                        s.mt_protein_change: 'p.A750P'
                                     }
                                 },
                                 {
                                     'genomic': {
-                                        'hugo_symbol': 'EGFR',
-                                        'variant_category': 'Mutation',
-                                        'protein_change': 'p.S768I'
+                                        s.mt_hugo_symbol: 'EGFR',
+                                        s.mt_variant_category: 'Mutation',
+                                        s.mt_protein_change: 'p.S768I'
                                     }
                                 },
                                 {
                                     'genomic': {
-                                        'hugo_symbol': 'EGFR',
-                                        'variant_category': 'Mutation',
-                                        'protein_change': 'p.L833V'
+                                        s.mt_hugo_symbol: 'EGFR',
+                                        s.mt_variant_category: 'Mutation',
+                                        s.mt_protein_change: 'p.L833V'
                                     }
                                 },
                                 {
                                     'genomic': {
-                                        'hugo_symbol': 'EGFR',
-                                        'variant_category': 'Mutation',
-                                        'protein_change': 'p.L858R'
+                                        s.mt_hugo_symbol: 'EGFR',
+                                        s.mt_variant_category: 'Mutation',
+                                        s.mt_protein_change: 'p.L858R'
                                     }
                                 },
                                 {
                                     'genomic': {
-                                        'hugo_symbol': 'EGFR',
-                                        'variant_category': 'Mutation',
-                                        'protein_change': 'p.L861R'
+                                        s.mt_hugo_symbol: 'EGFR',
+                                        s.mt_variant_category: 'Mutation',
+                                        s.mt_protein_change: 'p.L861R'
                                     }
                                 },
                                 {
                                     'genomic': {
-                                        'hugo_symbol': 'EGFR',
-                                        'variant_category': 'Mutation',
-                                        'protein_change': 'p.L861R'
+                                        s.mt_hugo_symbol: 'EGFR',
+                                        s.mt_variant_category: 'Mutation',
+                                        s.mt_protein_change: 'p.L861R'
                                     }
                                 }
                             ]
                         },
                         {
                             'genomic': {
-                                'hugo_symbol': 'ALK',
-                                'variant_category': '!Structural Variation'
+                                s.mt_hugo_symbol: 'ALK',
+                                s.mt_variant_category: '!Structural Variation'
                             }
                         },
                         {
                             'genomic': {
-                                'hugo_symbol': 'ROS1',
-                                'variant_category': '!Structural Variation'
+                                s.mt_hugo_symbol: 'ROS1',
+                                s.mt_variant_category: '!Structural Variation'
                             }
                         },
                         {
                             'genomic': {
-                                'hugo_symbol': 'RET',
-                                'variant_category': '!Structural Variation'
+                                s.mt_hugo_symbol: 'RET',
+                                s.mt_variant_category: '!Structural Variation'
                             }
                         },
                         {
                             'genomic': {
-                                'hugo_symbol': 'MET',
-                                'cnv_call': 'High Amplification',
-                                'variant_category': '!Copy Number Variation'
+                                s.mt_hugo_symbol: 'MET',
+                                s.mt_cnv_call: 'High Amplification',
+                                s.mt_variant_category: '!Copy Number Variation'
                             }
                         },
                         {
                             'genomic': {
-                                'hugo_symbol': 'MET',
-                                'variant_category': '!Structural Variation'
+                                s.mt_hugo_symbol: 'MET',
+                                s.mt_variant_category: '!Structural Variation'
                             }
                         },
                         {
                             'genomic': {
                                 'exon': 14,
-                                'hugo_symbol': 'MET',
-                                'variant_category': '!Mutation',
-                                'variant_classification': 'In_Frame_Del'
+                                s.mt_hugo_symbol: 'MET',
+                                s.mt_variant_category: '!Mutation',
+                                s.mt_variant_class: 'In_Frame_Del'
                             }
                         },
                         {
                             'genomic': {
-                                'hugo_symbol': 'ERBB2',
-                                'variant_category': '!Mutation',
+                                s.mt_hugo_symbol: 'ERBB2',
+                                s.mt_variant_category: '!Mutation',
                             }
                         },
                         {
                             'genomic': {
-                                'hugo_symbol': 'BRAF',
-                                'protein_change': 'p.V600E',
-                                'variant_category': '!Mutation',
+                                s.mt_hugo_symbol: 'BRAF',
+                                s.mt_protein_change: 'p.V600E',
+                                s.mt_variant_category: '!Mutation',
                             }
                         }
                     ]
                 },
                 {
                     'clinical': {
-                        'age_numerical': '>=18',
-                        'oncotree_primary_diagnosis': 'Lung Adenocarcinoma'
+                        s.mt_age: '>=18',
+                        s.mt_diagnosis: 'Lung Adenocarcinoma'
                     }
                 }
             ]
+        }
+
+        self.simple_and_tree = {
+            'and': [
+                {
+                    'genomic': {
+                        s.mt_hugo_symbol: 'EGFR',
+                        s.mt_variant_category: 'Mutation',
+                        s.mt_protein_change: 'p.E709K'
+                    }
+                },
+                {
+                    'genomic': {
+                        s.mt_hugo_symbol: 'BRAF',
+                        s.mt_variant_category: 'Mutation',
+                        s.mt_protein_change: 'p.V600E'
+                    }
+                }
+            ]
+        }
+        self.simple_or_tree = {
+            'and': [
+                {
+                    'or': [
+                        {
+                            'genomic': {
+                                s.mt_hugo_symbol: 'EGFR',
+                                s.mt_variant_category: 'Mutation',
+                                s.mt_protein_change: 'p.E709K'
+                            }
+                        },
+                        {
+                            'genomic': {
+                                s.mt_hugo_symbol: 'BRAF',
+                                s.mt_variant_category: 'Mutation',
+                                s.mt_protein_change: 'p.V600E'
+                            }
+                        }
+                    ]
+                },
+                {
+                    'clinical': {
+                        s.mt_diagnosis: 'Lung Adenocarcinoma'
+                    }
+                }
+            ]
+
+        }
+        self.complex_or_tree = {
+            'and': [
+                {
+                    'or': [
+                        {
+                            'and': [
+                                {
+                                    'genomic': {
+                                        s.mt_hugo_symbol: 'EGFR',
+                                        s.mt_variant_category: 'Mutation',
+                                        s.mt_protein_change: 'p.E709K'
+                                    }
+                                },
+                                {
+                                    'genomic': {
+                                        s.mt_hugo_symbol: 'AKT',
+                                        s.mt_variant_category: 'Mutation',
+                                        s.mt_protein_change: 'p.E17K'
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            'genomic': {
+                                s.mt_hugo_symbol: 'BRAF',
+                                s.mt_variant_category: 'Mutation',
+                                s.mt_protein_change: 'p.V600E'
+                            }
+                        }
+                    ]
+                },
+                {
+                    'clinical': {
+                        s.mt_diagnosis: 'Lung Adenocarcinoma'
+                    }
+                }
+            ]
+
         }
 
     def add_test_trials(self):

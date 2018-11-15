@@ -52,7 +52,7 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
         }, p1
         assert p2 == {
             self.p.hugo_symbol_key: 'BRAF',
-            kn.mutation_list_col: s.variant_category_mutation_val
+            kn.variant_category_col: s.variant_category_mutation_val
         }, p2
 
         # clean up
@@ -111,7 +111,7 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
         assert p2 == {
             self.p.hugo_symbol_key: 'BRAF',
             self.p.protein_change_key: 'p.V600E',
-            kn.mutation_list_col: s.variant_category_mutation_val
+            kn.variant_category_col: s.variant_category_mutation_val
         }, p2
         assert p3 == {
             '_id': 0, kn.sample_id_col: 1, kn.mrn_col: 1, kn.vital_status_col: 1,
@@ -120,7 +120,7 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
         assert p4 == {
             self.p.hugo_symbol_key: 'BRAF',
             self.p.protein_change_key: 'p.V600D',
-            kn.mutation_list_col: s.variant_category_mutation_val
+            kn.variant_category_col: s.variant_category_mutation_val
         }, p4
 
         # clean up
@@ -163,7 +163,7 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
         assert p2 == {
             self.p.hugo_symbol_key: 'BRAF',
             self.p.ref_residue_key: 'p.V600',
-            kn.mutation_list_col: s.variant_category_mutation_val
+            kn.variant_category_col: s.variant_category_mutation_val
         }, p2
 
         # clean up
@@ -228,7 +228,7 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
         assert p2 == {
             self.p.hugo_symbol_key: 'BRAF',
             self.p.transcript_exon_key: 20,
-            kn.mutation_list_col: s.variant_category_mutation_val
+            kn.variant_category_col: s.variant_category_mutation_val
         }, p2
         assert p3 == {
             '_id': 0, kn.sample_id_col: 1, kn.mrn_col: 1, kn.vital_status_col: 1,
@@ -238,7 +238,7 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
             self.p.hugo_symbol_key: 'BRAF',
             self.p.transcript_exon_key: 20,
             self.p.variant_class_key: 'In_Frame_Ins',
-            kn.mutation_list_col: s.variant_category_mutation_val
+            kn.variant_category_col: s.variant_category_mutation_val
         }, p4
 
         # clean up
@@ -284,7 +284,7 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
         }, p1
         assert p2 == {
             self.p.hugo_symbol_key: 'BRAF',
-            kn.cnv_list_col: s.variant_category_cnv_val
+            kn.variant_category_col: s.variant_category_cnv_val
         }, p2
 
         # clean up
@@ -325,7 +325,7 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
         assert p2 == {
             self.p.hugo_symbol_key: 'BRAF',
             self.p.cnv_call_key: s.cnv_call_hetero_del,
-            kn.cnv_list_col: s.variant_category_cnv_val
+            kn.variant_category_col: s.variant_category_cnv_val
         }, p2
 
         # clean up
@@ -364,7 +364,7 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
         }, p1
         assert p2 == {
             self.p.hugo_symbol_key: 'NTRK1',
-            kn.sv_list_col: s.variant_category_sv_val
+            kn.variant_category_col: s.variant_category_sv_val
         }, p2
 
         # clean up
@@ -405,7 +405,7 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
         }, p1
         assert p2 == {
             self.p.hugo_symbol_key: 'BRAF',
-            kn.wt_genes_col: s.variant_category_wt_val
+            kn.variant_category_col: s.variant_category_wt_val
         }, p2
 
         # clean up

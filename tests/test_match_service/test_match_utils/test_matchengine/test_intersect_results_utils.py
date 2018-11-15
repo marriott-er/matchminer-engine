@@ -309,8 +309,7 @@ class TestIntersectResultsUtils(TestQueryUtilitiesShared):
                 kn.oncotree_primary_diagnosis_name_col: 'Lung Adenocarcinoma',
                 kn.mutation_list_col: [
                     {kn.hugo_symbol_col: 'BRAF', kn.protein_change_col: 'p.V600E'},
-                    {kn.hugo_symbol_col: 'BRAF', kn.protein_change_col: 'p.V600D'},
-                    {kn.transcript_exon_col: 14, kn.hugo_symbol_col: 'MET', kn.variant_class_col: 'In_Frame_Del'}
+                    {kn.hugo_symbol_col: 'BRAF', kn.protein_change_col: 'p.V600D'}
                 ]
             },
             {
@@ -326,6 +325,13 @@ class TestIntersectResultsUtils(TestQueryUtilitiesShared):
                 kn.oncotree_primary_diagnosis_name_col: 'Lung Adenocarcinoma',
                 kn.mutation_list_col: [
                     {kn.hugo_symbol_col: 'BRAF', kn.protein_change_col: 'p.V600D'},
+                ]
+            },
+            {
+                kn.mrn_col: '01', kn.sample_id_col: 'DEV-01',
+                kn.oncotree_primary_diagnosis_name_col: 'Lung Adenocarcinoma',
+                kn.mutation_list_col: [
+                    {kn.transcript_exon_col: 14, kn.hugo_symbol_col: 'MET', kn.variant_class_col: 'In_Frame_Del'}
                 ]
             },
             {
@@ -485,8 +491,7 @@ class TestIntersectResultsUtils(TestQueryUtilitiesShared):
                 kn.oncotree_primary_diagnosis_name_col: 'Lung Adenocarcinoma',
                 kn.mutation_list_col: [
                     {kn.hugo_symbol_col: 'BRAF', kn.protein_change_col: 'p.V600E'},
-                    {kn.hugo_symbol_col: 'BRAF', kn.protein_change_col: 'p.V600D'},
-                    {kn.transcript_exon_col: 14, kn.hugo_symbol_col: 'MET', kn.variant_class_col: 'In_Frame_Del'}
+                    {kn.hugo_symbol_col: 'BRAF', kn.protein_change_col: 'p.V600D'}
                 ]
             },
             {
@@ -502,6 +507,13 @@ class TestIntersectResultsUtils(TestQueryUtilitiesShared):
                 kn.oncotree_primary_diagnosis_name_col: 'Lung Adenocarcinoma',
                 kn.mutation_list_col: [
                     {kn.hugo_symbol_col: 'BRAF', kn.protein_change_col: 'p.V600D'},
+                ]
+            },
+            {
+                kn.mrn_col: '01', kn.sample_id_col: 'DEV-01',
+                kn.oncotree_primary_diagnosis_name_col: 'Lung Adenocarcinoma',
+                kn.mutation_list_col: [
+                    {kn.transcript_exon_col: 14, kn.hugo_symbol_col: 'MET', kn.variant_class_col: 'In_Frame_Del'}
                 ]
             },
             {
