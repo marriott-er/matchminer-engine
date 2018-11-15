@@ -105,9 +105,9 @@ class TestMatchEngine(TestQueryUtilitiesShared):
         m = me._search_for_matching_records(node=node)
         assert m[0] == {
             kn.sample_id_col: 'TEST-SAMPLE-COLON',
-            'clinical_exclusion_reasons': {
+            'clinical_exclusion_reasons': [{
                 kn.oncotree_primary_diagnosis_name_col: 'Lung'
-            }
+            }]
         }, m[0]
 
         # genomic inclusion
@@ -149,10 +149,10 @@ class TestMatchEngine(TestQueryUtilitiesShared):
         m = me._search_for_matching_records(node=node)
         assert m[1] == {
             kn.sample_id_col: 'TEST-SAMPLE-COLON',
-            'genomic_exclusion_reasons': {
+            'genomic_exclusion_reasons': [{
                 kn.hugo_symbol_col: 'BRAF',
                 kn.mutation_list_col: s.variant_category_mutation_val
-            }
+            }]
         }, m[1]
 
     def test_intersect_results(self):

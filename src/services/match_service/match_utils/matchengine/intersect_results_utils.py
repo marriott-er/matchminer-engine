@@ -24,9 +24,9 @@ class IntersectResultsUtils(object):
         :param children: {list of digraph nodes}
         :return: {digraph node}
         """
-        # todo unit test
         matched_sample_ids = self._get_sample_ids(node=children[0])
         node['matches'] = children[0]['matches'][:]
+
         for child in children[1:]:
 
             # intersect/update current set of matched sample ids with child's
@@ -39,6 +39,7 @@ class IntersectResultsUtils(object):
 
             # iterate each of this child's matches and update accordingly
             for child_match in child['matches'][:]:
+
                 child_sample_id = child_match[kn.sample_id_col]
                 if child_sample_id not in matched_sample_ids:
                     continue
@@ -57,7 +58,7 @@ class IntersectResultsUtils(object):
 
                 # or we add new matches as appropriate
                 else:
-                    node['matches'].extend(self._filter_matches(node=child, sample_ids=matched_sample_ids))
+                    node['matches'].append(child_match)
 
     @staticmethod
     def _get_sample_ids(node):
@@ -67,7 +68,6 @@ class IntersectResultsUtils(object):
         :param node: {digraph node}
         :return: {set}
         """
-        # todo unit test
         return set(i[kn.sample_id_col] for i in node['matches'])
 
     @staticmethod
@@ -79,7 +79,6 @@ class IntersectResultsUtils(object):
         :param sample_ids: {set}
         :return: {list}
         """
-        # todo unit test
         return [i for i in node['matches'] if i[kn.sample_id_col] in sample_ids]
 
     @staticmethod
@@ -93,13 +92,14 @@ class IntersectResultsUtils(object):
         :param genomic: {bool}
         :return: {dict} (old_match)
         """
-        # todo unit test
+        is_child_reason_list = {True: list.extend, False: list.append}
         for key in keys:
             if key in child_match and key not in old_match:
                 old_match[key] = child_match[key]
             elif genomic and key in child_match and key in old_match:
                 if isinstance(old_match[key], dict):
                     old_match[key] = [old_match[key]]
-                old_match[key].append(child_match[key])
+
+                is_child_reason_list[isinstance(child_match[key], list)](old_match[key], child_match[key])
 
         return old_match

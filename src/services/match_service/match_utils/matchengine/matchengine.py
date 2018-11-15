@@ -62,7 +62,6 @@ class MatchEngine(AssessNodeUtils, IntersectResultsUtils):
 
         :return: {null}
         """
-        # todo unit test
         for node_id in list(nx.dfs_postorder_nodes(self.match_tree_nx, source=1)):
 
             # access node and its children
@@ -95,7 +94,6 @@ class MatchEngine(AssessNodeUtils, IntersectResultsUtils):
         :param node: {digraph node}
         :return: {null}
         """
-        # todo unit test
         # include inclusion reasons in projection
         if 'genomic_inclusion_reasons' in node:
             proj = node['genomic_inclusion_reasons']
@@ -116,9 +114,9 @@ class MatchEngine(AssessNodeUtils, IntersectResultsUtils):
                         variant[kn.mr_reason_level_col] = node['variant_level']
 
             elif 'genomic_exclusion_reasons' in node:
-                match['genomic_exclusion_reasons'] = node['genomic_exclusion_reasons']
+                match['genomic_exclusion_reasons'] = [node['genomic_exclusion_reasons']]
             elif 'clinical_exclusion_reasons' in node:
-                match['clinical_exclusion_reasons'] = node['clinical_exclusion_reasons']
+                match['clinical_exclusion_reasons'] = [node['clinical_exclusion_reasons']]
 
         return matches
 
