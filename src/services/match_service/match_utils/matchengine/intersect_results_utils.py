@@ -8,8 +8,8 @@ class IntersectResultsUtils(object):
         self.intersection_dict = {'and': set.intersection_update, 'or': set.update}
         self.clinical_keys = [kn.oncotree_primary_diagnosis_name_col, kn.birth_date_col, kn.gender_col]
         self.genomic_keys = [
-            'genomic_exclusion_reasons',
-            'clinical_exclusion_reasons',
+            kn.genomic_exclusion_reasons_col,
+            kn.clinical_exclusion_reasons_col,
             kn.mutation_list_col,
             kn.cnv_list_col,
             kn.sv_list_col,

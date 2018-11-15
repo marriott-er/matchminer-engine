@@ -3,6 +3,7 @@ from src.data_store import key_names as kn
 from tests.test_match_service import TestQueryUtilitiesShared
 from src.services.match_service.match_utils.trial_utils import TrialUtils
 from src.services.match_service.match_utils.matchengine.matchengine import MatchEngine
+from src.data_store.trial_matches_data_model import trial_matches_schema
 
 import datetime as dt
 
@@ -17,6 +18,7 @@ class TestMatchEngine(TestQueryUtilitiesShared):
     def tearDown(self):
         self.db.testSamples.drop()
         self.db[s.sample_collection_name].drop()
+        self.db[s.trial_match_collection_name].drop()
 
     @staticmethod
     def _set_up_matchengine(trial):
@@ -150,6 +152,7 @@ class TestMatchEngine(TestQueryUtilitiesShared):
         me.convert_match_tree_to_digraph()
         me.traverse_match_tree()
         self._print(me.matches)
+        # todo is DEV-05 missing the exclusion criteria?
         assert sorted(list(set([i[kn.sample_id_col] for i in me.matches]))) == ['DEV-01', 'DEV-02', 'DEV-05'], \
             sorted([i[kn.sample_id_col] for i in me.matches])
 
@@ -262,13 +265,13 @@ class TestMatchEngine(TestQueryUtilitiesShared):
         node = {
             'type': 'clinical',
             'query': {kn.oncotree_primary_diagnosis_name_col: {'$ne': 'Lung'}},
-            'clinical_exclusion_reasons': {kn.oncotree_primary_diagnosis_name_col: 'Lung'}
+            kn.clinical_exclusion_reasons_col: {kn.oncotree_primary_diagnosis_name_col: 'Lung'}
         }
         me = MatchEngine(match_tree=None, trial_info=None)
         m = me._search_for_matching_records(node=node)
         assert m[0] == {
             kn.sample_id_col: 'TEST-SAMPLE-COLON',
-            'clinical_exclusion_reasons': [{
+            kn.clinical_exclusion_reasons_col: [{
                 kn.oncotree_primary_diagnosis_name_col: 'Lung'
             }]
         }, m[0]
@@ -290,7 +293,6 @@ class TestMatchEngine(TestQueryUtilitiesShared):
             kn.sample_id_col: 'TEST-SAMPLE-BRAF-V600E',
             kn.oncotree_primary_diagnosis_name_col: 'Breast',
             kn.mutation_list_col: [{
-                kn.mr_inclusion_criteria_col: True,
                 kn.mr_reason_level_col: 'gene',
                 kn.hugo_symbol_col: 'BRAF',
                 kn.protein_change_col: 'p.V600E',
@@ -303,7 +305,7 @@ class TestMatchEngine(TestQueryUtilitiesShared):
             'type': 'genomic',
             'query': {kn.mutation_list_col: {'$not': {'$elemMatch': {kn.hugo_symbol_col: 'BRAF'}}}},
             'variant_level': 'gene',
-            'genomic_exclusion_reasons': {
+            kn.genomic_exclusion_reasons_col: {
                 kn.hugo_symbol_col: 'BRAF',
                 kn.mutation_list_col: s.variant_category_mutation_val
             }
@@ -312,8 +314,69 @@ class TestMatchEngine(TestQueryUtilitiesShared):
         m = me._search_for_matching_records(node=node)
         assert m[1] == {
             kn.sample_id_col: 'TEST-SAMPLE-COLON',
-            'genomic_exclusion_reasons': [{
+            kn.genomic_exclusion_reasons_col: [{
                 kn.hugo_symbol_col: 'BRAF',
                 kn.mutation_list_col: s.variant_category_mutation_val
             }]
         }, m[1]
+
+    def test_create_trial_match_records(self):
+
+        trial_info = {
+            'protocol_no': '00-000',
+            'accrual_status': 'open',
+            'level': 'step',
+            'step_code': 'STEP CODE',
+            'arm_code': None
+        }
+        me = MatchEngine(match_tree=None, trial_info=trial_info)
+        me.matches = [
+            {
+                kn.genomic_exclusion_reasons_col: [
+                    {
+                        kn.variant_category_col: s.variant_category_sv_val,
+                        kn.hugo_symbol_col: 'ALK'
+                    },
+                ],
+                kn.oncotree_primary_diagnosis_name_col: 'Lung Adenocarcinoma',
+                kn.mutation_list_col: [{kn.hugo_symbol_col: 'BRAF', 'level': 'gene'}],
+                kn.birth_date_col: dt.datetime(year=1900, day=1, month=1),
+                kn.sample_id_col: 'DEV-01',
+                kn.mrn_col: '01',
+                kn.vital_status_col: 'alive'
+            },
+            {
+                kn.genomic_exclusion_reasons_col: [
+                    {
+                        kn.variant_category_col: s.variant_category_sv_val,
+                        kn.hugo_symbol_col: 'ALK'
+                    },
+                ],
+                kn.oncotree_primary_diagnosis_name_col: 'Lung Adenocarcinoma',
+                kn.mutation_list_col: [{kn.hugo_symbol_col: 'EGFR', 'level': 'gene'}],
+                kn.birth_date_col: dt.datetime(year=1900, day=1, month=1),
+                kn.sample_id_col: 'DEV-02',
+                kn.mrn_col: '01',
+                kn.vital_status_col: 'alive'
+            }
+        ]
+        me.create_trial_match_records()
+
+        trial_matches = self._findall(query={},
+                                       proj={k: 1 for k in trial_matches_schema.keys()},
+                                       table=s.trial_match_collection_name)
+        self._print(trial_matches)
+        for tm in trial_matches:
+            assert tm[kn.tm_trial_protocol_no_col] == '00-000'
+            assert tm[kn.sample_id_col] == 'DEV-01' or tm[kn.sample_id_col] == 'DEV-02'
+            assert tm[kn.mrn_col] == '01'
+            assert tm[kn.tm_sort_order_col] == 0
+            assert tm[kn.vital_status_col] == 'alive'
+            assert tm[kn.tm_trial_accrual_status_col] == 'open'
+            assert tm[kn.mr_trial_level_col] == 'step'
+            assert tm[kn.mr_trial_step_code_col] == 'STEP CODE'
+            assert tm[kn.mr_trial_arm_code_col] is None
+            assert tm[kn.mr_trial_dose_code_col] is None
+            assert kn.mutation_list_col in tm
+            assert tm[kn.oncotree_primary_diagnosis_name_col] == 'Lung Adenocarcinoma'
+            assert tm[kn.birth_date_col] == dt.datetime(year=1900, day=1, month=1)

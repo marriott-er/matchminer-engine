@@ -17,7 +17,6 @@ class QueryUtils(object):
         :param val: {any type}
         :return: {dict}
         """
-        # todo unit test
         return {variant_category: {'$elemMatch': {key: val}}}
 
     @staticmethod
@@ -30,7 +29,6 @@ class QueryUtils(object):
         :param val: {any type}
         :return: {dict}
         """
-        # todo unit test
         return {
             '$or': [
                 {variant_category: {'$not': {'$elemMatch': {key: val}}}},

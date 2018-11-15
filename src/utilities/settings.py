@@ -29,6 +29,7 @@ oncotree_all_liquid_text = '_LIQUID_'
 
 # sample table settings
 sample_collection_name = 'samples'
+trial_match_collection_name = 'trialmatches'
 variant_category_mutation_val = 'MUTATION'
 variant_category_wildcard_mutation_val = 'WILDCARD_MUTATION'
 variant_category_exon_val = 'EXON'

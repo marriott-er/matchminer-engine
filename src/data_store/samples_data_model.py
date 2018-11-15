@@ -8,7 +8,8 @@ variant_category_rules = {
     'allowed': [
         s.variant_category_mutation_val,
         s.variant_category_cnv_val,
-        s.variant_category_sv_val
+        s.variant_category_sv_val,
+        s.variant_category_wt_val
     ]
 }
 vital_status_allowed_vals = ['alive', 'deceased']
@@ -56,6 +57,10 @@ cnvs_schema = {
 svs_schema = {
     kn.variant_category_col: variant_category_rules,
     kn.sv_comment_col: {'type': 'string', 'required': True},
+}
+wts_schema = {
+    kn.variant_category_col: variant_category_rules,
+    kn.hugo_symbol_col: {'type': 'string', 'required': True},
 }
 
 low_coverage_schema = {
@@ -145,7 +150,7 @@ samples_schema = {
     kn.consent_17000_col: {'type': 'string', 'nullable': True},
 
     # wild-type information
-    kn.wt_genes_col: {'type': 'list', 'schema': {'type': 'string'}},
+    kn.wt_genes_col: {'type': 'list', 'schema': {'type': 'dict', 'schema': wts_schema}},
 
     # variant information
     kn.mutation_list_col: {'type': 'list', 'schema': {'type': 'dict', 'schema': mutations_schema}},

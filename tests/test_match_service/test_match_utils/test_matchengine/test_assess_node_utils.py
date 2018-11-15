@@ -102,8 +102,8 @@ class TestAssessNodeUtils(TestQueryUtilitiesShared):
         }
         self.a._parse_gene_level(node=node)
         assert 'query' in node
-        assert 'genomic_exclusion_reasons' in node
-        assert node['genomic_exclusion_reasons'] == {
+        assert kn.genomic_exclusion_reasons_col in node
+        assert node[kn.genomic_exclusion_reasons_col] == {
             kn.variant_category_col: s.variant_category_mutation_val,
             kn.hugo_symbol_col: 'BRAF'
         }
@@ -127,11 +127,11 @@ class TestAssessNodeUtils(TestQueryUtilitiesShared):
         }
         self.a._parse_gene_level(node=node)
         assert 'query' in node
-        assert 'genomic_exclusion_reasons' in node
-        assert node['genomic_exclusion_reasons'] == {
+        assert kn.genomic_exclusion_reasons_col in node
+        assert node[kn.genomic_exclusion_reasons_col] == {
             kn.variant_category_col: s.variant_category_cnv_val,
             kn.hugo_symbol_col: 'BRAF'
-        }, node['genomic_exclusion_reasons']
+        }, node[kn.genomic_exclusion_reasons_col]
         assert node['variant_level'] == 'gene'
 
         # inclusive sv
@@ -152,8 +152,8 @@ class TestAssessNodeUtils(TestQueryUtilitiesShared):
         }
         self.a._parse_gene_level(node=node)
         assert 'query' in node
-        assert 'genomic_exclusion_reasons' in node
-        assert node['genomic_exclusion_reasons'] == {
+        assert kn.genomic_exclusion_reasons_col in node
+        assert node[kn.genomic_exclusion_reasons_col] == {
             kn.variant_category_col: s.variant_category_sv_val,
             kn.hugo_symbol_col: 'BRAF'
         }
@@ -179,8 +179,8 @@ class TestAssessNodeUtils(TestQueryUtilitiesShared):
         }
         self.a._parse_gene_level(node=node)
         assert 'query' in node
-        assert 'genomic_exclusion_reasons' in node
-        assert node['genomic_exclusion_reasons'] == {
+        assert kn.genomic_exclusion_reasons_col in node
+        assert node[kn.genomic_exclusion_reasons_col] == {
             kn.variant_category_col: s.variant_category_sv_val,
             kn.hugo_symbol_col: 'BRAF'
         }
@@ -208,12 +208,12 @@ class TestAssessNodeUtils(TestQueryUtilitiesShared):
         }
         self.a._parse_variant_level(node=node)
         assert 'query' in node
-        assert 'genomic_exclusion_reasons' in node
-        assert node['genomic_exclusion_reasons'] == {
+        assert kn.genomic_exclusion_reasons_col in node
+        assert node[kn.genomic_exclusion_reasons_col] == {
             kn.variant_category_col: s.variant_category_mutation_val,
             kn.hugo_symbol_col: 'BRAF',
             kn.protein_change_col: 'p.V600E'
-        }, node['genomic_exclusion_reasons']
+        }, node[kn.genomic_exclusion_reasons_col]
         assert node['variant_level'] == 'variant'
 
     def test_parse_wildcard_level(self):
@@ -238,12 +238,12 @@ class TestAssessNodeUtils(TestQueryUtilitiesShared):
         }
         self.a._parse_wildcard_level(node=node)
         assert 'query' in node
-        assert 'genomic_exclusion_reasons' in node
-        assert node['genomic_exclusion_reasons'] == {
+        assert kn.genomic_exclusion_reasons_col in node
+        assert node[kn.genomic_exclusion_reasons_col] == {
             kn.variant_category_col: s.variant_category_mutation_val,
             kn.hugo_symbol_col: 'BRAF',
             kn.ref_residue_col: 'p.V600'
-        }, node['genomic_exclusion_reasons']
+        }, node[kn.genomic_exclusion_reasons_col]
         assert node['variant_level'] == 'wildcard'
 
     def test_parse_exon_level(self):
@@ -268,12 +268,12 @@ class TestAssessNodeUtils(TestQueryUtilitiesShared):
         }
         self.a._parse_exon_level(node=node)
         assert 'query' in node
-        assert 'genomic_exclusion_reasons' in node
-        assert node['genomic_exclusion_reasons'] == {
+        assert kn.genomic_exclusion_reasons_col in node
+        assert node[kn.genomic_exclusion_reasons_col] == {
             kn.variant_category_col: s.variant_category_mutation_val,
             kn.hugo_symbol_col: 'BRAF',
             kn.transcript_exon_col: 20
-        }, node['genomic_exclusion_reasons']
+        }, node[kn.genomic_exclusion_reasons_col]
         assert node['variant_level'] == 'exon'
 
     def test_parse_cnv_call(self):
@@ -298,12 +298,12 @@ class TestAssessNodeUtils(TestQueryUtilitiesShared):
         }
         self.a._parse_cnv_call(node=node)
         assert 'query' in node
-        assert 'genomic_exclusion_reasons' in node
-        assert node['genomic_exclusion_reasons'] == {
+        assert kn.genomic_exclusion_reasons_col in node
+        assert node[kn.genomic_exclusion_reasons_col] == {
             kn.variant_category_col: s.variant_category_cnv_val,
             kn.hugo_symbol_col: 'BRAF',
             kn.cnv_call_col: s.cnv_call_hetero_del
-        }, node['genomic_exclusion_reasons']
+        }, node[kn.genomic_exclusion_reasons_col]
         assert node['variant_level'] == 'variant'
 
     def test_parse_signature(self):

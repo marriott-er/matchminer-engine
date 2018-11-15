@@ -163,7 +163,7 @@ class TestIntersectResultsUtils(TestQueryUtilitiesShared):
                 {
                     kn.mrn_col: '01', kn.sample_id_col: 'DEV-02',
                     kn.oncotree_primary_diagnosis_name_col: 'Lung Adenocarcinoma',
-                    'genomic_exclusion_reasons': [
+                    kn.genomic_exclusion_reasons_col: [
                         {kn.hugo_symbol_col: 'ERBB2'},
                         {kn.hugo_symbol_col: 'BRAF', kn.protein_change_col: 'p.V600E'}
                     ]
@@ -183,14 +183,14 @@ class TestIntersectResultsUtils(TestQueryUtilitiesShared):
                 {
                     kn.mrn_col: '01', kn.oncotree_primary_diagnosis_name_col: 'Lung Adenocarcinoma',
                     kn.sample_id_col: 'DEV-01',
-                    'genomic_exclusion_reasons': [
+                    kn.genomic_exclusion_reasons_col: [
                         {kn.hugo_symbol_col: 'RET', kn.variant_category_col: s.variant_category_sv_val}
                     ]
                 },
                 {
                     kn.mrn_col: '01', kn.oncotree_primary_diagnosis_name_col: 'Lung Adenocarcinoma',
                     kn.sample_id_col: 'DEV-02',
-                    'genomic_exclusion_reasons': [
+                    kn.genomic_exclusion_reasons_col: [
                         {kn.hugo_symbol_col: 'RET', kn.variant_category_col: s.variant_category_sv_val}
                     ]
                 },
@@ -200,7 +200,7 @@ class TestIntersectResultsUtils(TestQueryUtilitiesShared):
                     kn.mutation_list_col: [
                         {kn.hugo_symbol_col: 'MET', kn.transcript_exon_col: 13, kn.variant_class_col: 'In_Frame_Del'},
                     ],
-                    'genomic_exclusion_reasons': [
+                    kn.genomic_exclusion_reasons_col: [
                         {kn.hugo_symbol_col: 'RET', kn.variant_category_col: s.variant_category_sv_val}
                     ]
                 }
@@ -215,14 +215,14 @@ class TestIntersectResultsUtils(TestQueryUtilitiesShared):
                     {kn.hugo_symbol_col: 'BRAF', kn.protein_change_col: 'p.V600E'},
                     {kn.hugo_symbol_col: 'BRAF', kn.protein_change_col: 'p.V600D'},
                 ],
-                'genomic_exclusion_reasons': [
+                kn.genomic_exclusion_reasons_col: [
                     {kn.hugo_symbol_col: 'RET', kn.variant_category_col: s.variant_category_sv_val}
                 ]
             },
             {
                 kn.mrn_col: '01', kn.sample_id_col: 'DEV-02',
                 kn.oncotree_primary_diagnosis_name_col: 'Lung Adenocarcinoma',
-                'genomic_exclusion_reasons': [
+                kn.genomic_exclusion_reasons_col: [
                     {kn.hugo_symbol_col: 'ERBB2'},
                     {kn.hugo_symbol_col: 'BRAF', kn.protein_change_col: 'p.V600E'},
                     {kn.hugo_symbol_col: 'RET', kn.variant_category_col: s.variant_category_sv_val}
@@ -235,7 +235,7 @@ class TestIntersectResultsUtils(TestQueryUtilitiesShared):
                     {kn.hugo_symbol_col: 'BRAF', kn.protein_change_col: 'p.V600D'},
                     {kn.transcript_exon_col: 13, kn.hugo_symbol_col: 'MET', kn.variant_class_col: 'In_Frame_Del'}
                 ],
-                'genomic_exclusion_reasons': [
+                kn.genomic_exclusion_reasons_col: [
                     {kn.hugo_symbol_col: 'RET', kn.variant_category_col: s.variant_category_sv_val}
                 ]
             }
@@ -391,7 +391,7 @@ class TestIntersectResultsUtils(TestQueryUtilitiesShared):
                 {
                     kn.mrn_col: '01', kn.oncotree_primary_diagnosis_name_col: 'Lung Adenocarcinoma',
                     kn.sample_id_col: 'DEV-01',
-                    'clinical_exclusion_reasons': [
+                    kn.clinical_exclusion_reasons_col: [
                         {kn.oncotree_primary_diagnosis_name_col: 'Melanoma'}
                     ]
                 },
@@ -410,7 +410,7 @@ class TestIntersectResultsUtils(TestQueryUtilitiesShared):
                     {kn.hugo_symbol_col: 'BRAF', kn.protein_change_col: 'p.V600E'},
                     {kn.hugo_symbol_col: 'BRAF', kn.protein_change_col: 'p.V600D'}
                 ],
-                'clinical_exclusion_reasons': [
+                kn.clinical_exclusion_reasons_col: [
                     {kn.oncotree_primary_diagnosis_name_col: 'Melanoma'}
                 ]
             },

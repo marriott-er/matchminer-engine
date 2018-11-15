@@ -4,6 +4,8 @@ import networkx as nx
 from src.utilities import settings as s
 from src.utilities.utilities import get_db
 from src.data_store import key_names as kn
+from src.data_store.validator import SamplesValidator
+from src.data_store.trial_matches_data_model import trial_matches_schema
 from src.services.match_service.match_utils.sort import add_sort_order
 from src.services.match_service.match_utils.matchengine.assess_node_utils import AssessNodeUtils
 from src.services.match_service.match_utils.matchengine.intersect_results_utils import IntersectResultsUtils
@@ -24,6 +26,7 @@ class MatchEngine(AssessNodeUtils, IntersectResultsUtils):
 
         self.matches = None
         self.trial_matches = None
+        self.validator = SamplesValidator(trial_matches_schema)
 
     def convert_match_tree_to_digraph(self):
         """
@@ -109,14 +112,13 @@ class MatchEngine(AssessNodeUtils, IntersectResultsUtils):
         for match in matches:
             if kn.mutation_list_col in match:
                 for variant in match[kn.mutation_list_col]:
-                    variant[kn.mr_inclusion_criteria_col] = 'genomic_inclusion_reasons' in node
                     if 'variant_level' in node:
                         variant[kn.mr_reason_level_col] = node['variant_level']
 
-            elif 'genomic_exclusion_reasons' in node:
-                match['genomic_exclusion_reasons'] = [node['genomic_exclusion_reasons']]
-            elif 'clinical_exclusion_reasons' in node:
-                match['clinical_exclusion_reasons'] = [node['clinical_exclusion_reasons']]
+            elif kn.genomic_exclusion_reasons_col in node:
+                match[kn.genomic_exclusion_reasons_col] = [node[kn.genomic_exclusion_reasons_col]]
+            elif kn.clinical_exclusion_reasons_col in node:
+                match[kn.clinical_exclusion_reasons_col] = [node[kn.clinical_exclusion_reasons_col]]
 
         return matches
 
@@ -127,38 +129,22 @@ class MatchEngine(AssessNodeUtils, IntersectResultsUtils):
 
         :return: {null}
         """
-        # todo unit test
-        trial_match_docs = []
         for sample in self.matches:
 
-            mut_reasons = []
-            cnv_reasons = []
-            sv_reasons = []
-            wt_reasons = []
-            # todo parse matched results
-            # todo add signatures
-            # todo add low coverage
+            sample[kn.tm_sort_order_col] = 0
+            sample[kn.tm_trial_protocol_no_col] = self.trial_info['protocol_no']
+            sample[kn.tm_trial_accrual_status_col] = self.trial_info['accrual_status']
+            sample[kn.mr_trial_level_col] = self.trial_info['level']
+            sample[kn.mr_trial_step_code_col] = self.trial_info['step_code']
+            sample[kn.mr_trial_arm_code_col] = self.trial_info['arm_code'] if 'arm_code' in self.trial_info else None
+            sample[kn.mr_trial_dose_code_col] = self.trial_info['dose_code'] if 'dose_code' in self.trial_info else None
 
-            match_reasons = {
-                kn.mr_trial_level_col: self.trial_info['level'],
-                kn.mr_trial_step_code_col: self.trial_info['step_code'],
-                kn.mr_trial_arm_code_col: self.trial_info['arm_code'] if 'arm_code' in self.trial_info else None,
-                kn.mr_trial_dose_code_col: self.trial_info['dose_code'] if 'dose_code' in self.trial_info else None,
-            }
-
-            trial_match_doc = {
-                kn.tm_sample_id_col: sample[kn.sample_id_col],
-                kn.tm_trial_protocol_no_col: self.trial_info['protocol_no'],
-                kn.tm_mrn_col: sample[kn.mrn_col],
-                kn.tm_vital_status_col: sample[kn.vital_status_col],
-                kn.tm_trial_accrual_status_col: self.trial_info['accrual_status'],
-                kn.tm_sort_order_col: 0,
-                kn.tm_match_reasons_col: match_reasons
-            }
-            trial_match_docs.append(trial_match_doc)
+            if not self.validator.validate_document(sample):
+                raise ValueError('%s sample did not pass data validation: %s' % (sample[kn.sample_id_col],
+                                                                                 self.validator.errors))
 
         # todo add versioning
-        res = self.db.trial_match.insert_many(trial_match_docs)
+        res = self.db[s.trial_match_collection_name].insert_many(self.matches)
         logging.info('%s | %d trial matches added' % (self.trial_info['protocol_no'], len(res.inserted_ids)))
 
     def sort_trial_matches(self):
