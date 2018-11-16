@@ -106,10 +106,36 @@ class TestSort(TestQueryUtilitiesShared):
         assert extract_tier(m6) == 1
         assert extract_tier(m7) == 1
 
+    def test_extract_match_level(self):
+
+        m1 = {}
+        m2 = {kn.mutation_list_col: []}
+        m3 = {kn.mutation_list_col: [{}]}
+        m4 = {kn.mutation_list_col: [{kn.mr_reason_level_col: 'variant'}]}
+        m5 = {kn.mutation_list_col: [{kn.mr_reason_level_col: 'variant'}, {}]}
+        m6 = {kn.mutation_list_col: [{kn.mr_reason_level_col: 'variant'}, {kn.mr_reason_level_col: 'wildcard'}]}
+        m7 = {kn.mutation_list_col: [{kn.mr_reason_level_col: 'variant'}, {kn.mr_reason_level_col: 'wildcard'},
+                                     {kn.mr_reason_level_col: 'exon'}, {kn.mr_reason_level_col: 'gene'}]}
+        m8 = {kn.mutation_list_col: [{kn.mr_reason_level_col: 'wildcard'}, {kn.mr_reason_level_col: 'exon'},
+                                     {kn.mr_reason_level_col: 'gene'}]}
+        m9 = {kn.mutation_list_col: [{kn.mr_reason_level_col: 'exon'}, {kn.mr_reason_level_col: 'gene'}]}
+        m10 = {kn.mutation_list_col: [{kn.mr_reason_level_col: 'gene'}]}
+        assert extract_match_level(m1) is None
+        assert extract_match_level(m2) is None
+        assert extract_match_level(m3) is None
+        assert extract_match_level(m4) == 'variant'
+        assert extract_match_level(m5) == 'variant'
+        assert extract_match_level(m6) == 'variant'
+        assert extract_match_level(m7) == 'variant'
+        assert extract_match_level(m8) == 'wildcard'
+        assert extract_match_level(m9) == 'exon'
+        assert extract_match_level(m10) == 'gene'
+
     def test_sort_by_tier(self):
 
-        # MMR Deficient
         m1 = ('DEV-01', '00-001')
+
+        # MMR Deficient
         sort_order = {m1: []}
         m1_data = {
             kn.mrn_col: 'MRN-01',
@@ -217,23 +243,61 @@ class TestSort(TestQueryUtilitiesShared):
 
     def test_sort_by_match_type(self):
 
-        sort_order = {('01', 'p01'): [0]}
-        match = {
-            kn.mrn_col: '01',
-            kn.sample_id_col: '01',
-            kn.tm_trial_protocol_no_col: 'p01',
-            'match_type': None
+        m1 = ('DEV-01', '00-001')
+
+        # variant-level
+        sort_order = {m1: [0]}
+        m1_data = {
+            kn.mrn_col: 'MRN-01',
+            kn.sample_id_col: m1[0],
+            kn.tm_trial_protocol_no_col: m1[1],
+            kn.mutation_list_col: [{kn.mr_reason_level_col: 'variant'}]
         }
-        sort_order = sort_by_match_type(match, sort_order)
-        assert sort_order[('01', 'p01')][1] == 2
+        sort_order = sort_by_match_type(m1_data, sort_order)
+        assert sort_order[m1][1] == 0
 
-        match['match_type'] = 'gene'
-        sort_order = sort_by_match_type(match, sort_order)
-        assert sort_order[('01', 'p01')][1] == 1
+        # wildcard-level
+        sort_order = {m1: [0]}
+        m2_data = {
+            kn.mrn_col: 'MRN-01',
+            kn.sample_id_col: m1[0],
+            kn.tm_trial_protocol_no_col: m1[1],
+            kn.mutation_list_col: [{kn.mr_reason_level_col: 'wildcard'}]
+        }
+        sort_order = sort_by_match_type(m2_data, sort_order)
+        assert sort_order[m1][1] == 1
 
-        match['match_type'] = 'variant'
-        sort_order = sort_by_match_type(match, sort_order)
-        assert sort_order[('01', 'p01')][1] == 0
+        # exon-level
+        sort_order = {m1: [0]}
+        m3_data = {
+            kn.mrn_col: 'MRN-01',
+            kn.sample_id_col: m1[0],
+            kn.tm_trial_protocol_no_col: m1[1],
+            kn.mutation_list_col: [{kn.mr_reason_level_col: 'exon'}]
+        }
+        sort_order = sort_by_match_type(m3_data, sort_order)
+        assert sort_order[m1][1] == 2
+
+        # gene-level
+        sort_order = {m1: [0]}
+        m4_data = {
+            kn.mrn_col: 'MRN-01',
+            kn.sample_id_col: m1[0],
+            kn.tm_trial_protocol_no_col: m1[1],
+            kn.mutation_list_col: [{kn.mr_reason_level_col: 'gene'}]
+        }
+        sort_order = sort_by_match_type(m4_data, sort_order)
+        assert sort_order[m1][1] == 3
+
+        # no mutation
+        sort_order = {m1: [0]}
+        m5_data = {
+            kn.mrn_col: 'MRN-01',
+            kn.sample_id_col: m1[0],
+            kn.tm_trial_protocol_no_col: m1[1],
+        }
+        sort_order = sort_by_match_type(m5_data, sort_order)
+        assert sort_order[m1][1] == 4
 
     def test_sort_by_cancer_type(self):
 

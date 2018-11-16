@@ -93,30 +93,6 @@ def add_sort_order(trial_matches):
     return s.trial_matches_df.to_json(orient='records', date_format='iso')
 
 
-def sort_by_match_type(match, sort_order):
-    """
-    Second highest priority sorting
-    """
-    # todo unit test
-    idx = (match[kn.sample_id_col], match[kn.tm_trial_protocol_no_col])
-
-    if 'match_type' in match and match['match_type'] == 'variant':
-        sort_order[idx] = add_sort_value(sort_value=0,
-                                         priority=1,
-                                         sort_order_li=sort_order[idx])
-
-    elif 'match_type' in match and match['match_type'] == 'gene':
-        sort_order[idx] = add_sort_value(sort_value=1,
-                                         priority=1,
-                                         sort_order_li=sort_order[idx])
-    else:
-        sort_order[idx] = add_sort_value(sort_value=2,
-                                         priority=1,
-                                         sort_order_li=sort_order[idx])
-
-    return sort_order
-
-
 def sort_by_cancer_type(match, sort_order):
     """
     Third highest priority sorting
@@ -245,6 +221,23 @@ def extract_tier(match):
     return min(tiers) if len(tiers) > 0 else None
 
 
+def extract_match_level(match):
+    """
+    Extract mutation level from mutation list
+
+    :param match: {dict}
+    :return: {str or null}
+    """
+    if kn.mutation_list_col not in match or len(match[kn.mutation_list_col]) == 0:
+        return None
+
+    level_dict = {'variant': 0, 'wildcard': 1, 'exon': 2, 'gene': 3}
+    flipped_level_dict = {v: k for k, v in level_dict.iteritems()}
+    levels = [level_dict[i[kn.mr_reason_level_col]] for i in match[kn.mutation_list_col]
+              if kn.mr_reason_level_col if i and i[kn.mr_reason_level_col] is not None]
+    return flipped_level_dict[min(levels)] if len(levels) > 0 else None
+
+
 # --------------- #
 # Sorting methods #
 # --------------- #
@@ -296,6 +289,41 @@ def sort_by_tier(match, sort_order):
     else:
         sort_order[idx] = add_sort_value(sort_value=7,
                                          priority=0,
+                                         sort_order_li=sort_order[idx])
+
+    return sort_order
+
+
+def sort_by_match_type(match, sort_order):
+    """
+    Second highest priority sorting
+    Variant-level match > wildcard-level match > exon-level match > gene-level match > anything else
+
+    :return {dict of lists}
+    """
+    idx = (match[kn.sample_id_col], match[kn.tm_trial_protocol_no_col])
+    level = extract_match_level(match)
+
+    if level == 'variant':
+        sort_order[idx] = add_sort_value(sort_value=0,
+                                         priority=1,
+                                         sort_order_li=sort_order[idx])
+
+    elif level == 'wildcard':
+        sort_order[idx] = add_sort_value(sort_value=1,
+                                         priority=1,
+                                         sort_order_li=sort_order[idx])
+    elif level == 'exon':
+        sort_order[idx] = add_sort_value(sort_value=2,
+                                         priority=1,
+                                         sort_order_li=sort_order[idx])
+    elif level == 'gene':
+        sort_order[idx] = add_sort_value(sort_value=3,
+                                         priority=1,
+                                         sort_order_li=sort_order[idx])
+    else:
+        sort_order[idx] = add_sort_value(sort_value=4,
+                                         priority=1,
                                          sort_order_li=sort_order[idx])
 
     return sort_order
