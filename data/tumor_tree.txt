@@ -576,4 +576,4 @@ Other (OTHER)	Cancer of Unknown Primary (CUP)	"Poorly Differentiated Carcinoma, 
 Other (OTHER)	Cancer of Unknown Primary (CUP)	Small Cell Carcinoma of Unknown Primary (SCUP)			Cancer of Unknown Primary	Black	C8099	C0280097
 Other (OTHER)	Cancer of Unknown Primary (CUP)	"Squamous Cell Carcinoma, NOS (SCCNOS)"			Cancer of Unknown Primary	Black	C8099	C0280097
 Other (OTHER)	Cancer of Unknown Primary (CUP)	Undifferentiated Malignant Neoplasm (UDMN)			Cancer of Unknown Primary	Black		
-No OncoTree Node Found (NO_ONCOTREE_NODE_FOUND)						Red		
+No OncoTree Node Found (NO_ONCOTREE_NODE_FOUND)						Red
