@@ -97,21 +97,7 @@ def add_sort_order(trial_matches):
 
 
 
-def sort_by_reverse_protocol_no(matches, sort_order):
-    """
-    Lowest priority sorting
-    """
-    # todo unit test
-    rev_prot_no_sort = sorted(matches, key=lambda k: int(k[kn.tm_trial_protocol_no_col].split('-')[0]))
-    i = 0
 
-    for match in rev_prot_no_sort[::-1]:
-
-        if len(sort_order[(match[kn.sample_id_col], match[kn.tm_trial_protocol_no_col])]) == 4:
-            sort_order[(match[kn.sample_id_col], match[kn.tm_trial_protocol_no_col])].append(i)
-            i += 1
-
-    return sort_order
 
 
 def final_sort(sort_order, master_sort_order):
@@ -319,6 +305,9 @@ def sort_by_cancer_type(match, sort_order):
 def sort_by_coordinating_center(match, sort_order):
     """
     Fourth highest priority sorting
+    DFCI > anything else
+
+    :return {dict of lists}
     """
     idx = (match[kn.sample_id_col], match[kn.tm_trial_protocol_no_col])
 
@@ -331,5 +320,24 @@ def sort_by_coordinating_center(match, sort_order):
         sort_order[idx] = add_sort_value(sort_value=1,
                                          priority=3,
                                          sort_order_li=sort_order[idx])
+
+    return sort_order
+
+
+def sort_by_reverse_protocol_no(matches, sort_order):
+    """
+    Lowest priority sorting
+    Protocol numbers from most recent years are sorted first
+
+    :return {dict of lists}
+    """
+    rev_prot_no_sort = sorted(matches, key=lambda k: int(k[kn.tm_trial_protocol_no_col].split('-')[0]))
+    i = 0
+
+    for match in rev_prot_no_sort[::-1]:
+
+        if len(sort_order[(match[kn.sample_id_col], match[kn.tm_trial_protocol_no_col])]) == 4:
+            sort_order[(match[kn.sample_id_col], match[kn.tm_trial_protocol_no_col])].append(i)
+            i += 1
 
     return sort_order

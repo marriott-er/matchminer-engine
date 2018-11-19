@@ -379,28 +379,28 @@ class TestSort(TestQueryUtilitiesShared):
     def test_sort_by_reverse_protocol_no(self):
 
         sort_order = {
-            ('01', '11-111'): [0, 0, 0, 0],
-            ('01', '09-999'): [0, 0, 0, 1],
-            ('01', '15-000'): [7, 0, 0, 0],
-            ('01', '15-111'): [7, 0, 0, 0],
-            ('01', '22-222'): [7, 1, 0, 0],
+            ('DEV-01', '11-111'): [0, 0, 0, 0],
+            ('DEV-01', '09-999'): [0, 0, 0, 1],
+            ('DEV-01', '15-000'): [7, 0, 0, 0],
+            ('DEV-01', '15-111'): [7, 0, 0, 0],
+            ('DEV-01', '22-222'): [7, 1, 0, 0],
         }
         matches = [
-            {kn.tm_trial_protocol_no_col: '11-111', kn.sample_id_col: '01'},
-            {kn.tm_trial_protocol_no_col: '09-999', kn.sample_id_col: '01'},
-            {kn.tm_trial_protocol_no_col: '15-000', kn.sample_id_col: '01'},
-            {kn.tm_trial_protocol_no_col: '15-111', kn.sample_id_col: '01'},
-            {kn.tm_trial_protocol_no_col: '22-222', kn.sample_id_col: '01'},
-            {kn.tm_trial_protocol_no_col: '22-222', kn.sample_id_col: '01'}
+            {kn.tm_trial_protocol_no_col: '11-111', kn.sample_id_col: 'DEV-01'},
+            {kn.tm_trial_protocol_no_col: '09-999', kn.sample_id_col: 'DEV-01'},
+            {kn.tm_trial_protocol_no_col: '15-000', kn.sample_id_col: 'DEV-01'},
+            {kn.tm_trial_protocol_no_col: '15-111', kn.sample_id_col: 'DEV-01'},
+            {kn.tm_trial_protocol_no_col: '22-222', kn.sample_id_col: 'DEV-01'},
+            {kn.tm_trial_protocol_no_col: '22-222', kn.sample_id_col: 'DEV-01'}
         ]
         sort_order = sort_by_reverse_protocol_no(matches, sort_order)
-        assert sort_order[('01', '11-111')] == [0, 0, 0, 0, 3]
-        assert sort_order[('01', '09-999')] == [0, 0, 0, 1, 4]
-        assert sort_order[('01', '15-000')] == [7, 0, 0, 0, 2]
-        assert sort_order[('01', '15-111')] == [7, 0, 0, 0, 1]
-        assert sort_order[('01', '15-111')] == [7, 0, 0, 0, 1]
-        assert sort_order[('01', '15-111')] == [7, 0, 0, 0, 1]
-        assert sort_order[('01', '22-222')] == [7, 1, 0, 0, 0]
+        assert sort_order[('DEV-01', '11-111')] == [0, 0, 0, 0, 3]
+        assert sort_order[('DEV-01', '09-999')] == [0, 0, 0, 1, 4]
+        assert sort_order[('DEV-01', '15-000')] == [7, 0, 0, 0, 2]
+        assert sort_order[('DEV-01', '15-111')] == [7, 0, 0, 0, 1]
+        assert sort_order[('DEV-01', '15-111')] == [7, 0, 0, 0, 1]
+        assert sort_order[('DEV-01', '15-111')] == [7, 0, 0, 0, 1]
+        assert sort_order[('DEV-01', '22-222')] == [7, 1, 0, 0, 0]
 
     def test_final_sort(self):
 
