@@ -28,90 +28,69 @@ class Sort:
         """
         self.trial_matches_df = pd.DataFrame.from_dict(self.trial_matches)
 
-        self.trial_matches_df['has_mut'] = self.trial_matches_df[kn.mutation_list_col].apply(self._has_vc)
-        self.trial_matches_df['has_cnv'] = self.trial_matches_df[kn.cnv_list_col].apply(self._has_vc)
-        self.trial_matches_df['has_sv'] = self.trial_matches_df[kn.sv_list_col].apply(self._has_vc)
-        self.trial_matches_df['has_wt'] = self.trial_matches_df[kn.wt_genes_col].apply(self._has_vc)
+        self.trial_matches_df['has_mut'] = self.trial_matches_df[kn.mutation_list_col].apply(has_vc)
+        self.trial_matches_df['has_cnv'] = self.trial_matches_df[kn.cnv_list_col].apply(has_vc)
+        self.trial_matches_df['has_sv'] = self.trial_matches_df[kn.sv_list_col].apply(has_vc)
+        self.trial_matches_df['has_wt'] = self.trial_matches_df[kn.wt_genes_col].apply(has_vc)
 
         self.all_sample_ids = self.trial_matches_df[kn.sample_id_col].unique().tolist()
         self.f_alive = (self.trial_matches_df[kn.vital_status_col] == 'alive')
         self.f_open = (self.trial_matches_df[kn.tm_trial_accrual_status_col] == 'open')
         self.f_no_svs = (self.trial_matches_df['has_sv'] == False)
 
+    def add_sort_order(self, trial_matches):
+        """
+        Aggregate all the trial matches by MRN and provide a sort order using the following logic:
+        (1) First sort by tier
+        (2) Then sort by match_type (variant > gene)
+        (3) Then sort by cancer type (specific cancer type > all solid/liquid)
+        (4) Then sort by coordinating center (DFCI > MGH)
+        (5) Then sort by reverse protocol number (high > low)
 
-def add_sort_order(trial_matches):
-    """
-    Aggregate all the trial matches by MRN and provide a sort order using the following logic:
-    (1) First sort by tier
-    (2) Then sort by match_type (variant > gene)
-    (3) Then sort by cancer type (specific cancer type > all solid/liquid)
-    (4) Then sort by coordinating center (DFCI > MGH)
-    (5) Then sort by reverse protocol number (high > low)
+        :param trial_matches: List of trial match dictionaries
+        :return: List of trial match dictionaries with sort_order column filled in:
+        """
+        # todo unit test
+        if len(trial_matches) == 0:
+            return trial_matches
 
-    :param trial_matches: List of trial match dictionaries
-    :return: List of trial match dictionaries with sort_order column filled in:
-    """
-    # todo unit test
-    if len(trial_matches) == 0:
-        return trial_matches
+        s = Sort(trial_matches=trial_matches)
+        s.prep_trial_matches()
 
-    s = Sort(trial_matches=trial_matches)
-    s.prep_trial_matches()
+        master_sort_order = {}
+        for sample_id in self.all_sample_ids:
+            f_sample_id = (self.trial_matches_df[kn.sample_id_col] == sample_id)
+            df = self.trial_matches_df[self.f_alive & self.f_open & self.f_no_svs & f_sample_id]
+            matches = df.T.to_dict().values()
 
-    master_sort_order = {}
-    for sample_id in s.all_sample_ids:
-        f_sample_id = (s.trial_matches_df[kn.sample_id_col] == sample_id)
-        df = s.trial_matches_df[s.f_alive & s.f_open & s.f_no_svs & f_sample_id]
-        matches = df.T.to_dict().values()
+            # The sort order dictionary keeps track of the priority for each sort category for each match
+            # Index 0 is sorted by tier with values 0 to 7
+            # Index 1 is sorted by match type with values 0 to 1
+            # Index 2 is sorted by cancer type match with values 0 to 2
+            # Index 3 is sorted by coordinating center with values 0 to 1
+            # Index 4 is sorted by reverse protocol number
+            sort_order = {}
 
-        # The sort order dictionary keeps track of the priority for each sort category for each match
-        # Index 0 is sorted by tier with values 0 to 7
-        # Index 1 is sorted by match type with values 0 to 1
-        # Index 2 is sorted by cancer type match with values 0 to 2
-        # Index 3 is sorted by coordinating center with values 0 to 1
-        # Index 4 is sorted by reverse protocol number
-        sort_order = {}
+            for match in matches:
 
-        for match in matches:
+                idx = (match[kn.sample_id_col], match[kn.tm_trial_protocol_no_col])
+                if idx not in sort_order:
+                    sort_order[idx] = []
 
-            idx = (match[kn.sample_id_col], match[kn.tm_trial_protocol_no_col])
-            if idx not in sort_order:
-                sort_order[idx] = []
+                sort_order = sort_by_tier(match, sort_order)
+                sort_order = sort_by_match_type(match, sort_order)
+                sort_order = sort_by_cancer_type(match, sort_order)
+                sort_order = sort_by_coordinating_center(match, sort_order)
 
-            sort_order = sort_by_tier(match, sort_order)
-            sort_order = sort_by_match_type(match, sort_order)
-            sort_order = sort_by_cancer_type(match, sort_order)
-            sort_order = sort_by_coordinating_center(match, sort_order)
+            sort_order = sort_by_reverse_protocol_no(matches, sort_order)
+            master_sort_order = final_sort(sort_order, master_sort_order)
 
-        sort_order = sort_by_reverse_protocol_no(matches, sort_order)
-        master_sort_order = final_sort(sort_order, master_sort_order)
+        s.trial_matches_df['sort_order'] = s.trial_matches_df.apply(
+            lambda x: master_sort_order[(x[kn.sample_id_col], x[kn.tm_trial_protocol_no_col])]
+            if (x[kn.sample_id_col], x[kn.tm_trial_protocol_no_col]) in master_sort_order
+            else -1, axis=1)
 
-    s.trial_matches_df['sort_order'] = s.trial_matches_df.apply(
-        lambda x: master_sort_order[(x[kn.sample_id_col], x[kn.tm_trial_protocol_no_col])]
-        if (x[kn.sample_id_col], x[kn.tm_trial_protocol_no_col]) in master_sort_order
-        else -1, axis=1)
-
-    return s.trial_matches_df.to_json(orient='records', date_format='iso')
-
-
-
-
-
-
-
-
-def final_sort(sort_order, master_sort_order):
-    # todo unit test
-    cols = ['tier', 'match_type', 'cancer_type', 'coordinating_center', 'rev_protocol_no']
-    sort_order_df = pd.DataFrame(sort_order.values(), columns=cols, index=sort_order.keys())
-    sort_order_df.sort_values(by=cols, axis=0, ascending=True, inplace=True)
-
-    j = 0
-    for idx, row in sort_order_df.iterrows():
-        master_sort_order[idx] = j
-        j += 1
-
-    return master_sort_order
+        return self.trial_matches_df.to_json(orient='records', date_format='iso')
 
 
 # --------- #
@@ -341,3 +320,23 @@ def sort_by_reverse_protocol_no(matches, sort_order):
             i += 1
 
     return sort_order
+
+
+def final_sort(sort_order, master_sort_order):
+    """
+    Perform sorting on the sort_order matrix
+
+    :param sort_order: {dict of lists}
+    :param master_sort_order: {dict of lists}
+    :return: {dict of lists}
+    """
+    cols = ['tier', 'match_type', 'cancer_type', 'coordinating_center', 'rev_protocol_no']
+    sort_order_df = pd.DataFrame(sort_order.values(), columns=cols, index=sort_order.keys())
+    sort_order_df.sort_values(by=cols, axis=0, ascending=True, inplace=True)
+
+    j = 0
+    for idx, row in sort_order_df.iterrows():
+        master_sort_order[idx] = j
+        j += 1
+
+    return master_sort_order

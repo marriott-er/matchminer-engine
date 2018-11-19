@@ -1305,3 +1305,401 @@ class TestQueryUtilitiesShared(unittest.TestCase):
     @staticmethod
     def _print(query):
         print json.dumps(query, indent=4, default=str)
+
+
+def get_demo_trial_matches():
+
+    tm1 = {
+        kn.sample_id_col: '111',
+        kn.mrn_col: '111',
+        kn.tm_trial_protocol_no_col: '111-000',
+        kn.mr_trial_level_col: 'step',
+        kn.mr_trial_step_code_col: '1',
+        kn.tm_trial_accrual_status_col: 'open',
+        kn.vital_status_col: 'alive',
+        kn.oncotree_primary_diagnosis_name_col: 'Cutaneous Melanoma',
+        kn.mr_diagnosis_level_col: 'specific',
+        kn.gender_col: 'Female',
+        kn.mr_coordinating_center_col: 'Dana-Farber Cancer Institute',
+        kn.mutation_list_col: [
+            {
+                kn.mr_reason_level_col: 'variant',
+                kn.hugo_symbol_col: 'BRAF',
+                kn.protein_change_col: 'p.V600E',
+                kn.variant_category_col: s.variant_category_mutation_val,
+                kn.variant_class_col: 'Missense_Mutation',
+                kn.transcript_exon_col: 15,
+                kn.chromosome_col: '1',
+                kn.strand_col: '-',
+                kn.position_col: 140453136,
+                kn.ref_allele_col: 'A',
+                kn.cdna_change_col: 'c.1799T>A',
+                kn.tier_col: 1,
+                kn.allele_fraction_col: 0.38
+            }
+        ]
+    }  # Tier 1 mutation (variant-level match)
+    tm2 = {
+        kn.sample_id_col: '111',
+        kn.mrn_col: '111',
+        kn.tm_trial_protocol_no_col: '222-000',
+        kn.mr_trial_level_col: 'step',
+        kn.mr_trial_step_code_col: '1',
+        kn.tm_trial_accrual_status_col: 'open',
+        kn.vital_status_col: 'alive',
+        kn.oncotree_primary_diagnosis_name_col: 'Cutaneous Melanoma',
+        kn.mr_diagnosis_level_col: 'specific',
+        kn.gender_col: 'Female',
+        kn.mr_coordinating_center_col: 'Dana-Farber Cancer Institute',
+        kn.mutation_list_col: [
+            {
+                kn.mr_reason_level_col: 'variant',
+                kn.hugo_symbol_col: 'BRAF',
+                kn.protein_change_col: 'p.E695Q',
+                kn.variant_category_col: s.variant_category_mutation_val,
+                kn.variant_class_col: 'Missense_Mutation',
+                kn.transcript_exon_col: 15,
+                kn.chromosome_col: '1',
+                kn.strand_col: '-',
+                kn.position_col: 140453136,
+                kn.ref_allele_col: 'A',
+                kn.cdna_change_col: 'c.1799T>A',
+                kn.tier_col: 4,
+                kn.allele_fraction_col: 0.38
+            }
+        ],
+        kn.cnv_list_col: [
+            {
+                kn.hugo_symbol_col: 'BRAF',
+                kn.variant_category_col: s.variant_category_cnv_val,
+                kn.actionability_col: 'actionable'
+            }
+        ]
+    }  # Tier 4 mutation with actionable CNV
+    tm3 = {
+        kn.sample_id_col: '111',
+        kn.mrn_col: '111',
+        kn.tm_trial_protocol_no_col: '333-000',
+        kn.mr_trial_level_col: 'step',
+        kn.mr_trial_step_code_col: '1',
+        kn.tm_trial_accrual_status_col: 'open',
+        kn.vital_status_col: 'alive',
+        kn.oncotree_primary_diagnosis_name_col: 'Cutaneous Melanoma',
+        kn.mr_diagnosis_level_col: 'specific',
+        kn.gender_col: 'Female',
+        kn.mr_coordinating_center_col: 'Dana-Farber Cancer Institute',
+        kn.mutation_list_col: [
+            {
+                kn.mr_reason_level_col: 'variant',
+                kn.hugo_symbol_col: 'BRAF',
+                kn.protein_change_col: 'p.E695Q',
+                kn.variant_category_col: s.variant_category_mutation_val,
+                kn.variant_class_col: 'Missense_Mutation',
+                kn.transcript_exon_col: 15,
+                kn.chromosome_col: '1',
+                kn.strand_col: '-',
+                kn.position_col: 140453136,
+                kn.ref_allele_col: 'A',
+                kn.cdna_change_col: 'c.1799T>A',
+                kn.tier_col: 4,
+                kn.allele_fraction_col: 0.38
+            }
+        ],
+        kn.cnv_list_col: [
+            {
+                kn.hugo_symbol_col: 'BRAF',
+                kn.variant_category_col: s.variant_category_cnv_val,
+            }
+        ]
+    }  # Tier 4 mutation with null-tier CNV
+    tm4 = {
+        kn.sample_id_col: '111',
+        kn.mrn_col: '111',
+        kn.tm_trial_protocol_no_col: '444-000',
+        kn.mr_trial_level_col: 'step',
+        kn.mr_trial_step_code_col: '1',
+        kn.tm_trial_accrual_status_col: 'open',
+        kn.vital_status_col: 'alive',
+        kn.oncotree_primary_diagnosis_name_col: 'Cutaneous Melanoma',
+        kn.mr_diagnosis_level_col: 'specific',
+        kn.gender_col: 'Female',
+        kn.mr_coordinating_center_col: 'Dana-Farber Cancer Institute',
+        kn.mutation_list_col: [
+            {
+                kn.mr_reason_level_col: 'variant',
+                kn.hugo_symbol_col: 'BRAF',
+                kn.protein_change_col: 'p.G469A',
+                kn.variant_category_col: s.variant_category_mutation_val,
+                kn.variant_class_col: 'Missense_Mutation',
+                kn.transcript_exon_col: 15,
+                kn.chromosome_col: '1',
+                kn.strand_col: '-',
+                kn.position_col: 140453136,
+                kn.ref_allele_col: 'A',
+                kn.cdna_change_col: 'c.1799T>A',
+                kn.tier_col: 2,
+                kn.allele_fraction_col: 0.38
+            }
+        ]
+    }  # Tier 2 mutation (variant-level match)
+    tm5 = {
+        kn.sample_id_col: '111',
+        kn.mrn_col: '111',
+        kn.tm_trial_protocol_no_col: '555-000',
+        kn.mr_trial_level_col: 'step',
+        kn.mr_trial_step_code_col: '1',
+        kn.tm_trial_accrual_status_col: 'open',
+        kn.vital_status_col: 'alive',
+        kn.oncotree_primary_diagnosis_name_col: 'Cutaneous Melanoma',
+        kn.mr_diagnosis_level_col: 'specific',
+        kn.gender_col: 'Female',
+        kn.mr_coordinating_center_col: 'Dana-Farber Cancer Institute',
+        kn.mutation_list_col: [
+            {
+                kn.mr_reason_level_col: 'variant',
+                kn.hugo_symbol_col: 'BRAF',
+                kn.protein_change_col: 'p.N581S',
+                kn.variant_category_col: s.variant_category_mutation_val,
+                kn.variant_class_col: 'Missense_Mutation',
+                kn.transcript_exon_col: 15,
+                kn.chromosome_col: '1',
+                kn.strand_col: '-',
+                kn.position_col: 140453136,
+                kn.ref_allele_col: 'A',
+                kn.cdna_change_col: 'c.1799T>A',
+                kn.tier_col: 3,
+                kn.allele_fraction_col: 0.38
+            }
+        ]
+    }  # Tier 3 mutation (variant-level match)
+    tm6 = {
+        kn.sample_id_col: '111',
+        kn.mrn_col: '111',
+        kn.tm_trial_protocol_no_col: '666-000',
+        kn.mr_trial_level_col: 'step',
+        kn.mr_trial_step_code_col: '1',
+        kn.tm_trial_accrual_status_col: 'open',
+        kn.vital_status_col: 'alive',
+        kn.oncotree_primary_diagnosis_name_col: 'Cutaneous Melanoma',
+        kn.mr_diagnosis_level_col: 'specific',
+        kn.gender_col: 'Female',
+        kn.mr_coordinating_center_col: 'Dana-Farber Cancer Institute',
+        kn.mutation_list_col: [
+            {
+                kn.mr_reason_level_col: 'variant',
+                kn.hugo_symbol_col: 'BRAF',
+                kn.protein_change_col: 'p.E695Q',
+                kn.variant_category_col: s.variant_category_mutation_val,
+                kn.variant_class_col: 'Missense_Mutation',
+                kn.transcript_exon_col: 15,
+                kn.chromosome_col: '1',
+                kn.strand_col: '-',
+                kn.position_col: 140453136,
+                kn.ref_allele_col: 'A',
+                kn.cdna_change_col: 'c.1799T>A',
+                kn.tier_col: 4,
+                kn.allele_fraction_col: 0.38
+            }
+        ]
+    }  # Tier 4 mutation (variant-level match)
+    tm7 = {
+        kn.sample_id_col: '111',
+        kn.mrn_col: '111',
+        kn.tm_trial_protocol_no_col: '777-000',
+        kn.mr_trial_level_col: 'step',
+        kn.mr_trial_step_code_col: '1',
+        kn.tm_trial_accrual_status_col: 'open',
+        kn.vital_status_col: 'alive',
+        kn.oncotree_primary_diagnosis_name_col: 'Cutaneous Melanoma',
+        kn.mr_diagnosis_level_col: 'specific',
+        kn.gender_col: 'Female',
+        kn.mr_coordinating_center_col: 'Dana-Farber Cancer Institute',
+        kn.mutation_list_col: [
+            {
+                kn.mr_reason_level_col: 'gene',
+                kn.hugo_symbol_col: 'BRAF',
+                kn.protein_change_col: 'p.V600E',
+                kn.variant_category_col: s.variant_category_mutation_val,
+                kn.variant_class_col: 'Missense_Mutation',
+                kn.transcript_exon_col: 15,
+                kn.chromosome_col: '1',
+                kn.strand_col: '-',
+                kn.position_col: 140453136,
+                kn.ref_allele_col: 'A',
+                kn.cdna_change_col: 'c.1799T>A',
+                kn.tier_col: 1,
+                kn.allele_fraction_col: 0.38
+            }
+        ]
+    }  # Tier 1 mutation (gene-level match)
+    tm8 = {
+        kn.sample_id_col: '111',
+        kn.mrn_col: '111',
+        kn.tm_trial_protocol_no_col: '888-000',
+        kn.mr_trial_level_col: 'step',
+        kn.mr_trial_step_code_col: '1',
+        kn.tm_trial_accrual_status_col: 'open',
+        kn.vital_status_col: 'alive',
+        kn.oncotree_primary_diagnosis_name_col: 'Cutaneous Melanoma',
+        kn.mr_diagnosis_level_col: '_solid_',
+        kn.gender_col: 'Female',
+        kn.mr_coordinating_center_col: 'Dana-Farber Cancer Institute',
+        kn.mutation_list_col: [
+            {
+                kn.mr_reason_level_col: 'variant',
+                kn.hugo_symbol_col: 'BRAF',
+                kn.protein_change_col: 'p.V600E',
+                kn.variant_category_col: s.variant_category_mutation_val,
+                kn.variant_class_col: 'Missense_Mutation',
+                kn.transcript_exon_col: 15,
+                kn.chromosome_col: '1',
+                kn.strand_col: '-',
+                kn.position_col: 140453136,
+                kn.ref_allele_col: 'A',
+                kn.cdna_change_col: 'c.1799T>A',
+                kn.tier_col: 1,
+                kn.allele_fraction_col: 0.38
+            }
+        ]
+    }  # Tier 1 mutation (all solid tumor match)
+    tm9 = {
+        kn.sample_id_col: '111',
+        kn.mrn_col: '111',
+        kn.tm_trial_protocol_no_col: '999-000',
+        kn.mr_trial_level_col: 'step',
+        kn.mr_trial_step_code_col: '1',
+        kn.tm_trial_accrual_status_col: 'open',
+        kn.vital_status_col: 'alive',
+        kn.oncotree_primary_diagnosis_name_col: 'Cutaneous Melanoma',
+        kn.mr_diagnosis_level_col: 'specific',
+        kn.gender_col: 'Female',
+        kn.mr_coordinating_center_col: 'Massachussetts General Hospital',
+        kn.mutation_list_col: [
+            {
+                kn.mr_reason_level_col: 'variant',
+                kn.hugo_symbol_col: 'BRAF',
+                kn.protein_change_col: 'p.V600E',
+                kn.variant_category_col: s.variant_category_mutation_val,
+                kn.variant_class_col: 'Missense_Mutation',
+                kn.transcript_exon_col: 15,
+                kn.chromosome_col: '1',
+                kn.strand_col: '-',
+                kn.position_col: 140453136,
+                kn.ref_allele_col: 'A',
+                kn.cdna_change_col: 'c.1799T>A',
+                kn.tier_col: 1,
+                kn.allele_fraction_col: 0.38
+            }
+        ]
+    }  # Tier 1 mutation (MGH coordinating center)
+    tm10 = {
+        kn.sample_id_col: '111',
+        kn.mrn_col: '111',
+        kn.tm_trial_protocol_no_col: '000-111',
+        kn.mr_trial_level_col: 'step',
+        kn.mr_trial_step_code_col: '1',
+        kn.tm_trial_accrual_status_col: 'open',
+        kn.vital_status_col: 'alive',
+        kn.oncotree_primary_diagnosis_name_col: 'Cutaneous Melanoma',
+        kn.mr_diagnosis_level_col: 'specific',
+        kn.gender_col: 'Female',
+        kn.mr_coordinating_center_col: 'Dana-Farber Cancer Institute',
+        kn.mutation_list_col: [
+            {
+                kn.mr_reason_level_col: 'variant',
+                kn.hugo_symbol_col: 'BRAF',
+                kn.protein_change_col: 'p.V600E',
+                kn.variant_category_col: s.variant_category_mutation_val,
+                kn.variant_class_col: 'Missense_Mutation',
+                kn.transcript_exon_col: 15,
+                kn.chromosome_col: '1',
+                kn.strand_col: '-',
+                kn.position_col: 140453136,
+                kn.ref_allele_col: 'A',
+                kn.cdna_change_col: 'c.1799T>A',
+                kn.tier_col: 1,
+                kn.allele_fraction_col: 0.38
+            }
+        ]
+    }  # Tier 1 mutation
+    tm11 = {
+        kn.sample_id_col: '111',
+        kn.mrn_col: '111',
+        kn.tm_trial_protocol_no_col: '0001-000',
+        kn.mr_trial_level_col: 'step',
+        kn.mr_trial_step_code_col: '1',
+        kn.tm_trial_accrual_status_col: 'open',
+        kn.vital_status_col: 'alive',
+        kn.oncotree_primary_diagnosis_name_col: 'Cutaneous Melanoma',
+        kn.mr_diagnosis_level_col: 'specific',
+        kn.gender_col: 'Female',
+        kn.mr_coordinating_center_col: 'Dana-Farber Cancer Institute',
+        kn.mmr_status_col: s.mmr_status_deficient_val,
+        kn.mutation_list_col: [
+            {
+                kn.mr_reason_level_col: 'variant',
+                kn.hugo_symbol_col: 'BRAF',
+                kn.protein_change_col: 'p.V600E',
+                kn.variant_category_col: s.variant_category_mutation_val,
+                kn.variant_class_col: 'Missense_Mutation',
+                kn.transcript_exon_col: 15,
+                kn.chromosome_col: '1',
+                kn.strand_col: '-',
+                kn.position_col: 140453136,
+                kn.ref_allele_col: 'A',
+                kn.cdna_change_col: 'c.1799T>A',
+                kn.tier_col: 1,
+                kn.allele_fraction_col: 0.38
+            }
+        ]
+    }  # Tier 1 mutation with MMR Deficient signature
+    tm12 = {
+        kn.sample_id_col: '111',
+        kn.mrn_col: '111',
+        kn.tm_trial_protocol_no_col: '0002-000',
+        kn.mr_trial_level_col: 'step',
+        kn.mr_trial_step_code_col: '1',
+        kn.tm_trial_accrual_status_col: 'open',
+        kn.vital_status_col: 'alive',
+        kn.oncotree_primary_diagnosis_name_col: 'Cutaneous Melanoma',
+        kn.mr_diagnosis_level_col: 'specific',
+        kn.gender_col: 'Female',
+        kn.mr_coordinating_center_col: 'Dana-Farber Cancer Institute',
+        kn.wt_genes_col: [
+            {
+                kn.hugo_symbol_col: 'BRAF',
+            }
+        ]
+    }  # BRAF wild-type
+    tm13 = {
+        kn.sample_id_col: '111',
+        kn.mrn_col: '111',
+        kn.tm_trial_protocol_no_col: '0003-000',
+        kn.mr_trial_level_col: 'step',
+        kn.mr_trial_step_code_col: '1',
+        kn.tm_trial_accrual_status_col: 'open',
+        kn.vital_status_col: 'alive',
+        kn.oncotree_primary_diagnosis_name_col: 'Cutaneous Melanoma',
+        kn.mr_diagnosis_level_col: 'specific',
+        kn.gender_col: 'Female',
+        kn.mr_coordinating_center_col: 'Dana-Farber Cancer Institute',
+        kn.sv_list_col: [
+            {
+                kn.sv_comment_col: 'BRAF',
+            }
+        ]
+    }  # BRAF structural variation
+    tm14 = {
+        kn.sample_id_col: '111',
+        kn.mrn_col: '111',
+        kn.tm_trial_protocol_no_col: '0004-000',
+        kn.mr_trial_level_col: 'step',
+        kn.mr_trial_step_code_col: '1',
+        kn.tm_trial_accrual_status_col: 'open',
+        kn.vital_status_col: 'alive',
+        kn.oncotree_primary_diagnosis_name_col: 'Cutaneous Melanoma',
+        kn.mr_diagnosis_level_col: 'specific',
+        kn.gender_col: 'Female'
+    }  # clinical-only match
+    trial_matches = [tm1, tm2, tm3, tm4, tm5, tm6, tm7, tm8, tm9, tm10, tm11, tm12, tm13, tm14]
+    return trial_matches

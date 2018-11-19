@@ -1,10 +1,6 @@
 """Copyright 2016 Dana-Farber Cancer Institute"""
 
-import pandas as pd
-
-from src.utilities import settings as s
-from src.data_store import key_names as kn
-from tests.test_match_service import TestQueryUtilitiesShared
+from tests.test_match_service import TestQueryUtilitiesShared, get_demo_trial_matches
 from src.services.match_service.match_utils.sort import *
 
 
@@ -406,34 +402,35 @@ class TestSort(TestQueryUtilitiesShared):
 
         mso = {}
         sort_order = {
-            ('01', '11-111'): [0, 0, 0, 0, 1],
-            ('01', '09-999'): [0, 0, 0, 1, 0],
-            ('01', '12-000'): [2, 3, 1, 0, 2],
-            ('01', '12-222'): [2, 3, 1, 1, 3],
-            ('01', '12-333'): [2, 3, 1, 0, 4],
-            ('01', '13-000'): [2, 0, 0, 0, 5],
-            ('01', '15-333'): [2, 3, 1, 0, 6]
+            ('DEV-01', '11-111'): [0, 0, 0, 0, 1],
+            ('DEV-01', '09-999'): [0, 0, 0, 1, 0],
+            ('DEV-01', '12-000'): [2, 3, 1, 0, 2],
+            ('DEV-01', '12-222'): [2, 3, 1, 1, 3],
+            ('DEV-01', '12-333'): [2, 3, 1, 0, 4],
+            ('DEV-01', '13-000'): [2, 0, 0, 0, 5],
+            ('DEV-01', '15-333'): [2, 3, 1, 0, 6]
         }
         mso = final_sort(sort_order, mso)
-        assert mso[('01', '11-111')] == 0
-        assert mso[('01', '09-999')] == 1
-        assert mso[('01', '13-000')] == 2
-        assert mso[('01', '12-000')] == 3
-        assert mso[('01', '12-333')] == 4
-        assert mso[('01', '15-333')] == 5
-        assert mso[('01', '12-222')] == 6
+        assert mso[('DEV-01', '11-111')] == 0
+        assert mso[('DEV-01', '09-999')] == 1
+        assert mso[('DEV-01', '13-000')] == 2
+        assert mso[('DEV-01', '12-000')] == 3
+        assert mso[('DEV-01', '12-333')] == 4
+        assert mso[('DEV-01', '15-333')] == 5
+        assert mso[('DEV-01', '12-222')] == 6
 
     def test_add_sort_order(self):
 
-        tm = self.get_demo_trial_matches()
-        tm = add_sort_order(tm)
+        # todo debug
+        tm = get_demo_trial_matches()
+        tm = self.s.add_sort_order(tm)
 
         # print tm[[kn.tm_trial_protocol_no_col, 'sort_order']].sort_values(by='sort_order', ascending=True)
         assert tm[[kn.tm_trial_protocol_no_col, 'sort_order']].sort_values(by='sort_order', ascending=True).protocol_no.tolist() == \
             [
                 '0003-000',  # tm13 (SV match (gets a sort order of -1))
                 '0001-000',  # tm11 (mmr status deficient)
-                '111-000',  # tm1  (tier 1, variant match, specific cancer type, DFCI, higher protocol #)
+                '111-000',   # tm1  (tier 1, variant match, specific cancer type, DFCI, higher protocol #)
                 '000-000',   # tm10 (tier 1, variant match, specific cancer type, DFCI, lower protocol #)
                 '999-000',   # tm9  (tier 1, variant match, specific cancer type, MGH)
                 '888-000',   # tm8  (tier 1, variant match, solid cancer type)
