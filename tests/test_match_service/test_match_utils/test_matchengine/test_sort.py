@@ -301,27 +301,56 @@ class TestSort(TestQueryUtilitiesShared):
 
     def test_sort_by_cancer_type(self):
 
-        sort_order = {('01', 'p01'): [0, 0]}
-        match = {
-            kn.mrn_col: '01',
-            kn.sample_id_col: '01',
-            kn.tm_trial_protocol_no_col: 'p01',
-            'cancer_type_match': 'all_solid'
+        m1 = ('DEV-01', '00-001')
+
+        # specifically Lung Adenocarcinoma cancer type
+        sort_order = {m1: [0, 0]}
+        m1_data = {
+            kn.mrn_col: 'MRN-01',
+            kn.sample_id_col: m1[0],
+            kn.tm_trial_protocol_no_col: m1[1],
+            kn.oncotree_primary_diagnosis_name_col: 'Lung Adenocarcinoma',
+            kn.mr_diagnosis_level_col: 'specific'
         }
-        sort_order = sort_by_cancer_type(match, sort_order)
-        assert sort_order[('01', 'p01')][2] == 1
+        sort_order = sort_by_cancer_type(m1_data, sort_order)
+        assert sort_order[m1][2] == 0
 
-        match['cancer_type_match'] = 'all_liquid'
-        sort_order = sort_by_cancer_type(match, sort_order)
-        assert sort_order[('01', 'p01')][2] == 1
+        # all sold tumor expansion match
+        sort_order = {m1: [0, 0]}
+        m2_data = {
+            kn.mrn_col: 'MRN-01',
+            kn.sample_id_col: m1[0],
+            kn.tm_trial_protocol_no_col: m1[1],
+            kn.oncotree_primary_diagnosis_name_col: 'Lung Adenocarcinoma',
+            kn.mr_diagnosis_level_col: '_solid_'
+        }
+        sort_order = sort_by_cancer_type(m2_data, sort_order)
+        assert sort_order[m1][2] == 1
 
-        match['cancer_type_match'] = 'specific'
-        sort_order = sort_by_cancer_type(match, sort_order)
-        assert sort_order[('01', 'p01')][2] == 0
+        # all liquid tumor expansion match
+        sort_order = {m1: [0, 0]}
+        m3_data = {
+            kn.mrn_col: 'MRN-01',
+            kn.sample_id_col: m1[0],
+            kn.tm_trial_protocol_no_col: m1[1],
+            kn.oncotree_primary_diagnosis_name_col: 'Lung Adenocarcinoma',
+            kn.mr_diagnosis_level_col: '_liquid_'
+        }
+        sort_order = sort_by_cancer_type(m3_data, sort_order)
+        assert sort_order[m1][2] == 1
 
-        match['cancer_type_match'] = 'unknown'
-        sort_order = sort_by_cancer_type(match, sort_order)
-        assert sort_order[('01', 'p01')][2] == 0
+        # cancer type level not specified
+        sort_order = {m1: [0, 0]}
+        m4_data = {
+            kn.mrn_col: 'MRN-01',
+            kn.sample_id_col: m1[0],
+            kn.tm_trial_protocol_no_col: m1[1],
+            kn.oncotree_primary_diagnosis_name_col: 'Lung Adenocarcinoma',
+        }
+        sort_order = sort_by_cancer_type(m4_data, sort_order)
+        assert sort_order[m1][2] == 2
+
+
 
     def test_sort_by_coordinating_center(self):
 

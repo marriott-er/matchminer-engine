@@ -306,23 +306,19 @@ def sort_by_cancer_type(match, sort_order):
 
     :return {dict of lists}
     """
-    # todo enable this tracking
-    # todo refactor
-    # todo unit test
-
     idx = (match[kn.sample_id_col], match[kn.tm_trial_protocol_no_col])
 
-    if 'cancer_type_match' in match and match['cancer_type_match'] == 'specific':
+    if kn.mr_diagnosis_level_col in match and match[kn.mr_diagnosis_level_col] == 'specific':
         sort_order[idx] = add_sort_value(sort_value=0,
                                          priority=2,
                                          sort_order_li=sort_order[idx])
 
-    elif 'cancer_type_match' in match and match['cancer_type_match'] == 'all_solid':
+    elif kn.mr_diagnosis_level_col in match and match[kn.mr_diagnosis_level_col] == '_solid_':
         sort_order[idx] = add_sort_value(sort_value=1,
                                          priority=2,
                                          sort_order_li=sort_order[idx])
 
-    elif 'cancer_type_match' in match and match['cancer_type_match'] == 'all_liquid':
+    elif kn.mr_diagnosis_level_col in match and match[kn.mr_diagnosis_level_col] == '_liquid_':
         sort_order[idx] = add_sort_value(sort_value=1,
                                          priority=2,
                                          sort_order_li=sort_order[idx])
