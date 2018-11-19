@@ -1368,14 +1368,8 @@ def get_demo_trial_matches():
                 kn.allele_fraction_col: 0.38
             }
         ],
-        kn.cnv_list_col: [
-            {
-                kn.hugo_symbol_col: 'BRAF',
-                kn.variant_category_col: s.variant_category_cnv_val,
-                kn.actionability_col: 'actionable'
-            }
-        ]
-    }  # Tier 4 mutation with actionable CNV
+        kn.cnv_list_col: None
+    }  # Tier 4 mutation
     tm3 = {
         kn.sample_id_col: '111',
         kn.mrn_col: '111',

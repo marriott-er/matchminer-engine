@@ -20,7 +20,7 @@ class Sort:
         self.f_open = None
         self.f_no_svs = None
 
-    def prep_trial_matches(self):
+    def _prep_trial_matches(self):
         """
         Add columns to dataframe to facilitate sorting
 
@@ -38,7 +38,7 @@ class Sort:
         self.f_open = (self.trial_matches_df[kn.tm_trial_accrual_status_col] == 'open')
         self.f_no_svs = (self.trial_matches_df['has_sv'] == False)
 
-    def add_sort_order(self, trial_matches):
+    def add_sort_order(self):
         """
         Aggregate all the trial matches by MRN and provide a sort order using the following logic:
         (1) First sort by tier
@@ -47,19 +47,17 @@ class Sort:
         (4) Then sort by coordinating center (DFCI > MGH)
         (5) Then sort by reverse protocol number (high > low)
 
-        :param trial_matches: List of trial match dictionaries
-        :return: List of trial match dictionaries with sort_order column filled in:
+        :return: {Pandas dataframe}
         """
-        # todo unit test
-        if len(trial_matches) == 0:
-            return trial_matches
+        if len(self.trial_matches) == 0:
+            return self.trial_matches
 
-        s = Sort(trial_matches=trial_matches)
-        s.prep_trial_matches()
-
+        self._prep_trial_matches()
         master_sort_order = {}
+
         for sample_id in self.all_sample_ids:
             f_sample_id = (self.trial_matches_df[kn.sample_id_col] == sample_id)
+
             df = self.trial_matches_df[self.f_alive & self.f_open & self.f_no_svs & f_sample_id]
             matches = df.T.to_dict().values()
 
@@ -70,7 +68,6 @@ class Sort:
             # Index 3 is sorted by coordinating center with values 0 to 1
             # Index 4 is sorted by reverse protocol number
             sort_order = {}
-
             for match in matches:
 
                 idx = (match[kn.sample_id_col], match[kn.tm_trial_protocol_no_col])
@@ -85,12 +82,12 @@ class Sort:
             sort_order = sort_by_reverse_protocol_no(matches, sort_order)
             master_sort_order = final_sort(sort_order, master_sort_order)
 
-        s.trial_matches_df['sort_order'] = s.trial_matches_df.apply(
+        self.trial_matches_df['sort_order'] = self.trial_matches_df.apply(
             lambda x: master_sort_order[(x[kn.sample_id_col], x[kn.tm_trial_protocol_no_col])]
             if (x[kn.sample_id_col], x[kn.tm_trial_protocol_no_col]) in master_sort_order
             else -1, axis=1)
 
-        return self.trial_matches_df.to_json(orient='records', date_format='iso')
+        return self.trial_matches_df
 
 
 # --------- #
@@ -103,7 +100,7 @@ def has_vc(vc):
     :param vc: {list or null}
     :return: {bool or null}
     """
-    return len(vc) > 0 if isinstance(vc, list) else vc
+    return len(vc) > 0 if isinstance(vc, list) else False
 
 
 def add_sort_value(sort_value, priority, sort_order_li):
@@ -133,7 +130,8 @@ def extract_tier(match):
     :param match: {dict}
     :return: {int or null}
     """
-    if kn.mutation_list_col not in match or len(match[kn.mutation_list_col]) == 0:
+    if kn.mutation_list_col not in match or not isinstance(match[kn.mutation_list_col], list)\
+            or len(match[kn.mutation_list_col]) == 0:
         return None
 
     tiers = [i[kn.tier_col] for i in match[kn.mutation_list_col]
@@ -148,7 +146,8 @@ def extract_match_level(match):
     :param match: {dict}
     :return: {str or null}
     """
-    if kn.mutation_list_col not in match or len(match[kn.mutation_list_col]) == 0:
+    if kn.mutation_list_col not in match or not isinstance(match[kn.mutation_list_col], list)\
+            or len(match[kn.mutation_list_col]) == 0:
         return None
 
     level_dict = {'variant': 0, 'wildcard': 1, 'exon': 2, 'gene': 3}
@@ -186,7 +185,7 @@ def sort_by_tier(match, sort_order):
                                          priority=0,
                                          sort_order_li=sort_order[idx])
 
-    elif kn.cnv_list_col in match and len(match[kn.cnv_list_col]) > 0:
+    elif kn.cnv_list_col in match and isinstance(match[kn.cnv_list_col], list) and len(match[kn.cnv_list_col]) > 0:
         sort_order[idx] = add_sort_value(sort_value=3,
                                          priority=0,
                                          sort_order_li=sort_order[idx])
@@ -201,7 +200,7 @@ def sort_by_tier(match, sort_order):
                                          priority=0,
                                          sort_order_li=sort_order[idx])
 
-    elif kn.wt_genes_col in match and len(match[kn.wt_genes_col]):
+    elif kn.wt_genes_col in match and isinstance(match[kn.wt_genes_col], list) and len(match[kn.wt_genes_col]):
         sort_order[idx] = add_sort_value(sort_value=6,
                                          priority=0,
                                          sort_order_li=sort_order[idx])

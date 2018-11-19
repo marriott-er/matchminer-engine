@@ -16,7 +16,7 @@ class TestSort(TestQueryUtilitiesShared):
 
     def test_has_vc(self):
 
-        assert has_vc(None) is None
+        assert has_vc(None) is False
         assert has_vc([]) is False
         assert has_vc([[1]]) is True
 
@@ -59,7 +59,7 @@ class TestSort(TestQueryUtilitiesShared):
             }
         ]
         s = Sort(trial_matches=data)
-        s.prep_trial_matches()
+        s._prep_trial_matches()
         assert s.trial_matches_df['has_mut'].tolist() == [True, False, False, False]
         assert s.trial_matches_df['has_cnv'].tolist() == [False, True, False, False]
         assert s.trial_matches_df['has_sv'].tolist() == [False, False, True, None]
@@ -421,17 +421,18 @@ class TestSort(TestQueryUtilitiesShared):
 
     def test_add_sort_order(self):
 
-        # todo debug
         tm = get_demo_trial_matches()
-        tm = self.s.add_sort_order(tm)
+        self.s = Sort(trial_matches=tm)
+        tm = self.s.add_sort_order()
 
         # print tm[[kn.tm_trial_protocol_no_col, 'sort_order']].sort_values(by='sort_order', ascending=True)
-        assert tm[[kn.tm_trial_protocol_no_col, 'sort_order']].sort_values(by='sort_order', ascending=True).protocol_no.tolist() == \
+        assert tm[[kn.tm_trial_protocol_no_col, 'sort_order']].\
+            sort_values(by='sort_order', ascending=True)[kn.tm_trial_protocol_no_col].tolist() == \
             [
                 '0003-000',  # tm13 (SV match (gets a sort order of -1))
                 '0001-000',  # tm11 (mmr status deficient)
                 '111-000',   # tm1  (tier 1, variant match, specific cancer type, DFCI, higher protocol #)
-                '000-000',   # tm10 (tier 1, variant match, specific cancer type, DFCI, lower protocol #)
+                '000-111',   # tm10 (tier 1, variant match, specific cancer type, DFCI, lower protocol #)
                 '999-000',   # tm9  (tier 1, variant match, specific cancer type, MGH)
                 '888-000',   # tm8  (tier 1, variant match, solid cancer type)
                 '777-000',   # tm7  (tier 1, gene match)
