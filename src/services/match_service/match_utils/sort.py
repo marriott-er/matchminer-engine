@@ -50,7 +50,7 @@ class Sort:
         :return: {Pandas dataframe}
         """
         if len(self.trial_matches) == 0:
-            return self.trial_matches
+            return
 
         self._prep_trial_matches()
         master_sort_order = {}

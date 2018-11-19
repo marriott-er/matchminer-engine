@@ -6,7 +6,7 @@ from src.utilities.utilities import get_db
 from src.data_store import key_names as kn
 from src.data_store.validator import SamplesValidator
 from src.data_store.trial_matches_data_model import trial_matches_schema
-from src.services.match_service.match_utils.sort import add_sort_order
+from src.services.match_service.match_utils.sort import Sort
 from src.services.match_service.match_utils.matchengine.assess_node_utils import AssessNodeUtils
 from src.services.match_service.match_utils.matchengine.intersect_results_utils import IntersectResultsUtils
 
@@ -155,9 +155,9 @@ class MatchEngine(AssessNodeUtils, IntersectResultsUtils):
 
         :return: {Pandas dataframe}
         """
-        # todo unit test
         if self.trial_matches is None:
             return
 
         logging.info('Sorting trial matches')
-        return add_sort_order(self.trial_matches)
+        sort = Sort(trial_matches=self.trial_matches)
+        return sort.add_sort_order()
