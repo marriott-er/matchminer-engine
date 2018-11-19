@@ -339,6 +339,7 @@ class TestMatchEngine(TestQueryUtilitiesShared):
                     },
                 ],
                 kn.oncotree_primary_diagnosis_name_col: 'Lung Adenocarcinoma',
+                kn.mr_diagnosis_level_col: '_solid_',
                 kn.mutation_list_col: [{kn.hugo_symbol_col: 'BRAF', 'level': 'gene'}],
                 kn.birth_date_col: dt.datetime(year=1900, day=1, month=1),
                 kn.sample_id_col: 'DEV-01',
@@ -353,6 +354,7 @@ class TestMatchEngine(TestQueryUtilitiesShared):
                     },
                 ],
                 kn.oncotree_primary_diagnosis_name_col: 'Lung Adenocarcinoma',
+                kn.mr_diagnosis_level_col: 'specific',
                 kn.mutation_list_col: [{kn.hugo_symbol_col: 'EGFR', 'level': 'gene'}],
                 kn.birth_date_col: dt.datetime(year=1900, day=1, month=1),
                 kn.sample_id_col: 'DEV-02',
@@ -363,7 +365,7 @@ class TestMatchEngine(TestQueryUtilitiesShared):
         me.create_trial_match_records()
 
         trial_matches = self._findall(query={},
-                                       proj={k: 1 for k in trial_matches_schema.keys()},
+                                      proj={k: 1 for k in trial_matches_schema.keys()},
                                        table=s.trial_match_collection_name)
         self._print(trial_matches)
         for tm in trial_matches:
@@ -380,3 +382,4 @@ class TestMatchEngine(TestQueryUtilitiesShared):
             assert kn.mutation_list_col in tm
             assert tm[kn.oncotree_primary_diagnosis_name_col] == 'Lung Adenocarcinoma'
             assert tm[kn.birth_date_col] == dt.datetime(year=1900, day=1, month=1)
+            assert tm[kn.mr_diagnosis_level_col] == '_solid_' or tm[kn.mr_diagnosis_level_col] == 'specific'

@@ -1,4 +1,5 @@
 from src.utilities import settings as s
+from src.data_store import key_names as kn
 from src.services.match_service.match_utils.matchengine import matchengine_utils as me_utils
 from src.services.match_service.query_utils.clinical_queries import ClinicalQueries
 from src.services.match_service.query_utils.genomic_queries import GenomicQueries
@@ -104,8 +105,13 @@ class AssessNodeUtils(ClinicalQueries, GenomicQueries, ProjUtils):
         """
         cancer_type = node['value'][s.mt_diagnosis]
         include = me_utils.assess_inclusion(cancer_type)
-        subquery = self.create_oncotree_diagnosis_query(cancer_type=me_utils.sanitize_exclusion_vals(cancer_type),
+        sanitized_cancer_type = me_utils.sanitize_exclusion_vals(cancer_type)
+        subquery = self.create_oncotree_diagnosis_query(cancer_type=sanitized_cancer_type,
                                                         include=include)
+        node[kn.mr_diagnosis_level_col] = sanitized_cancer_type.lower() \
+            if cancer_type in [s.oncotree_all_solid_text, s.oncotree_all_liquid_text] \
+            else 'specific'
+
         query['$and'].append(subquery)
         proj_info.append({s.mt_diagnosis: cancer_type})
 

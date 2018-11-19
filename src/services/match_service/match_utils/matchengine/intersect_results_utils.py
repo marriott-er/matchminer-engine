@@ -6,7 +6,8 @@ class IntersectResultsUtils(object):
 
     def __init__(self):
         self.intersection_dict = {'and': set.intersection_update, 'or': set.update}
-        self.clinical_keys = [kn.oncotree_primary_diagnosis_name_col, kn.birth_date_col, kn.gender_col]
+        self.clinical_keys = [kn.oncotree_primary_diagnosis_name_col, kn.birth_date_col, kn.gender_col,
+                              kn.mr_diagnosis_level_col]
         self.genomic_keys = [
             kn.genomic_exclusion_reasons_col,
             kn.clinical_exclusion_reasons_col,

@@ -98,6 +98,7 @@ class TestIntersectResultsUtils(TestQueryUtilitiesShared):
             'matches': [
                 {
                     kn.mrn_col: '01', kn.oncotree_primary_diagnosis_name_col: 'Lung Adenocarcinoma',
+                    kn.mr_diagnosis_level_col: '_solid_',
                     kn.sample_id_col: 'DEV-01',
                     kn.mutation_list_col: [
                         {kn.hugo_symbol_col: 'MET', kn.transcript_exon_col: 14, kn.variant_class_col: 'In_Frame_Del'},
@@ -117,6 +118,7 @@ class TestIntersectResultsUtils(TestQueryUtilitiesShared):
             {
                 kn.mrn_col: '01', kn.sample_id_col: 'DEV-01',
                 kn.oncotree_primary_diagnosis_name_col: 'Lung Adenocarcinoma',
+                kn.mr_diagnosis_level_col: '_solid_',
                 kn.mutation_list_col: [
                     {kn.hugo_symbol_col: 'BRAF', kn.protein_change_col: 'p.V600E'},
                     {kn.hugo_symbol_col: 'BRAF', kn.protein_change_col: 'p.V600D'},

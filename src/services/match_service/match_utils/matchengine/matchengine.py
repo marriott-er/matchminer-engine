@@ -21,6 +21,7 @@ class MatchEngine(AssessNodeUtils, IntersectResultsUtils):
 
         self.trial_info = trial_info
         self.match_tree = match_tree
+        self.diagnosis_level = None
         self.match_tree_nx = None
         self.db = get_db()
 

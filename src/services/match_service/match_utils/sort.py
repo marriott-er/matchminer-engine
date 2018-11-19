@@ -93,36 +93,6 @@ def add_sort_order(trial_matches):
     return s.trial_matches_df.to_json(orient='records', date_format='iso')
 
 
-def sort_by_cancer_type(match, sort_order):
-    """
-    Third highest priority sorting
-    """
-
-    idx = (match[kn.sample_id_col], match[kn.tm_trial_protocol_no_col])
-
-    if 'cancer_type_match' in match and match['cancer_type_match'] == 'specific':
-        sort_order[idx] = add_sort_value(sort_value=0,
-                                         priority=2,
-                                         sort_order_li=sort_order[idx])
-
-    elif 'cancer_type_match' in match and match['cancer_type_match'] == 'all_solid':
-        sort_order[idx] = add_sort_value(sort_value=1,
-                                         priority=2,
-                                         sort_order_li=sort_order[idx])
-
-    elif 'cancer_type_match' in match and match['cancer_type_match'] == 'all_liquid':
-        sort_order[idx] = add_sort_value(sort_value=1,
-                                         priority=2,
-                                         sort_order_li=sort_order[idx])
-
-    else:
-        sort_order[idx] = add_sort_value(sort_value=2,
-                                         priority=2,
-                                         sort_order_li=sort_order[idx])
-
-    return sort_order
-
-
 def sort_by_coordinating_center(match, sort_order):
     """
     Fourth highest priority sorting
@@ -327,3 +297,40 @@ def sort_by_match_type(match, sort_order):
                                          sort_order_li=sort_order[idx])
 
     return sort_order
+
+
+def sort_by_cancer_type(match, sort_order):
+    """
+    Third highest priority sorting
+    Cancer-specific > All solid tumors > All liquid tumors
+
+    :return {dict of lists}
+    """
+    # todo enable this tracking
+    # todo refactor
+    # todo unit test
+
+    idx = (match[kn.sample_id_col], match[kn.tm_trial_protocol_no_col])
+
+    if 'cancer_type_match' in match and match['cancer_type_match'] == 'specific':
+        sort_order[idx] = add_sort_value(sort_value=0,
+                                         priority=2,
+                                         sort_order_li=sort_order[idx])
+
+    elif 'cancer_type_match' in match and match['cancer_type_match'] == 'all_solid':
+        sort_order[idx] = add_sort_value(sort_value=1,
+                                         priority=2,
+                                         sort_order_li=sort_order[idx])
+
+    elif 'cancer_type_match' in match and match['cancer_type_match'] == 'all_liquid':
+        sort_order[idx] = add_sort_value(sort_value=1,
+                                         priority=2,
+                                         sort_order_li=sort_order[idx])
+
+    else:
+        sort_order[idx] = add_sort_value(sort_value=2,
+                                         priority=2,
+                                         sort_order_li=sort_order[idx])
+
+    return sort_order
+

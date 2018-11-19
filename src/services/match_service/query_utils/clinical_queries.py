@@ -17,7 +17,6 @@ class ClinicalQueries(QueryUtils, ClinicalUtils):
 
         :param cancer_type {str}
         :param include: {bool}
-        :return: {dict}
         """
         if cancer_type in [s.oncotree_all_solid_text, s.oncotree_all_liquid_text]:
             expanded_diagnoses = self.expand_grouped_diagnoses(diagnosis=cancer_type)

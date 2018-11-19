@@ -22,12 +22,23 @@ class TestAssessNodeUtils(TestQueryUtilitiesShared):
         self.a._parse_diagnosis(node=node, query=self.query, proj_info=self.proj_info)
         assert self.query['$and'][0] == {kn.oncotree_primary_diagnosis_name_col: {'$in': ['Lung Adenocarcinoma']}}
         assert self.proj_info[0] == {s.mt_diagnosis: 'Lung Adenocarcinoma'}
+        assert node[kn.mr_diagnosis_level_col] == 'specific'
 
         # exclusion
         node = {'value': {s.mt_diagnosis: '!Lung Adenocarcinoma'}}
         self.a._parse_diagnosis(node=node, query=self.query, proj_info=self.proj_info)
         assert self.query['$and'][1] == {kn.oncotree_primary_diagnosis_name_col: {'$nin': ['Lung Adenocarcinoma']}}
         assert self.proj_info[1] == {s.mt_diagnosis: '!Lung Adenocarcinoma'}
+        assert node[kn.mr_diagnosis_level_col] == 'specific'
+
+        # _solid_ and _liquid_ expansion capture
+        node = {'value': {s.mt_diagnosis: s.oncotree_all_solid_text}}
+        self.a._parse_diagnosis(node=node, query=self.query, proj_info=self.proj_info)
+        assert node[kn.mr_diagnosis_level_col] == '_solid_'
+
+        node = {'value': {s.mt_diagnosis: s.oncotree_all_liquid_text}}
+        self.a._parse_diagnosis(node=node, query=self.query, proj_info=self.proj_info)
+        assert node[kn.mr_diagnosis_level_col] == '_liquid_'
 
     def test_parse_age(self):
 
@@ -36,6 +47,7 @@ class TestAssessNodeUtils(TestQueryUtilitiesShared):
         assert self.query['$and'][0].keys() == [kn.birth_date_col]
         assert self.query['$and'][0][kn.birth_date_col].keys() == ['$lte']
         assert self.proj_info[0] == {s.mt_age: '>=18'}
+        assert node[kn.mr_diagnosis_level_col] == 'specific'
 
     def test_parse_gender(self):
 
@@ -43,6 +55,7 @@ class TestAssessNodeUtils(TestQueryUtilitiesShared):
         self.a._parse_gender(node=node, query=self.query, proj_info=self.proj_info)
         assert self.query == {'$and': [{kn.gender_col: 'Female'}]}
         assert self.proj_info == [{s.mt_gender: 'Female'}]
+        assert node[kn.mr_diagnosis_level_col] == 'specific'
 
     def test_parse_variant_category(self):
 
