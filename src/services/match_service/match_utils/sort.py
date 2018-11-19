@@ -3,6 +3,7 @@
 import logging
 import pandas as pd
 
+from src.utilities import settings as s
 from src.data_store import key_names as kn
 
 logging.basicConfig(level=logging.DEBUG, format='[%(levelname)s] %(message)s', )
@@ -93,23 +94,7 @@ def add_sort_order(trial_matches):
     return s.trial_matches_df.to_json(orient='records', date_format='iso')
 
 
-def sort_by_coordinating_center(match, sort_order):
-    """
-    Fourth highest priority sorting
-    """
-    # todo unit test
-    idx = (match[kn.sample_id_col], match[kn.tm_trial_protocol_no_col])
 
-    if 'coordinating_center' in match and match['coordinating_center'] == 'Dana-Farber Cancer Institute':
-        sort_order[idx] = add_sort_value(sort_value=0,
-                                         priority=3,
-                                         sort_order_li=sort_order[idx])
-    else:
-        sort_order[idx] = add_sort_value(sort_value=1,
-                                         priority=3,
-                                         sort_order_li=sort_order[idx])
-
-    return sort_order
 
 
 def sort_by_reverse_protocol_no(matches, sort_order):
@@ -330,3 +315,21 @@ def sort_by_cancer_type(match, sort_order):
 
     return sort_order
 
+
+def sort_by_coordinating_center(match, sort_order):
+    """
+    Fourth highest priority sorting
+    """
+    idx = (match[kn.sample_id_col], match[kn.tm_trial_protocol_no_col])
+
+    if kn.mr_coordinating_center_col in match and \
+            match[kn.mr_coordinating_center_col] == s.coordinating_center_dfci_val:
+        sort_order[idx] = add_sort_value(sort_value=0,
+                                         priority=3,
+                                         sort_order_li=sort_order[idx])
+    else:
+        sort_order[idx] = add_sort_value(sort_value=1,
+                                         priority=3,
+                                         sort_order_li=sort_order[idx])
+
+    return sort_order

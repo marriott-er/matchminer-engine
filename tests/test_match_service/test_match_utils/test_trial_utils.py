@@ -24,6 +24,7 @@ class TestTrialUtils(TestQueryUtilitiesShared):
         assert match_trees[0].trial_info['step_code'] == '1'
         assert match_trees[0].trial_info['arm_code'] is None
         assert match_trees[0].trial_info['dose_code'] is None
+        assert match_trees[0].trial_info[s.trial_coordinating_center_col] == 'unknown'
 
         # closed trial with one arm-level match tree
         t = TrialUtils(trial=self.load_trial('10-114'))
@@ -36,6 +37,7 @@ class TestTrialUtils(TestQueryUtilitiesShared):
         assert match_trees[0].trial_info['step_code'] == '1'
         assert match_trees[0].trial_info['arm_code'] == '1'
         assert match_trees[0].trial_info['dose_code'] is None
+        assert match_trees[0].trial_info[s.trial_coordinating_center_col] == 'DFCI'
 
         # unspecified accrual status trial with two dose-level match trees
         t = TrialUtils(trial=self.load_trial('00-005'))
@@ -48,3 +50,4 @@ class TestTrialUtils(TestQueryUtilitiesShared):
         assert match_trees[0].trial_info['step_code'] == '1'
         assert match_trees[0].trial_info['arm_code'] == 'DOSE'
         assert match_trees[0].trial_info['dose_code'] == '1'
+        assert match_trees[0].trial_info[s.trial_coordinating_center_col] == 'unknown'

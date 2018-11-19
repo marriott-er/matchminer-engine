@@ -95,6 +95,8 @@ trial_step_code_col = 'step_code'
 trial_arm_code_col = 'arm_code'
 trial_dose_code_col = 'level_code'
 trial_match_tree_col = 'match'
+trial_coordinating_center_col = 'coordinating_center'
+coordinating_center_dfci_val = 'Dana-Farber Cancer Institute'
 
 # trial clinical criteria settings
 mt_diagnosis = 'oncotree_primary_diagnosis'

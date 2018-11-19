@@ -350,23 +350,31 @@ class TestSort(TestQueryUtilitiesShared):
         sort_order = sort_by_cancer_type(m4_data, sort_order)
         assert sort_order[m1][2] == 2
 
-
-
     def test_sort_by_coordinating_center(self):
 
-        sort_order = {('01', 'p01'): [0, 0, 0]}
-        match = {
-            kn.mrn_col: '01',
-            kn.sample_id_col: '01',
-            kn.tm_trial_protocol_no_col: 'p01',
-            'coordinating_center': 'Massachussetts General Hospital'
-        }
-        sort_order = sort_by_coordinating_center(match, sort_order)
-        assert sort_order[('01', 'p01')][3] == 1
+        m1 = ('DEV-01', '00-001')
 
-        match['coordinating_center'] = 'Dana-Farber Cancer Institute'
-        sort_order = sort_by_coordinating_center(match, sort_order)
-        assert sort_order[('01', 'p01')][3] == 0
+        # DFCI
+        sort_order = {m1: [0, 0]}
+        m1_data = {
+            kn.mrn_col: 'MRN-01',
+            kn.sample_id_col: m1[0],
+            kn.tm_trial_protocol_no_col: m1[1],
+            kn.mr_coordinating_center_col: s.coordinating_center_dfci_val
+        }
+        sort_order = sort_by_coordinating_center(m1_data, sort_order)
+        assert sort_order[m1][2] == 0
+
+        # MGH
+        sort_order = {m1: [0, 0]}
+        m2_data = {
+            kn.mrn_col: 'MRN-01',
+            kn.sample_id_col: m1[0],
+            kn.tm_trial_protocol_no_col: m1[1],
+            kn.mr_coordinating_center_col: 'Massachussetts General Hospital'
+        }
+        sort_order = sort_by_coordinating_center(m2_data, sort_order)
+        assert sort_order[m1][2] == 1
 
     def test_sort_by_reverse_protocol_no(self):
 

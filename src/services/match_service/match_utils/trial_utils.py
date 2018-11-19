@@ -1,6 +1,7 @@
 import logging
 
 from src.utilities import settings as s
+from src.utilities.utilities import get_coordinating_center
 from src.services.match_service.match_utils.matchengine.matchengine import MatchEngine
 
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s', )
@@ -75,5 +76,6 @@ class TrialUtils:
             'level': kwargs['level'],
             'step_code': kwargs['step'][s.trial_step_code_col] if 'step' in kwargs else None,
             'arm_code': kwargs['arm'][s.trial_arm_code_col] if 'arm' in kwargs else None,
-            'dose_code': kwargs['dose'][s.trial_dose_code_col] if 'dose' in kwargs else None
+            'dose_code': kwargs['dose'][s.trial_dose_code_col] if 'dose' in kwargs else None,
+            s.trial_coordinating_center_col: get_coordinating_center(self.trial)
         }

@@ -2,11 +2,13 @@ import json
 import logging
 from pymongo import MongoClient
 
+from src.utilities import settings as s
 from src.data_store import key_names as kn
 from src.utilities.settings import MONGO_URI, MONGO_DBNAME
 
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s', )
 
+# todo unit test this entire file
 
 def get_db(mongo_uri=MONGO_URI, mongo_dbname=MONGO_DBNAME):
     """Returns a Mongo connection"""
@@ -52,3 +54,17 @@ def handle_chromosome_column(val):
         return val.split('.')[0]
     else:
         return val
+
+
+def get_coordinating_center(trial):
+    """
+    Returns the trials' coordinating center
+
+    :param trial: {dict}
+    :return: {str}
+    """
+
+    if s.trial_summary_col not in trial or s.trial_coordinating_center_col not in trial[s.trial_summary_col]:
+        return 'unknown'
+    else:
+        return trial[s.trial_summary_col][s.trial_coordinating_center_col]

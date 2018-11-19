@@ -70,6 +70,7 @@ status: Open to Accrual
 _summary:
   status:
     - value: 'Suspended'
+  coordinating_center: DFCI
 treatment_list:
   step:
   - arm:

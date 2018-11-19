@@ -139,6 +139,7 @@ class MatchEngine(AssessNodeUtils, IntersectResultsUtils):
             sample[kn.mr_trial_step_code_col] = self.trial_info['step_code']
             sample[kn.mr_trial_arm_code_col] = self.trial_info['arm_code'] if 'arm_code' in self.trial_info else None
             sample[kn.mr_trial_dose_code_col] = self.trial_info['dose_code'] if 'dose_code' in self.trial_info else None
+            sample[kn.mr_coordinating_center_col] = self.trial_info[s.trial_coordinating_center_col]
 
             if not self.validator.validate_document(sample):
                 raise ValueError('%s sample did not pass data validation: %s' % (sample[kn.sample_id_col],
