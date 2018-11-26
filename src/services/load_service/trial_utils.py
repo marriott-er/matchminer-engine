@@ -2,6 +2,8 @@ import os
 import yaml
 import subprocess
 
+from src.utilities import settings as s
+
 
 class TrialUtils:
 
@@ -44,7 +46,7 @@ class TrialUtils:
 
         :param bson: Path to BSON file.
         """
-        cmd = "mongorestore --host localhost:27017 --db matchminer %s" % bson
+        cmd = "mongorestore --uri %s --db %s %s" % (s.MONGO_URI, s.MONGO_DBNAME, bson)
         subprocess.call(cmd.split(' '))
 
     @staticmethod
@@ -55,9 +57,8 @@ class TrialUtils:
 
         :param json: Path to JSON file.
         """
-
-        cmd = "mongoimport --host localhost:27017 --db matchminer --collection trial --file %s" % json
-        p = subprocess.Popen(cmd.split(' '), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        cmd = "mongoimport --uri %s --collection trial --file %s" % (s.MONGO_URI, json)
+        p = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         p.communicate()
         if p.returncode != 0:
             cmd += ' --jsonArray'

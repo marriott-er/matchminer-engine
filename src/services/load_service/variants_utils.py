@@ -93,7 +93,10 @@ class VariantsUtils:
         if kn.hugo_symbol_col not in data:
             raise ValueError('%s column must be included for wild type genes' % kn.hugo_symbol_col)
 
-        self.sample_obj[kn.wt_genes_col].append({kn.hugo_symbol_col: data[kn.hugo_symbol_col]})
+        self.sample_obj[kn.wt_genes_col].append({
+            kn.variant_category_col: s.variant_category_wt_val,
+            kn.hugo_symbol_col: data[kn.hugo_symbol_col]
+        })
 
     def determine_low_coverage_type(self, data):
         """

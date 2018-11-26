@@ -13,7 +13,7 @@ from src.services.load_service.patient_utils import PatientUtils
 from src.services.load_service.trial_utils import TrialUtils
 from src.services.load_service.variants_utils import VariantsUtils
 
-logging.basicConfig(level=logging.DEBUG, format='[%(levelname)s] %(message)s', )
+logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s', )
 
 
 def load_service(_args):
@@ -62,15 +62,15 @@ def load_service(_args):
         exe.add_trial_data_to_mongo()
 
     # load_service patient old_data
-    if _args.clinical:
+    if _args.clinical or _args.samples:
         exe.load_patient_data()
 
         if not exe.clinical_is_bson:
             exe.reformat_clinical_dates()
 
-        # add to mongo
-        exe.add_clinical_data_to_mongo()
-        # exe.create_clinical_index()  # todo enable this
+            # add to mongo
+            exe.add_clinical_data_to_mongo()
+            # exe.create_clinical_index()  # todo enable this
 
 
 class LoadService:
@@ -80,7 +80,7 @@ class LoadService:
 
         self.db = get_db(self._args.mongo_uri)
         self.t = TrialUtils(self.db)
-        self.p = PatientUtils()
+        self.p = PatientUtils(self.db)
         self.validator = SamplesValidator(samples_schema)
 
         self.clinical_is_bson = False
@@ -103,12 +103,18 @@ class LoadService:
         :return: {null}
         """
 
+        if self._args.samples:
+            self.clinical_is_bson = self.p.load_samples_bson(samples_bson=self._args.samples)
+            return
+
         # both clinical and genomic files must be supplied
-        if not self._args.genomic:
+        if self._args.clinical and not self._args.genomic:
             raise ValueError('Genomic file must be supplied along with clinical file.')
 
         logging.info('Reading data into pandas...')
-        self.clinical_is_bson = self.p.load_dict[self._args.patient_format](self._args.clinical, self._args.genomic)
+        self.clinical_is_bson = self.p.load_dict[self._args.sample_format](self._args.clinical,
+                                                                           self._args.genomic,
+                                                                           self._args.low_coverage)
 
     def reformat_clinical_dates(self):
         """
