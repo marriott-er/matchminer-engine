@@ -82,7 +82,8 @@ if __name__ == '__main__':
     param_csv_help = 'Set this flag to export your results in a .csv file. Default.'
     param_outpath_help = 'Destination and name of your results file.'
     param_trial_format_help = 'File format of input trial old_data. Default is YML.'
-    param_patient_format_help = 'File format of input patient old_data (both clinical and genomic files). Default is CSV.'
+    param_patient_format_help = 'File format of input patient old_data (both clinical and genomic files). ' \
+                                'Default is CSV.'
 
     # mode parser.
     parser = argparse.ArgumentParser()

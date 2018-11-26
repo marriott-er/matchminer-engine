@@ -55,8 +55,13 @@ class TrialUtils:
 
         :param json: Path to JSON file.
         """
+
         cmd = "mongoimport --host localhost:27017 --db matchminer --collection trial --file %s" % json
-        subprocess.call(cmd.split(' '))
+        p = subprocess.Popen(cmd.split(' '), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p.communicate()
+        if p.returncode != 0:
+            cmd += ' --jsonArray'
+            subprocess.call(cmd.split())
 
 
 def add_trial(yml, db):
