@@ -1,5 +1,6 @@
 import json
 import logging
+import pandas as pd
 from pymongo import MongoClient
 
 from src.utilities import settings as s
@@ -8,7 +9,6 @@ from src.utilities.settings import MONGO_URI, MONGO_DBNAME
 
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s', )
 
-# todo unit test this entire file
 
 def get_db(mongo_uri=MONGO_URI, mongo_dbname=MONGO_DBNAME):
     """Returns a Mongo connection"""
@@ -68,3 +68,28 @@ def get_coordinating_center(trial):
         return 'unknown'
     else:
         return trial[s.trial_summary_col][s.trial_coordinating_center_col]
+
+
+def chunk_table(db, table_name, df=None, chunk=0):
+    """
+    Create a Pandas dataframe in chunks
+
+    :param db: {MongoDB connection}
+    :param table_name: {str}
+    :param df: {Pandas dataframe}
+    :param chunk: {int}
+    :return: {Pandas dataframe}
+    """
+    chunk_size = 10000
+    num_records = db[table_name].count()
+    if df is None:
+        df = pd.DataFrame()
+
+    while chunk < num_records:
+        if df is not None:
+            logging.info('Loaded %d records into Pandas' % len(df.index))
+        cursor = db[table_name].find().sort([("$natural", 1)]).skip(chunk).limit(chunk_size)
+        df = df.append(pd.DataFrame.from_records(cursor))
+        chunk += chunk_size
+
+    return df
