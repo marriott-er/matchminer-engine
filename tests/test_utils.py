@@ -81,6 +81,6 @@ class TestUtils(unittest.TestCase):
             for _ in range(100010)
         ]
         self.db.testCollection.insert(docs)
-        df = chunk_table(db=self.db, table_name='testCollection')
+        df = load_table_in_chunks(db=self.db, table_name='testCollection')
         assert len(df.index) == 100010
 

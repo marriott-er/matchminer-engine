@@ -70,7 +70,7 @@ def get_coordinating_center(trial):
         return trial[s.trial_summary_col][s.trial_coordinating_center_col]
 
 
-def chunk_table(db, table_name, df=None, chunk=0):
+def load_table_in_chunks(db, table_name, df=None, chunk=0):
     """
     Create a Pandas dataframe in chunks
 
@@ -87,7 +87,7 @@ def chunk_table(db, table_name, df=None, chunk=0):
 
     while chunk < num_records:
         if df is not None:
-            logging.info('Loaded %d records into Pandas' % len(df.index))
+            logging.info('Loaded %d records' % len(df.index))
         cursor = db[table_name].find().sort([("$natural", 1)]).skip(chunk).limit(chunk_size)
         df = df.append(pd.DataFrame.from_records(cursor))
         chunk += chunk_size

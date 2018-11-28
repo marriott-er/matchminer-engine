@@ -4,6 +4,7 @@ import pandas as pd
 
 from src.utilities import settings as s
 from src.data_store import key_names as kn
+from src.utilities.utilities import load_table_in_chunks
 
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s', )
 
@@ -70,7 +71,7 @@ class PatientUtils:
 
         if genomic is not None:
             subprocess.call(cmd.format(genomic).split())
-            self.genomic_df = pd.DataFrame.from_records(self.db.genomic.find())
+            self.genomic_df = load_table_in_chunks(db=self.db, table_name='genomic')
 
         if lc is not None:
             subprocess.call(cmd.format(lc).split())
