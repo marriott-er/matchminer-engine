@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s', )
 
 class PatientUtils:
 
-    def __init__(self, db):
+    def __init__(self, db, mongo_uri, mongo_dbname):
 
         self.load_dict = {
             'csv': self.load_csv,
@@ -25,6 +25,8 @@ class PatientUtils:
         self.true_values = ['TRUE', 'True', 'true']
         self.false_values = ['FALSE', 'False', 'false']
         self.db = db
+        self.mongo_uri = mongo_uri
+        self.mongo_dbname = mongo_dbname
 
     def load_csv(self, clinical, genomic, **kwargs):
         """
@@ -63,7 +65,7 @@ class PatientUtils:
         """
 
         # load BSON into Pandas DF
-        cmd = 'mongorestore --uri %s --db %s {0}' % (s.MONGO_URI, s.MONGO_DBNAME)
+        cmd = 'mongorestore --uri %s --db %s {0}' % (self.mongo_uri, self.mongo_dbname)
 
         if clinical is not None:
             subprocess.call(cmd.format(clinical).split())

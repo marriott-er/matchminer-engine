@@ -7,9 +7,11 @@ from src.utilities import settings as s
 
 class TrialUtils:
 
-    def __init__(self, db):
+    def __init__(self, db, mongo_uri, mongo_dbname):
 
         self.db = db
+        self.mongo_uri = mongo_uri
+        self.mongo_dbname = mongo_dbname
         self.load_dict = {
             'yml': self.yaml_to_mongo,
             'bson': self.bson_to_mongo,
@@ -38,26 +40,24 @@ class TrialUtils:
         else:
             add_trial(yml, self.db)
 
-    @staticmethod
-    def bson_to_mongo(bson):
+    def bson_to_mongo(self, bson):
         """
         If you specify the path to a directory, all files with extension BSON will be added to MongoDB.
         If you specify the path to a specific BSON file, it will add that file to MongoDB.
 
         :param bson: Path to BSON file.
         """
-        cmd = "mongorestore --uri %s --db %s %s" % (s.MONGO_URI, s.MONGO_DBNAME, bson)
+        cmd = "mongorestore --uri %s --db %s %s" % (self.mongo_uri, self.mongo_dbname, bson)
         subprocess.call(cmd.split(' '))
 
-    @staticmethod
-    def json_to_mongo(json):
+    def json_to_mongo(self, json):
         """
         If you specify the path to a directory, all files with extension JSON will be added to MongoDB.
         If you specify the path to a specific JSON file, it will add that file to MongoDB.
 
         :param json: Path to JSON file.
         """
-        cmd = "mongoimport --uri %s --collection trial --file %s" % (s.MONGO_URI, json)
+        cmd = "mongoimport --uri %s --db %s --collection trial --file %s" % (self.mongo_uri, self.mongo_dbname, json)
         p = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         p.communicate()
         if p.returncode != 0:

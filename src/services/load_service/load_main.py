@@ -78,9 +78,14 @@ class LoadService:
     def __init__(self, args):
         self._args = args
 
+        if self._args.mongo_uri is None:
+            self._args.mongo_uri = s.MONGO_URI
+        if self._args.mongo_dbname is None:
+            self._args.mongo_dbname = s.MONGO_DBNAME
+
         self.db = get_db(mongo_uri=self._args.mongo_uri, mongo_dbname=self._args.mongo_dbname)
-        self.t = TrialUtils(self.db)
-        self.p = PatientUtils(self.db)
+        self.t = TrialUtils(self.db, mongo_uri=self._args.mongo_uri, mongo_dbname=self._args.mongo_dbname)
+        self.p = PatientUtils(self.db, mongo_uri=self._args.mongo_uri, mongo_dbname=self._args.mongo_dbname)
         self.validator = SamplesValidator(samples_schema)
 
         self.clinical_is_bson = False
