@@ -78,7 +78,7 @@ class LoadService:
     def __init__(self, args):
         self._args = args
 
-        self.db = get_db(self._args.mongo_uri)
+        self.db = get_db(mongo_uri=self._args.mongo_uri, mongo_dbname=self._args.mongo_dbname)
         self.t = TrialUtils(self.db)
         self.p = PatientUtils(self.db)
         self.validator = SamplesValidator(samples_schema)

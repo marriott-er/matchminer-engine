@@ -99,6 +99,7 @@ if __name__ == '__main__':
     subp_p.add_argument('-s', dest='samples', help=param_samples_help)
     subp_p.add_argument('-lc', dest='low_coverage', help=param_lc_help)
     subp_p.add_argument('--mongo-uri', dest='mongo_uri', required=False, default=None, help=param_mongo_uri_help)
+    subp_p.add_argument('--mongo-dbname', dest='mongo_dbname', required=False, default=None, help=param_mongo_uri_help)
     subp_p.add_argument('--trial-format',
                         dest='trial_format',
                         default='yml',
