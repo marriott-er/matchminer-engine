@@ -50,6 +50,7 @@ class TrialUtils:
         print '---debug---'
         print 'mongo_dbname', self.mongo_dbname
         print 'mongo_uri', self.mongo_uri
+        print 'bson', bson
         print
         cmd = "mongorestore --uri %s --db %s %s" % (self.mongo_uri, self.mongo_dbname, bson)
         subprocess.call(cmd.split(' '))
