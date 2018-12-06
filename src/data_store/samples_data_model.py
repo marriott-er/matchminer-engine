@@ -23,8 +23,8 @@ gender_allowed_vals = ['Male', 'Female']
 mutations_schema = {
     kn.variant_category_col: variant_category_rules,
     kn.hugo_symbol_col: {'type': 'string', 'required': True},
-    kn.chromosome_col: {'type': 'string', 'required': True},
-    kn.position_col: {'type': 'integer', 'required': True},
+    kn.chromosome_col: {'type': 'string', 'required': False},
+    kn.position_col: {'type': 'integer', 'required': False},
     kn.strand_col: {'type': 'string', 'required': True, 'allowed': ['+', '-']},
     kn.transcript_exon_col: {'type': 'integer', 'required': True},
     kn.variant_class_col: {'type': 'string', 'required': True},

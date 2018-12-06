@@ -1,10 +1,10 @@
 import logging
 import subprocess
 import pandas as pd
-import datetime as dt
 
 from src.utilities import settings as s
 from src.data_store import key_names as kn
+from src.utilities.utilities import set_dtypes
 from src.utilities.utilities import load_table_in_chunks
 
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s', )
@@ -26,7 +26,10 @@ class PatientUtils:
             kn.alt_mrn_col: str,
             kn.pdf_layout_version_col: int
         }
-        self.gdtypes = {kn.coverage_col: float, kn.chromosome_col: str}
+        self.gdtypes = {
+            kn.coverage_col: int,
+            kn.chromosome_col: str,
+        }
         self.true_values = ['TRUE', 'True', 'true']
         self.false_values = ['FALSE', 'False', 'false']
         self.db = db
@@ -76,11 +79,19 @@ class PatientUtils:
             subprocess.call(cmd.format(clinical).split())
             self.clinical_df = pd.DataFrame.from_records(self.db.clinical.find())
             self.clinical_df.rename(index=str, columns=s.rename_clinical, inplace=True)
+            self.clinical_df = set_dtypes(df=self.clinical_df, dtype_dict=self.cdtypes)
 
         if genomic is not None:
             subprocess.call(cmd.format(genomic).split())
             self.genomic_df = load_table_in_chunks(db=self.db, table_name='genomic')
             self.genomic_df.rename(index=str, columns=s.rename_genomic, inplace=True)
+            self.genomic_df = set_dtypes(df=self.genomic_df, dtype_dict=self.gdtypes)
+
+            print '---debug---'
+            print self.genomic_df.head(1).T
+            print self.genomic_df.dtypes
+            assert False
+            # todo here
 
         if lc is not None:
             subprocess.call(cmd.format(lc).split())

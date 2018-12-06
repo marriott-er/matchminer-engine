@@ -116,6 +116,6 @@ def set_dtypes(df, dtype_dict):
     """
     for col in dtype_dict.keys():
         if col in df.columns:
-            df[col] = df[col].apply(lambda x: dtype_dict[col](x))
+            df[col] = df[col].apply(lambda x: dtype_dict[col](x) if pd.notnull(x) else x)
 
     return df

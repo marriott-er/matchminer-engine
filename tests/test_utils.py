@@ -94,10 +94,13 @@ class TestUtils(unittest.TestCase):
         dtype_dict = {'stringCol': str, 'intCol': int, 'floatCol': float}
 
         cols = ['stringCol', 'intCol', 'floatCol']
-        data = [[1.0, 1.0, '1']]
+        data = [[1.0, 1.0, '1'], [None, None, None]]
         df = pd.DataFrame(data, columns=cols)
         df = set_dtypes(df=df, dtype_dict=dtype_dict)
         assert type(df['stringCol'].tolist()[0]) == str
         assert type(df['intCol'].tolist()[0]) == int
         assert type(df['floatCol'].tolist()[0]) == float
+        assert type(df['stringCol'].tolist()[1]) is None
+        assert type(df['intCol'].tolist()[1]) is None
+        assert type(df['floatCol'].tolist()[1]) is None
 
