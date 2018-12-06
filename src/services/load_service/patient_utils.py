@@ -1,6 +1,7 @@
 import logging
 import subprocess
 import pandas as pd
+import datetime as dt
 
 from src.utilities import settings as s
 from src.data_store import key_names as kn
@@ -20,7 +21,11 @@ class PatientUtils:
         }
         self.clinical_df = None
         self.genomic_df = None
-        self.cdtypes = {kn.mrn_col: str, kn.alt_mrn_col: str}
+        self.cdtypes = {
+            kn.mrn_col: str,
+            kn.alt_mrn_col: str,
+            kn.pdf_layout_version_col: int
+        }
         self.gdtypes = {kn.coverage_col: float, kn.chromosome_col: str}
         self.true_values = ['TRUE', 'True', 'true']
         self.false_values = ['FALSE', 'False', 'false']
@@ -70,22 +75,21 @@ class PatientUtils:
         if clinical is not None:
             subprocess.call(cmd.format(clinical).split())
             self.clinical_df = pd.DataFrame.from_records(self.db.clinical.find())
+            self.clinical_df.rename(index=str, columns=s.rename_clinical, inplace=True)
 
         if genomic is not None:
             subprocess.call(cmd.format(genomic).split())
             self.genomic_df = load_table_in_chunks(db=self.db, table_name='genomic')
+            self.genomic_df.rename(index=str, columns=s.rename_genomic, inplace=True)
 
         if lc is not None:
             subprocess.call(cmd.format(lc).split())
-            self.genomic_df = self.genomic_df.append(pd.DataFrame.from_records(self.db.negative_genomic.find()))
+            lc_df = pd.DataFrame.from_records(self.db.negative_genomic.find())
+            lc_df.rename(index=str, columns=s.rename_lc, inplace=True)
+            lc_df[kn.variant_category_col] = s.variant_category_lc_val
+            self.genomic_df = self.genomic_df.append(lc_df)
 
-        # rename columns
-        self.clinical_df.rename(index=str, columns=s.rename_clinical, inplace=True)
-        self.genomic_df.rename(index=str, columns=s.rename_genomic, inplace=True)
-
-
-    @staticmethod
-    def load_samples_bson(samples_bson):
+    def load_samples_bson(self, samples_bson):
         """
         Load bson file into MongoDB
 
@@ -93,6 +97,6 @@ class PatientUtils:
         :return: {null}
         """
         logging.info('Restoring samples data from %s' % samples_bson)
-        cmd = "mongorestore --uri %s --db %s %s" % (s.MONGO_URI, s.MONGO_DBNAME, samples_bson)
+        cmd = "mongorestore --uri %s --db %s %s" % (self.mongo_uri, self.mongo_dbname, samples_bson)
         subprocess.call(cmd.split())
         return True

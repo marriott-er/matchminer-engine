@@ -26,6 +26,7 @@ if file_path is not None:
 TUMOR_TREE = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../', 'data/tumor_tree.txt'))
 oncotree_all_solid_text = '_SOLID_'
 oncotree_all_liquid_text = '_LIQUID_'
+date_cols = [kn.birth_date_col, kn.report_date_col, kn.date_received_at_seq_center_col]
 
 # sample table settings
 sample_collection_name = 'samples'
@@ -234,11 +235,14 @@ rename_genomic = {
     'POLE_STATUS': kn.pole_status_col,
     'APOBEC_STATUS': kn.apobec_status_col,
     'UVA_STATUS': kn.uva_status_col,
+}
+rename_lc = {
     'coverage_type': kn.coverage_type_col,
     'roi_type': kn.roi_type_col,
     'panel': kn.panel_col,
     'true_codon': kn.codon_col,
     'true_transcript_exon': kn.low_coverage_exon_col,
     'show_codon': kn.show_codon_col,
-    'show_exon': kn.show_exon_col
+    'show_exon': kn.show_exon_col,
+    kn.lc_coverage_col: kn.lc_coverage_col
 }

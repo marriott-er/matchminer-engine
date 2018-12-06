@@ -71,7 +71,7 @@ low_coverage_schema = {
     kn.codon_col: {'type': 'integer', 'nullable': True},
     kn.show_codon_col: {'type': 'boolean', 'nullable': True},
     kn.show_exon_col: {'type': 'boolean', 'nullable': True},
-    kn.coverage_col: {'type': 'float', 'nullable': True},
+    kn.lc_coverage_col: {'type': 'float', 'nullable': True},
     kn.low_coverage_exon_col: {'type': 'integer', 'nullable': True},
 }
 
@@ -145,7 +145,7 @@ samples_schema = {
     kn.q2_consent_col: {'type': 'string', 'required': True},
     kn.q3_consent_col: {'type': 'string', 'required': True},
     kn.q4_consent_col: {'type': 'string', 'required': True},
-    kn.q5_consent_col: {'type': 'string', 'required': True},
+    kn.q5_consent_col: {'type': 'string', 'required': False},
     kn.cris_consent_col: {'type': 'string', 'required': True},
     kn.consent_17000_col: {'type': 'string', 'nullable': True},
 

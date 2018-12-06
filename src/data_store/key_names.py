@@ -43,6 +43,7 @@ codon_col = 'codon'
 show_codon_col = 'showCodon'
 low_coverage_exon_col = 'exon'
 show_exon_col = 'showExon'
+lc_coverage_col = 'coverageLC'
 
 # ------------------ #
 # Clinical key names #

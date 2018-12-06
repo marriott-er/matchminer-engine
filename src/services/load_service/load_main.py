@@ -1,10 +1,11 @@
 import logging
 import pandas as pd
 import datetime as dt
+from pandas.tslib import Timestamp
 from pymongo import ASCENDING, DESCENDING
 
 from src.utilities import settings as s
-from src.utilities.utilities import handle_chromosome_column
+from src.utilities.utilities import handle_chromosome_column, handle_vc
 from src.data_store import key_names as kn
 from src.data_store.samples_data_model import samples_schema
 from src.data_store.validator import SamplesValidator
@@ -89,7 +90,6 @@ class LoadService:
         self.validator = SamplesValidator(samples_schema)
 
         self.clinical_is_bson = False
-        self.date_cols = [kn.birth_date_col, kn.report_date_col, kn.date_received_at_seq_center_col]
         self.date_format = '%Y-%m-%d %X'
 
     def add_trial_data_to_mongo(self):
@@ -129,10 +129,11 @@ class LoadService:
         """
 
         # change date column values from strings to datetime objects
-        for col in self.date_cols:
+        for col in s.date_cols:
             try:
                 self.p.clinical_df[col] = self.p.clinical_df[col].apply(
-                    lambda x: str(dt.datetime.strptime(x, self.date_format)))
+                    lambda x: dt.datetime.strftime(x, self.date_format) if isinstance(x, Timestamp) else
+                              str(dt.datetime.strptime(x, self.date_format)))
             except ValueError as exc:
                 if col == kn.birth_date_col:
                     logging.warning('Birth dates should be formatted %Y-%m-%d to be properly stored in MongoDB.')
@@ -151,20 +152,22 @@ class LoadService:
         :return: {null}
         """
         logging.info('Adding clinical old_data to mongo...')
-        clinical_json = dataframe_to_json(df=self.p.clinical_df)
+        cols = [i for i in self.p.clinical_df.columns if i in s.rename_clinical.values()]
+        clinical_json = dataframe_to_json(df=self.p.clinical_df[cols])
         for sample_obj in clinical_json:
 
             # add genomic data
             sample_obj = self._add_genomic_data_to_clinical_dataframe(sample_obj=sample_obj)
 
             # convert date columns as datetime object
-            for col in self.date_cols:
+            for col in s.date_cols:
                 if col in sample_obj:
                     sample_obj[col] = dt.datetime.strptime(str(sample_obj[col]), self.date_format)
 
             # Special type edge case for chromosome column
             for mutation in sample_obj[kn.mutation_list_col]:
-                mutation[kn.chromosome_col] = handle_chromosome_column(mutation[kn.chromosome_col])
+                if kn.chromosome_col in mutation:
+                    mutation[kn.chromosome_col] = handle_chromosome_column(mutation[kn.chromosome_col])
 
             # validate data with samples schema
             if not self.validator.validate_document(sample_obj):
@@ -182,7 +185,8 @@ class LoadService:
         :return: {dict} sample_obj updated with genomic columns
         """
         f1 = (self.p.genomic_df[kn.sample_id_col] == sample_obj[kn.sample_id_col])
-        genomic_json = dataframe_to_json(df=self.p.genomic_df[f1])
+        cols = [i for i in self.p.genomic_df.columns if i in s.rename_genomic.values()]
+        genomic_json = dataframe_to_json(df=self.p.genomic_df[f1][cols])
 
         # initialize genomic columns in sample object
         v = VariantsUtils(sample_obj=sample_obj)
@@ -190,11 +194,11 @@ class LoadService:
         # parse each variant
         for variant_obj in genomic_json:
             if kn.variant_category_col not in variant_obj or \
-                            variant_obj[kn.variant_category_col] not in s.allowed_variants:
+                    handle_vc(variant_obj[kn.variant_category_col]) not in s.allowed_variants:
                 raise ValueError('%s column must be included for each genomic record.' % kn.variant_category_col)
 
-            variant_category = variant_obj[kn.variant_category_col]
-            v.variant_parser_dict[variant_category](data=variant_obj)
+            variant_category = handle_vc(variant_obj[kn.variant_category_col])
+            v.variant_parser_dict[variant_category](data=variant_obj)  # todo here
 
         return v.sample_obj
 

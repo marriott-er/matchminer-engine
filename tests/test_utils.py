@@ -63,6 +63,11 @@ class TestUtils(unittest.TestCase):
         assert handle_chromosome_column('X.0') == 'X.0'
         assert handle_chromosome_column('X') == 'X'
 
+    def test_handle_vc(self):
+
+        assert handle_vc(s.variant_category_mutation_val) == s.variant_category_mutation_val
+        assert handle_vc('WT') == s.variant_category_wt_val
+
     def test_get_coordinating_center(self):
 
         t1 = {}
@@ -83,4 +88,16 @@ class TestUtils(unittest.TestCase):
         self.db.testCollection.insert(docs)
         df = load_table_in_chunks(db=self.db, table_name='testCollection')
         assert len(df.index) == 100010
+
+    def test_set_dtypes(self):
+
+        dtype_dict = {'stringCol': str, 'intCol': int, 'floatCol': float}
+
+        cols = ['stringCol', 'intCol', 'floatCol']
+        data = [[1.0, 1.0, '1']]
+        df = pd.DataFrame(data, columns=cols)
+        df = set_dtypes(df=df, dtype_dict=dtype_dict)
+        assert type(df['stringCol'].tolist()[0]) == str
+        assert type(df['intCol'].tolist()[0]) == int
+        assert type(df['floatCol'].tolist()[0]) == float
 

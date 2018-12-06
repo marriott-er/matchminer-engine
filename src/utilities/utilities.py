@@ -56,6 +56,16 @@ def handle_chromosome_column(val):
         return val
 
 
+def handle_vc(vc):
+    """
+    Ensure variant category value is formatted correctly between the old and new values
+
+    :param vc: {str}
+    :return: {str}
+    """
+    return s.variant_category_wt_val if vc == 'WT' else vc
+
+
 def get_coordinating_center(trial):
     """
     Returns the trials' coordinating center
@@ -91,5 +101,21 @@ def load_table_in_chunks(db, table_name, df=None, chunk=0):
         cursor = db[table_name].find().sort([("$natural", 1)]).skip(chunk).limit(chunk_size)
         df = df.append(pd.DataFrame.from_records(cursor))
         chunk += chunk_size
+
+    return df
+
+
+def set_dtypes(df, dtype_dict):
+    """
+    Set the data types for the given dataframe
+
+    :param df: {Pandas dataframe}
+    :param col: {str}
+    :param dtype_dict: {dict}
+    :return: {Pandas dataframe}
+    """
+    for col in dtype_dict.keys():
+        if col in df.columns:
+            df[col] = df[col].apply(lambda x: dtype_dict[col](x))
 
     return df
