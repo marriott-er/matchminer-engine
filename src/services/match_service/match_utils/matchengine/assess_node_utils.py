@@ -59,7 +59,8 @@ class AssessNodeUtils(ClinicalQueries, GenomicQueries, ProjUtils):
         :param node: {digraph node}
         :return: {digraph node}
         """
-        criteria = sorted(node['value'].keys())
+        ignore_these_fields = ['display_name', 'fusion_partner_hugo_symbol']
+        criteria = sorted([i for i in node['value'].keys() if i not in ignore_these_fields])
 
         # gene level query (mutations, cnvs, and svs)
         if criteria == [s.mt_hugo_symbol, s.mt_variant_category]:
