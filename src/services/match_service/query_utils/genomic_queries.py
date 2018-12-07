@@ -24,11 +24,16 @@ class GenomicQueries(QueryUtils, GenomicUtils):
             True: self.create_exon_inclusion_query,
             False: self.create_exon_exclusion_query
         }
+        self.variant_class_query_dict = {
+            True: self.create_variant_class_inclusion_query,
+            False: self.create_variant_class_exclusion_query
+        }
 
         self.variant_category_dict = {
             s.variant_category_mutation_val: kn.mutation_list_col,
             s.variant_category_wildcard_mutation_val: kn.mutation_list_col,
             s.variant_category_exon_val: kn.mutation_list_col,
+            s.variant_category_variant_class_val: kn.mutation_list_col,
             s.variant_category_cnv_val: kn.cnv_list_col,
             s.variant_category_sv_val: kn.sv_list_col,
             s.variant_category_wt_val: kn.wt_genes_col
@@ -122,6 +127,60 @@ class GenomicQueries(QueryUtils, GenomicUtils):
         return self.variant_level_query_dict[include](variant_category=s.variant_category_wildcard_mutation_val,
                                                       gene_name=gene_name,
                                                       variant_val=protein_change)
+
+    def create_variant_class_query(self, gene_name, variant_class, include=True):
+        """
+        Create MongoDB query to find samples with mutations in the given gene and variant classification
+
+        :param gene_name: {str}
+        :param variant_class: {str}
+        :param include: {bool}
+        :return: {dict}
+        """
+        return self.variant_class_query_dict[include](gene_name=gene_name,
+                                                      variant_class=variant_class)
+
+    def create_variant_class_inclusion_query(self, gene_name, variant_class):
+        """
+        Create MongoDB query that matches the specific gene and variant classification.
+
+        :param gene_name: {str}
+        :param variant_class: {str}
+        :return: {dict}
+        """
+        return {
+            kn.mutation_list_col: {
+                '$elemMatch': {
+                    self.hugo_symbol_key: gene_name,
+                    self.variant_class_key: variant_class
+                }
+            }
+        }
+
+    def create_variant_class_exclusion_query(self, gene_name, variant_class):
+        """
+        Create MongoDB query that matches the specific variant specified.
+
+        :param gene_name: {str}
+        :param exon: {int}
+        :param variant_class: {str or null}
+        :return: {dict}
+        """
+        exclude_query = {
+            kn.mutation_list_col: {
+                '$elemMatch': {
+                    self.hugo_symbol_key: {'$eq': gene_name},
+                    self.variant_class_key: {'$ne': variant_class}
+                }
+            }
+        }
+        query = {'$or': [
+            self.create_gene_level_query(gene_name=gene_name,
+                                         variant_category=s.variant_category_variant_class_val,
+                                         include=False),
+            exclude_query
+        ]}
+        return query
 
     def create_exon_query(self, gene_name, exon, variant_class=None, include=True):
         """

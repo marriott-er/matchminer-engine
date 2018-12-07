@@ -193,6 +193,24 @@ class TestQueryUtilitiesShared(unittest.TestCase):
             kn.sample_id_col: 'TEST-SAMPLE-MMR-DEFICIENT',
             kn.mmr_status_col: s.mmr_status_deficient_val
         }
+        self.test_case_braf_nonsense_mutation = {
+            kn.sample_id_col: 'TEST-SAMPLE-BRAF-NONSENSE',
+            kn.mutation_list_col: [
+                {kn.hugo_symbol_col: 'BRAF', kn.variant_class_col: 'Nonsense_Mutation'}
+            ]
+        }
+        self.test_case_braf_missense_mutation = {
+            kn.sample_id_col: 'TEST-SAMPLE-BRAF-MISSENSE',
+            kn.mutation_list_col: [
+                {kn.hugo_symbol_col: 'BRAF', kn.variant_class_col: 'Missense_Mutation'}
+            ]
+        }
+        self.test_case_egfr_nonsense_mutation = {
+            kn.sample_id_col: 'TEST-SAMPLE-EGFR-NONSENSE',
+            kn.mutation_list_col: [
+                {kn.hugo_symbol_col: 'EGFR', kn.variant_class_col: 'Nonsense_Mutation'}
+            ]
+        }
 
         self.test_cases = [
             self.test_case_lung,

@@ -172,6 +172,34 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
         # clean up
         self.db.testSamples.drop()
 
+    def test_create_variant_class_query(self):
+
+        # set up
+        self.db.testSamples.insert_many([
+            self.test_case_braf_nonsense_mutation,
+            self.test_case_braf_missense_mutation,
+            self.test_case_egfr_nonsense_mutation,
+            self.test_case_no_mutation
+        ])
+
+        # BRAF Nonsense (inclusion)
+        q1 = self.gq.create_variant_class_query(gene_name='BRAF', variant_class='Nonsense_Mutation', include=True)
+        res1 = self._findalls(q1)
+        self._print(q1)
+        assert res1 == ['TEST-SAMPLE-BRAF-NONSENSE'], res1
+
+        # BRAF Nonsense (exclusion)
+        q2 = self.gq.create_variant_class_query(gene_name='BRAF', variant_class='Nonsense_Mutation', include=False)
+        res2 = self._findalls(q2)
+        self._print(q2)
+        assert res2 == ['TEST-SAMPLE-BRAF-MISSENSE', 'TEST-SAMPLE-EGFR-NONSENSE', 'TEST-SAMPLE-NO-MUTATION'], res2
+
+        # projections
+        # todo
+
+        # clean up
+        self.db.testSamples.drop()
+
     def test_create_exon_query(self):
 
         # set up
