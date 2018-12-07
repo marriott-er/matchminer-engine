@@ -10,8 +10,15 @@ from src.utilities.settings import MONGO_URI, MONGO_DBNAME
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s', )
 
 
-def get_db(mongo_uri=MONGO_URI, mongo_dbname=MONGO_DBNAME):
+def get_db(mongo_uri=None, mongo_dbname=None):
     """Returns a Mongo connection"""
+
+    if mongo_uri is None:
+        mongo_uri = MONGO_URI
+
+    if mongo_dbname is None:
+        mongo_dbname = MONGO_DBNAME
+
     connection = MongoClient(mongo_uri)
     return connection[mongo_dbname]
 
@@ -119,3 +126,21 @@ def set_dtypes(df, dtype_dict):
             df[col] = df[col].apply(lambda x: dtype_dict[col](x) if pd.notnull(x) else x)
 
     return df
+
+
+def format_match_tree_code(step_code, arm_code, dose_code):
+    """
+    Format match tree code for logging
+
+    :param step_code: {str}
+    :param arm_code: {str}
+    :param dose_code: {str}
+    :return:
+    """
+    code = step_code
+    if arm_code is not None:
+        code += '.%s' % arm_code
+    if dose_code is not None:
+        code += '.%s' % dose_code
+
+    return code

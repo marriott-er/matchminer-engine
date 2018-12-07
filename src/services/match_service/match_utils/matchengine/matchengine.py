@@ -2,11 +2,11 @@ import logging
 import networkx as nx
 
 from src.utilities import settings as s
-from src.utilities.utilities import get_db
 from src.data_store import key_names as kn
 from src.data_store.validator import SamplesValidator
-from src.data_store.trial_matches_data_model import trial_matches_schema
 from src.services.match_service.match_utils.sort import Sort
+from src.utilities.utilities import get_db, format_match_tree_code
+from src.data_store.trial_matches_data_model import trial_matches_schema
 from src.services.match_service.match_utils.matchengine.assess_node_utils import AssessNodeUtils
 from src.services.match_service.match_utils.matchengine.intersect_results_utils import IntersectResultsUtils
 
@@ -146,8 +146,20 @@ class MatchEngine(AssessNodeUtils, IntersectResultsUtils):
                                                                                  self.validator.errors))
 
         # todo add versioning
-        res = self.db[s.trial_match_collection_name].insert_many(self.matches)
-        logging.info('%s | %d trial matches added' % (self.trial_info['protocol_no'], len(res.inserted_ids)))
+        if len(self.matches) > 0:
+            res = self.db[s.trial_match_collection_name].insert_many(self.matches)
+            logging.info('%s | %s | %d trial matches added' % (
+                self.trial_info['protocol_no'],
+                format_match_tree_code(step_code=self.trial_info['step_code'],
+                                       arm_code=self.trial_info['arm_code'],
+                                       dose_code=self.trial_info['dose_code']),
+                len(res.inserted_ids)))
+        else:
+            logging.info('%s | %s | No trial matches' % (
+                self.trial_info['protocol_no'],
+                format_match_tree_code(step_code=self.trial_info['step_code'],
+                                       arm_code=self.trial_info['arm_code'],
+                                       dose_code=self.trial_info['dose_code'])))
 
     def sort_trial_matches(self):
         """

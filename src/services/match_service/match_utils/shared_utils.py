@@ -9,8 +9,8 @@ logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s', )
 
 class SharedUtils(object):
 
-    def __init__(self):
-        self.db = get_db()
+    def __init__(self, mongo_uri, mongo_dbname):
+        self.db = get_db(mongo_uri, mongo_dbname)
 
     def find_trials(self, query=None):
         """

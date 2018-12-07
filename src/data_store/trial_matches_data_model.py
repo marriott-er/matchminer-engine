@@ -43,6 +43,7 @@ trial_matches_schema = {
     kn.mr_trial_step_code_col: {'type': 'string', 'required': True},
     kn.mr_trial_arm_code_col: {'type': 'string', 'nullable': True},
     kn.mr_trial_dose_code_col: {'type': 'string', 'nullable': True},
+    kn.mr_coordinating_center_col: {'type': 'string', 'nullable': True},
 
     # genomic reasons for matching
     kn.mutation_list_col: {'type': 'list', 'schema': {'type': 'dict', 'schema': mutation_reasons_schema}},

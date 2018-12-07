@@ -104,3 +104,12 @@ class TestUtils(unittest.TestCase):
         assert type(df['intCol'].tolist()[1]) is float
         assert type(df['floatCol'].tolist()[1]) is float
 
+    def test_format_match_tree_code(self):
+
+        s = '1'
+        a = 'Arm1'
+        d = '100'
+        assert format_match_tree_code(step_code=s, arm_code=None, dose_code=None) == '1'
+        assert format_match_tree_code(step_code=s, arm_code=a, dose_code=None) == '1.Arm1'
+        assert format_match_tree_code(step_code=s, arm_code=a, dose_code=d) == '1.Arm1.100'
+
