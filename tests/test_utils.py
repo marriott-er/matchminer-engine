@@ -98,9 +98,9 @@ class TestUtils(unittest.TestCase):
         df = pd.DataFrame(data, columns=cols)
         df = set_dtypes(df=df, dtype_dict=dtype_dict)
         assert type(df['stringCol'].tolist()[0]) == str
-        assert type(df['intCol'].tolist()[0]) == int
+        assert type(df['intCol'].tolist()[0]) == float
         assert type(df['floatCol'].tolist()[0]) == float
-        assert type(df['stringCol'].tolist()[1]) is None
-        assert type(df['intCol'].tolist()[1]) is None
-        assert type(df['floatCol'].tolist()[1]) is None
+        assert type(df['stringCol'].tolist()[1]) is float
+        assert type(df['intCol'].tolist()[1]) is float
+        assert type(df['floatCol'].tolist()[1]) is float
 

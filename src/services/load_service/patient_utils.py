@@ -28,6 +28,7 @@ class PatientUtils:
         }
         self.gdtypes = {
             kn.coverage_col: int,
+            kn.transcript_exon_col: int,
             kn.chromosome_col: str,
         }
         self.true_values = ['TRUE', 'True', 'true']
@@ -86,12 +87,6 @@ class PatientUtils:
             self.genomic_df = load_table_in_chunks(db=self.db, table_name='genomic')
             self.genomic_df.rename(index=str, columns=s.rename_genomic, inplace=True)
             self.genomic_df = set_dtypes(df=self.genomic_df, dtype_dict=self.gdtypes)
-
-            print '---debug---'
-            print self.genomic_df.head(1).T
-            print self.genomic_df.dtypes
-            assert False
-            # todo here
 
         if lc is not None:
             subprocess.call(cmd.format(lc).split())

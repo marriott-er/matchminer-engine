@@ -25,16 +25,16 @@ mutations_schema = {
     kn.hugo_symbol_col: {'type': 'string', 'required': True},
     kn.chromosome_col: {'type': 'string', 'required': False},
     kn.position_col: {'type': 'integer', 'required': False},
-    kn.strand_col: {'type': 'string', 'required': True, 'allowed': ['+', '-']},
+    kn.strand_col: {'type': 'string', 'required': True, 'allowed': ['+', '-', None], 'nullable': True},
     kn.transcript_exon_col: {'type': 'integer', 'required': True},
     kn.variant_class_col: {'type': 'string', 'required': True},
-    kn.protein_change_col: {'type': 'string', 'required': True},
-    kn.cdna_change_col: {'type': 'string', 'required': True},
+    kn.protein_change_col: {'type': 'string', 'required': True, 'nullable': True},
+    kn.cdna_change_col: {'type': 'string', 'required': True, 'nullable': True},
     kn.cdna_transcript_id_col: {'type': 'string', 'nullable': True},
     kn.alt_allele_col: {'type': 'string', 'required': True},
     kn.ref_allele_col: {'type': 'string', 'required': True},
     kn.ref_residue_col: {'type': 'string', 'nullable': True},
-    kn.allele_fraction_col: {'type': 'float', 'required': True},
+    kn.allele_fraction_col: {'type': 'float', 'required': True, 'nullable': True},
     kn.transcript_src_col: {'type': 'string', 'nullable': True},
     kn.coverage_col: {'type': 'integer', 'nullable': True},
     kn.somatic_status_col: {'type': 'string', 'nullable': True},
@@ -46,12 +46,12 @@ mutations_schema = {
 cnvs_schema = {
     kn.variant_category_col: variant_category_rules,
     kn.hugo_symbol_col: {'type': 'string', 'required': True},
-    kn.cytoband_col: {'type': 'string', 'required': True, 'nullable': True},
+    kn.cytoband_col: {'type': 'string', 'required': False, 'nullable': True},
     kn.cnv_call_col: {'type': 'string', 'required': True, 'nullable': True},
     kn.cnv_band_col: {'type': 'string', 'required': True, 'nullable': True},
-    kn.copy_count_col: {'type': 'integer', 'required': True, 'nullable': True},
-    kn.cnv_row_id_col: {'type': 'integer', 'required': True, 'nullable': True},
-    kn.actionability_col: {'type': 'string', 'required': True, 'nullable': True, 'allowed': actionability_allowed_vals}
+    kn.copy_count_col: {'type': 'integer', 'required': False, 'nullable': True},
+    kn.cnv_row_id_col: {'type': 'integer', 'required': False, 'nullable': True},
+    kn.actionability_col: {'type': 'string', 'required': False, 'nullable': True, 'allowed': actionability_allowed_vals}
 }
 
 svs_schema = {

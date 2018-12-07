@@ -21,7 +21,7 @@ def load_service(_args):
     """
     Sets up MongoDB for matching
 
-    :param args: clinical: Path to csv file containing clinical old_data. Required fields are:
+    :param args: clinical: Path to csv file containing clinical data. Required fields are:
         - MRN                           {str} (Unique patient identifier)
         - sampleId                      {str} (Unique sample identifier)
         - oncotreePrimaryDiagnosisName  {str} (Disease diagnosis)
@@ -35,7 +35,7 @@ def load_service(_args):
         - firstLast                     {str} (Patient's first and last name)
         - gender                        {str} (Male or Female)
 
-    :param args: genomic: Path to csv file containing genomic old_data. The following fields are used in matching:
+    :param args: genomic: Path to csv file containing genomic data. The following fields are used in matching:
         - sampleId                      {str} (Unique sample identifier)
         - variantCategory               {str} (CNV, MUTATION, SV, SIGNATURE, WILDTYPE, LOW_COVERAGE) ** required
         - hugoSymbol                    {str} (Gene name)
@@ -58,11 +58,11 @@ def load_service(_args):
     """
     exe = LoadService(_args)
 
-    # insert trial old_data
+    # insert trial data
     if _args.trials:
         exe.add_trial_data_to_mongo()
 
-    # load_service patient old_data
+    # load_service patient data
     if _args.clinical or _args.samples:
         exe.load_patient_data()
 
@@ -123,7 +123,7 @@ class LoadService:
 
     def reformat_clinical_dates(self):
         """
-        Reformat old_data values to the appropriate types
+        Reformat data values to the appropriate types
 
         :return: {null}
         """
@@ -151,7 +151,7 @@ class LoadService:
 
         :return: {null}
         """
-        logging.info('Adding clinical old_data to mongo...')
+        logging.info('Adding clinical data to mongo...')
         cols = [i for i in self.p.clinical_df.columns if i in s.rename_clinical.values()]
         clinical_json = dataframe_to_json(df=self.p.clinical_df[cols])
         for sample_obj in clinical_json:
@@ -169,6 +169,12 @@ class LoadService:
                 if kn.chromosome_col in mutation:
                     mutation[kn.chromosome_col] = handle_chromosome_column(mutation[kn.chromosome_col])
 
+                # Integers are stored as floats in the dataframe because Pandas can't handle null values in a column
+                # with an integer data type
+                for col in [k for k, v in self.p.gdtypes.iteritems() if v == int]:
+                    if col in mutation and pd.notnull(mutation[col]):
+                        mutation[col] = int(mutation[col])
+
             # validate data with samples schema
             if not self.validator.validate_document(sample_obj):
                 raise ValueError('%s sample did not pass data validation: %s' % (sample_obj[kn.sample_id_col],
@@ -179,7 +185,7 @@ class LoadService:
 
     def _add_genomic_data_to_clinical_dataframe(self, sample_obj):
         """
-        Add the genomic old_data to the "variants" column of the clinical documents
+        Add the genomic data to the "variants" column of the clinical documents
 
         :param sample_obj: {dict}
         :return: {dict} sample_obj updated with genomic columns
