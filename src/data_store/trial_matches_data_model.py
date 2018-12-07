@@ -16,7 +16,7 @@ def adjust_schema(schema):
     return schema
 
 accrual_status_allowed_vals = [s.match_accrual_status_open_val, s.match_accrual_status_closed_val]
-trial_level_allowed_vals = ['step', 'arm', 'dose']
+trial_level_allowed_vals = ['step', 'arm', 'dose_level']
 
 # Match reasons schemas
 mutation_reasons_schema = adjust_schema(sdm.mutations_schema.copy())

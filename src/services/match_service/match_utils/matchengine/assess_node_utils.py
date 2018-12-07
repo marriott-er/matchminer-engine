@@ -60,8 +60,6 @@ class AssessNodeUtils(ClinicalQueries, GenomicQueries, ProjUtils):
         :return: {digraph node}
         """
         criteria = sorted(node['value'].keys())
-        print '---debug---'
-        print criteria
 
         # gene level query (mutations, cnvs, and svs)
         if criteria == [s.mt_hugo_symbol, s.mt_variant_category]:
