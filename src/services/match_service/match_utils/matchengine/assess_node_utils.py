@@ -79,6 +79,10 @@ class AssessNodeUtils(ClinicalQueries, GenomicQueries, ProjUtils):
         elif s.mt_exon in criteria:
             return self._parse_exon_level(node=node)
 
+        # variant-class-level mutation criteria
+        elif s.mt_variant_class in criteria:
+            return self._parse_variant_class_level(node=node)
+
         # cnv criteria
         elif s.mt_cnv_call in criteria:
             return self._parse_cnv_call(node=node)
@@ -307,6 +311,37 @@ class AssessNodeUtils(ClinicalQueries, GenomicQueries, ProjUtils):
             self.variant_category_dict[variant_category]: variant_category,
             self.hugo_symbol_key: gene_name,
             self.transcript_exon_key: exon,
+            self.variant_class_key: variant_class
+        }
+        node[proj] = self.create_genomic_proj(include=include,
+                                              query=node['query'],
+                                              keys=proj_info.keys(),
+                                              vals=proj_info.values())
+        return node
+
+    def _parse_variant_class_level(self, node):
+        """
+        Parse variant-class-level mutation criteria from node
+
+        :param node: {digraph node}
+        :return: {digraph node}
+        """
+        # parse node
+        node['variant_level'] = 'variant_class'
+        variant_class = node['value'][s.mt_variant_class]
+        gene_name = node['value'][s.mt_hugo_symbol]
+        variant_category, include = self._parse_variant_category(node=node)
+
+        # query
+        node['query'] = self.create_variant_class_query(gene_name=gene_name,
+                                                        variant_class=variant_class,
+                                                        include=include)
+
+        # projection
+        proj = 'genomic_%s' % self.proj_dict[include]
+        proj_info = {
+            self.variant_category_dict[variant_category]: variant_category,
+            self.hugo_symbol_key: gene_name,
             self.variant_class_key: variant_class
         }
         node[proj] = self.create_genomic_proj(include=include,

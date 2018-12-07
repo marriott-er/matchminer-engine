@@ -21,7 +21,7 @@ trial_level_allowed_vals = ['step', 'arm', 'dose']
 # Match reasons schemas
 mutation_reasons_schema = adjust_schema(sdm.mutations_schema.copy())
 mutation_reasons_schema[kn.mr_reason_level_col] = {'type': 'string', 'required': True,
-                                                   'allowed': ['gene', 'exon', 'wildcard', 'variant']}
+                                                   'allowed': ['gene', 'variant_class', 'exon', 'wildcard', 'variant']}
 cnv_reasons_schema = adjust_schema(sdm.cnvs_schema.copy())
 sv_reasons_schema = adjust_schema(sdm.svs_schema.copy())
 wt_reasons_schema = adjust_schema(sdm.wts_schema.copy())

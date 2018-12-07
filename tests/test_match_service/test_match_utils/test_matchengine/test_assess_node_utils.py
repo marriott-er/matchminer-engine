@@ -289,6 +289,36 @@ class TestAssessNodeUtils(TestQueryUtilitiesShared):
         }, node[kn.genomic_exclusion_reasons_col]
         assert node['variant_level'] == 'exon'
 
+    def test_parse_variant_class_level(self):
+
+        # inclusive
+        node = {'value': {
+            s.mt_variant_category: s.mt_mut_val,
+            s.mt_hugo_symbol: 'BRAF',
+            s.mt_variant_class: 'Nonsense_Mutation'}
+        }
+        self.a._parse_variant_class_level(node=node)
+        assert 'query' in node
+        assert 'genomic_inclusion_reasons' in node
+        assert node['genomic_inclusion_reasons'][kn.mutation_list_col] == node['query'][kn.mutation_list_col]
+        assert node['variant_level'] == 'variant_class'
+
+        # exclusive sv
+        node = {'value': {
+            s.mt_variant_category: '!%s' % s.mt_mut_val,
+            s.mt_hugo_symbol: 'BRAF',
+            s.mt_variant_class: 'Nonsense_Mutation'}
+        }
+        self.a._parse_variant_class_level(node=node)
+        assert 'query' in node
+        assert kn.genomic_exclusion_reasons_col in node
+        assert node[kn.genomic_exclusion_reasons_col] == {
+            kn.variant_category_col: s.variant_category_mutation_val,
+            kn.hugo_symbol_col: 'BRAF',
+            kn.variant_class_col: 'Nonsense_Mutation'
+        }, node[kn.genomic_exclusion_reasons_col]
+        assert node['variant_level'] == 'variant_class'
+
     def test_parse_cnv_call(self):
 
         # inclusive
