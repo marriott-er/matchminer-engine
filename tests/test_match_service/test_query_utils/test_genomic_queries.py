@@ -195,7 +195,21 @@ class TestGenomicQueries(TestQueryUtilitiesShared):
         assert res2 == ['TEST-SAMPLE-BRAF-MISSENSE', 'TEST-SAMPLE-EGFR-NONSENSE', 'TEST-SAMPLE-NO-MUTATION'], res2
 
         # projections
-        # todo
+        # projections
+        vc = self.gq.variant_category_dict[s.variant_category_variant_class_val]
+        p1 = self.p.create_genomic_proj(include=True, query=q1)
+        p2 = self.p.create_genomic_proj(include=False,
+                                        keys=[vc, self.p.hugo_symbol_key, self.p.variant_class_key],
+                                        vals=[s.variant_category_variant_class_val, 'BRAF', 'Nonsense_Mutation'])
+        assert p1 == {
+            '_id': 0, kn.sample_id_col: 1, kn.mrn_col: 1, kn.vital_status_col: 1,
+            kn.mutation_list_col: q1[kn.mutation_list_col]
+        }, p1
+        assert p2 == {
+            self.p.hugo_symbol_key: 'BRAF',
+            self.p.variant_class_key: 'Nonsense_Mutation',
+            kn.variant_category_col: s.variant_category_variant_class_val
+        }, p2
 
         # clean up
         self.db.testSamples.drop()
