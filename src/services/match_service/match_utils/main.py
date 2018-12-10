@@ -72,6 +72,10 @@ def main(args):
     if args.protocol_nos is not None:
         query = {'protocol_no': {'$in': args.protocol_nos.split(',')}}
 
+    sample_ids = None
+    if args.sample_ids is not None:
+        sample_ids = args.sample_ids.split(',')
+
     trials = utils.find_trials(query=query)
     for trial in trials:
 
@@ -79,6 +83,9 @@ def main(args):
         trial_utils = TrialUtils(trial=trial)
         matchengines = trial_utils.parse_match_trees_from_trial()
         for matchengine in matchengines:
+
+            if sample_ids is not None:
+                matchengine.sample_ids = sample_ids
 
             # create match tree
             matchengine.convert_match_tree_to_digraph()

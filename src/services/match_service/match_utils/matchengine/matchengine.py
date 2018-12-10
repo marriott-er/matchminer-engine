@@ -23,6 +23,7 @@ class MatchEngine(AssessNodeUtils, IntersectResultsUtils):
         self.match_tree = match_tree
         self.diagnosis_level = None
         self.match_tree_nx = None
+        self.sample_ids = None
         self.db = get_db()
 
         self.matches = None
@@ -75,12 +76,12 @@ class MatchEngine(AssessNodeUtils, IntersectResultsUtils):
             # clinical nodes
             if node['type'] == 'clinical':
                 node = self.assess_clinical_node(node=node)
-                node['matches'] = self._search_for_matching_records(node=node)
+                node['matches'] = self._search_for_matching_records(node=node, sample_ids=self.sample_ids)
 
             # genomic nodes
             elif node['type'] == 'genomic':
                 node = self.assess_genomic_node(node=node)
-                node['matches'] = self._search_for_matching_records(node=node)
+                node['matches'] = self._search_for_matching_records(node=node, sample_ids=self.sample_ids)
 
             # join child queries with "and"
             elif node['type'] == 'and' or node['type'] == 'or':
@@ -91,11 +92,12 @@ class MatchEngine(AssessNodeUtils, IntersectResultsUtils):
 
         self.matches = self.match_tree_nx.node[1]['matches']
 
-    def _search_for_matching_records(self, node):
+    def _search_for_matching_records(self, node, sample_ids=None):
         """
         Search for any sample records that match the constructed query
 
         :param node: {digraph node}
+        :param sample_ids: {list of str or null}
         :return: {null}
         """
         # include inclusion reasons in projection
@@ -105,6 +107,10 @@ class MatchEngine(AssessNodeUtils, IntersectResultsUtils):
             proj = node['clinical_inclusion_reasons']
         else:
             proj = self.proj.copy()
+
+        # subset patient data if applicable
+        if sample_ids is not None:
+            node['query'][kn.sample_id_col] = {'$in': sample_ids}
 
         # perform query
         matches = list(self.db[s.sample_collection_name].find(node['query'], proj))
