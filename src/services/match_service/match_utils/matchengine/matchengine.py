@@ -154,18 +154,19 @@ class MatchEngine(AssessNodeUtils, IntersectResultsUtils):
         # todo add versioning
         if len(self.matches) > 0:
             res = self.db[s.trial_match_collection_name].insert_many(self.matches)
-            logging.info('%s | %s | %d trial matches added' % (
-                self.trial_info['protocol_no'],
-                format_match_tree_code(step_code=self.trial_info['step_code'],
-                                       arm_code=self.trial_info['arm_code'],
-                                       dose_code=self.trial_info['dose_code']),
-                len(res.inserted_ids)))
+            # logging.info('%s | %s | %d trial matches added' % (
+            #     self.trial_info['protocol_no'],
+            #     format_match_tree_code(step_code=self.trial_info['step_code'],
+            #                            arm_code=self.trial_info['arm_code'],
+            #                            dose_code=self.trial_info['dose_code']),
+            #     len(res.inserted_ids)))
         else:
-            logging.info('%s | %s | No trial matches' % (
-                self.trial_info['protocol_no'],
-                format_match_tree_code(step_code=self.trial_info['step_code'],
-                                       arm_code=self.trial_info['arm_code'],
-                                       dose_code=self.trial_info['dose_code'])))
+            pass
+            # logging.info('%s | %s | No trial matches' % (
+            #     self.trial_info['protocol_no'],
+            #     format_match_tree_code(step_code=self.trial_info['step_code'],
+            #                            arm_code=self.trial_info['arm_code'],
+            #                            dose_code=self.trial_info['dose_code'])))
 
     def sort_trial_matches(self):
         """
