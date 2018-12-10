@@ -107,7 +107,6 @@ class MatchEngine(AssessNodeUtils, IntersectResultsUtils):
             proj = self.proj.copy()
 
         # perform query
-        node['query']['mrn'] = "702146"  # todo REMOVEME
         matches = list(self.db[s.sample_collection_name].find(node['query'], proj))
 
         # add exclusion reasons to match results
