@@ -153,6 +153,7 @@ class MatchEngine(AssessNodeUtils, IntersectResultsUtils):
 
         # todo add versioning
         if len(self.matches) > 0:
+            self.db[s.trial_match_collection_name].drop()
             res = self.db[s.trial_match_collection_name].insert_many(self.matches)
             logging.info('%s | %s | %d trial matches added' % (
                 self.trial_info['protocol_no'],
