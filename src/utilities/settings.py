@@ -30,7 +30,7 @@ date_cols = [kn.birth_date_col, kn.report_date_col, kn.date_received_at_seq_cent
 
 # sample table settings
 sample_collection_name = 'samples'
-trial_match_collection_name = 'trialmatches'
+trial_match_collection_name = 'trial_matches'
 variant_category_mutation_val = 'MUTATION'
 variant_category_wildcard_mutation_val = 'WILDCARD_MUTATION'
 variant_category_variant_class_val = 'VARIANT_CLASS_MUTATION'
