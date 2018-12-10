@@ -130,3 +130,28 @@ class ProjUtils(ClinicalUtils, GenomicUtils):
                 proj[k] = v
 
         return proj
+
+    def create_any_variant_proj(self, gene_name, include=True, query=None):
+        """
+        Create an inclusive or exclusive genomic projection for an any variant category query
+
+        :param gene_name: {str}
+        :param include: {bool}
+        :param query: {dict or null}
+        :return: {dict}
+        """
+        any_variant_dict = {True: self.create_genomic_proj, False: self.create_any_variant_exclusion_proj}
+        return any_variant_dict[include](include=include, gene_name=gene_name, query=query)
+
+    def create_any_variant_exclusion_proj(self, gene_name, **kwargs):
+        """
+        Create an exclusive genomic projection for an exclusion query against any variant category.
+
+        :param gene_name: {str}
+        :return: {dict}
+        """
+        mutation_proj = self.create_genomic_exclusion_proj(keys=[kn.mutation_list_col, kn.hugo_symbol_col],
+                                                           vals=[s.variant_category_mutation_val, gene_name])
+        cnv_proj = self.create_genomic_exclusion_proj(keys=[kn.cnv_list_col, kn.hugo_symbol_col],
+                                                      vals=[s.variant_category_cnv_val, gene_name])
+        return {'$and': [mutation_proj, cnv_proj]}

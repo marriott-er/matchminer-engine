@@ -302,3 +302,21 @@ class GenomicQueries(QueryUtils, GenomicUtils):
         :return: {dict}
         """
         raise NotImplementedError
+
+    def create_any_variant_query(self, gene_name, include=True):
+        """
+        Create MongoDB query to find samples with any variation in the specified gene.
+
+        :param gene_name: {str}
+        :param include: {bool}
+        :return: {dict}
+        """
+        include_dict = {True: '$or', False: '$and'}
+        return {include_dict[include]: [
+            self.create_gene_level_query(gene_name=gene_name,
+                                         variant_category=s.variant_category_mutation_val,
+                                         include=include),
+            self.create_gene_level_query(gene_name=gene_name,
+                                         variant_category=s.variant_category_cnv_val,
+                                         include=include),
+        ]}

@@ -180,21 +180,34 @@ class AssessNodeUtils(ClinicalQueries, GenomicQueries, ProjUtils):
         if variant_category == s.variant_category_sv_val:
             return self._parse_sv(node=node)
 
-        # query
-        node['query'] = self.create_gene_level_query(gene_name=gene_name,
-                                                     variant_category=variant_category,
-                                                     include=include)
-
-        # projection
         proj = 'genomic_%s' % self.proj_dict[include]
-        proj_info = {
-            self.variant_category_dict[variant_category]: variant_category,
-            self.hugo_symbol_key: gene_name
-        }
-        node[proj] = self.create_genomic_proj(include=include,
-                                              query=node['query'],
-                                              keys=proj_info.keys(),
-                                              vals=proj_info.values())
+
+        # Any Variation
+        if variant_category == s.variant_category_any_val:
+
+            # query
+            node['query'] = self.create_any_variant_query(gene_name=gene_name, include=include)
+
+            # projection
+            node[proj] = self.create_any_variant_proj(gene_name=gene_name, include=include, query=node['query'])
+
+        else:
+
+            # query
+            node['query'] = self.create_gene_level_query(gene_name=gene_name,
+                                                         variant_category=variant_category,
+                                                         include=include)
+
+            # projection
+            proj = 'genomic_%s' % self.proj_dict[include]
+            proj_info = {
+                self.variant_category_dict[variant_category]: variant_category,
+                self.hugo_symbol_key: gene_name
+            }
+            node[proj] = self.create_genomic_proj(include=include,
+                                                  query=node['query'],
+                                                  keys=proj_info.keys(),
+                                                  vals=proj_info.values())
         return node
 
     def _parse_sv(self, node):
@@ -361,7 +374,7 @@ class AssessNodeUtils(ClinicalQueries, GenomicQueries, ProjUtils):
         node['variant_level'] = 'variant'
         gene_name = node['value'][s.mt_hugo_symbol]
         variant_category, include = self._parse_variant_category(node=node)
-        cnv_call = me_utils.normalize_cnv_call_val(node['value'][s.mt_cnv_call])
+        cnv_call = me_utils.normalize_cnv_call_val(me_utils.sanitize_exclusion_vals(node['value'][s.mt_cnv_call]))
 
         # query
         node['query'] = self.create_cnv_query(gene_name=gene_name,

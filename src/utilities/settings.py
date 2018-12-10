@@ -40,6 +40,7 @@ variant_category_sv_val = 'SV'
 variant_category_signature_val = 'SIGNATURE'
 variant_category_wt_val = 'WILDTYPE'
 variant_category_lc_val = 'LOW_COVERAGE'
+variant_category_any_val = 'ANY'
 allowed_variants = [
     variant_category_mutation_val,
     variant_category_cnv_val,
@@ -134,6 +135,7 @@ mt_signature_cols = [
 mt_cnv_val = 'Copy Number Variation'
 mt_mut_val = 'Mutation'
 mt_sv_val = 'Structural Variation'
+mt_any_vc_val = 'Any Variation'
 mt_high_amp_val = 'High Amplification'
 mt_homo_del_val = 'Homozygous Deletion'
 mt_hetero_del_val = 'Heterozygous Deletion'

@@ -176,6 +176,36 @@ class TestAssessNodeUtils(TestQueryUtilitiesShared):
         }
         assert node['variant_level'] == 'gene'
 
+        # inclusive any variant
+        node = {'value': {
+            s.mt_variant_category: s.mt_any_vc_val,
+            s.mt_hugo_symbol: 'BRAF'}
+        }
+        self.a._parse_gene_level(node=node)
+        assert 'query' in node
+        assert 'genomic_inclusion_reasons' in node
+        assert node['genomic_inclusion_reasons']['$or'][0][kn.mutation_list_col] == \
+            node['query']['$or'][0][kn.mutation_list_col]
+        assert node['genomic_inclusion_reasons']['$or'][1][kn.cnv_list_col] == \
+            node['query']['$or'][1][kn.cnv_list_col]
+        assert node['variant_level'] == 'gene'
+
+        # exclusive sv
+        node = {'value': {
+            s.mt_variant_category: '!%s' % s.mt_any_vc_val,
+            s.mt_hugo_symbol: 'BRAF'}
+        }
+        self.a._parse_gene_level(node=node)
+        assert 'query' in node
+        assert kn.genomic_exclusion_reasons_col in node
+        assert node[kn.genomic_exclusion_reasons_col] == {
+            '$and': [
+                {kn.variant_category_col: s.variant_category_mutation_val, kn.hugo_symbol_col: 'BRAF'},
+                {kn.variant_category_col: s.variant_category_cnv_val, kn.hugo_symbol_col: 'BRAF'}
+            ]
+        }
+        assert node['variant_level'] == 'gene'
+
     def test_parse_sv(self):
 
         # inclusive sv

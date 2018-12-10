@@ -22,6 +22,7 @@ class TestMatchEngineUtils(TestQueryUtilitiesShared):
         assert normalize_variant_category_val(s.mt_cnv_val) == s.variant_category_cnv_val
         assert normalize_variant_category_val(s.mt_mut_val) == s.variant_category_mutation_val
         assert normalize_variant_category_val(s.mt_sv_val) == s.variant_category_sv_val
+        assert normalize_variant_category_val(s.mt_any_vc_val) == s.variant_category_any_val
 
     def test_normalize_cnv_call_val(self):
         assert normalize_cnv_call_val(s.mt_high_amp_val) == s.cnv_call_high_amp

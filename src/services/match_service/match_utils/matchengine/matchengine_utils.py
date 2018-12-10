@@ -37,7 +37,8 @@ def normalize_variant_category_val(val):
     variant_category_dict = {
         s.mt_cnv_val: s.variant_category_cnv_val,
         s.mt_mut_val: s.variant_category_mutation_val,
-        s.mt_sv_val: s.variant_category_sv_val
+        s.mt_sv_val: s.variant_category_sv_val,
+        s.mt_any_vc_val: s.variant_category_any_val
     }
     return variant_category_dict[val]
 
