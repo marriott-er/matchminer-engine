@@ -32,7 +32,7 @@ class AssessNodeUtils(ClinicalQueries, GenomicQueries, ProjUtils):
         # diagnosis query
         include = True
         if s.mt_diagnosis in criteria:
-            self._parse_diagnosis(node=node, query=query, proj_info=proj_info)
+            include = self._parse_diagnosis(node=node, query=query, proj_info=proj_info)
 
         # age query
         if s.mt_age in criteria:
@@ -95,7 +95,7 @@ class AssessNodeUtils(ClinicalQueries, GenomicQueries, ProjUtils):
             return self._parse_wildtype(node=node)
 
         # low-coverage criteria
-        # todo build out low coverage criteria logic
+        # todo build low coverage criteria logic
         else:
             raise ValueError('This node does not match an expected format.')
 
@@ -106,7 +106,7 @@ class AssessNodeUtils(ClinicalQueries, GenomicQueries, ProjUtils):
         :param node {digraph node}
         :param query {dict}
         :param proj_info {dict}
-        :return: {null}
+        :return: {bool}
         """
         cancer_type = node['value'][s.mt_diagnosis]
         include = me_utils.assess_inclusion(cancer_type)
@@ -119,6 +119,7 @@ class AssessNodeUtils(ClinicalQueries, GenomicQueries, ProjUtils):
 
         query['$and'].append(subquery)
         proj_info.append({s.mt_diagnosis: cancer_type})
+        return include
 
     def _parse_age(self, node, query, proj_info):
         """

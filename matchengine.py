@@ -23,6 +23,7 @@ if __name__ == '__main__':
     param_trial_format_help = 'File format of input trial old_data. Default is YML.'
     param_sample_format_help = 'File format of input patient old_data (both clinical and genomic files). ' \
                                'Default is CSV.'
+    param_protocol_nos_help = 'Optionally specify a comma-separated list of protocol numbers to match against'
 
     # mode parser.
     parser = argparse.ArgumentParser()
@@ -55,6 +56,7 @@ if __name__ == '__main__':
     subp_p = subp.add_parser('match', help='Matches all trials in database to patients')
     subp_p.add_argument('--mongo-uri', dest='mongo_uri', required=False, default=None, help=param_mongo_uri_help)
     subp_p.add_argument('--mongo-dbname', dest='mongo_dbname', required=False, default=None, help=param_mongo_uri_help)
+    subp_p.add_argument('--protocol-nos', dest='protocol_nos', required=False, help=param_protocol_nos_help)
     subp_p.add_argument('--now', dest="now", required=False, action="store_true", help=param_daemon_help)
     subp_p.add_argument('--json', dest="json_format", required=False, action="store_true", help=param_json_help)
     subp_p.add_argument('--csv', dest="csv_format", required=False, action="store_true", help=param_csv_help)

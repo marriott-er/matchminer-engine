@@ -527,4 +527,92 @@ class TestIntersectResultsUtils(TestQueryUtilitiesShared):
             }
         ], self._print(node['matches'])
 
+    def test_intersect_results_multiple_genomic_matches(self):
 
+        # AND Intersection between a genomic node with multiple matches and a clinical node with a single match
+        # ------------------------------------------------------------------------
+        # parent: AND
+        # child1: OR
+            # (y) DEV-01 variant1: KRAS p.G12D | variant2: NOT ALK SV and WT EGFR
+        # child2: AND
+            # (y) DEV-01: NOT Lung Squamous Cell Carcinoma and Lung Adenocarcinoma
+
+        node = {'type': 'and'}
+        child1 = {
+            'type': 'or',
+            'matches': [
+                {
+                    kn.mrn_col: '01', kn.sample_id_col: 'DEV-01',
+                    kn.mutation_list_col: [
+                        {kn.hugo_symbol_col: 'KRAS', kn.protein_change_col: 'p.G12D'},
+                    ]
+                },
+                {
+                    kn.mrn_col: '01', kn.sample_id_col: 'DEV-01',
+                    kn.genomic_exclusion_reasons_col: [
+                        {kn.hugo_symbol_col: 'ALK', kn.variant_category_col: s.variant_category_sv_val}
+                    ],
+                    kn.wt_genes_col: [
+                        {kn.hugo_symbol_col: 'EGFR', kn.variant_category_col: s.variant_category_wt_val}
+                    ]
+                }
+            ]
+        }
+        child2 = {
+            'type': 'and',
+            'matches': [
+                {
+                    kn.mrn_col: '01', kn.oncotree_primary_diagnosis_name_col: 'Lung Adenocarcinoma',
+                    kn.sample_id_col: 'DEV-01',
+                    kn.clinical_exclusion_reasons_col: [
+                        {
+                            kn.birth_date_col: '>=18',
+                            kn.oncotree_primary_diagnosis_name_col: '!Lung Squamous Cell Carcinoma'
+                        }
+                    ]
+                }
+            ]
+        }
+        self.i.intersect_results(node=node, children=[child1, child2])
+        assert node['matches'] == [
+            {
+                kn.oncotree_primary_diagnosis_name_col: 'Lung Adenocarcinoma',
+                kn.mrn_col: '01',
+                kn.clinical_exclusion_reasons_col: [
+                    {
+                        kn.oncotree_primary_diagnosis_name_col: '!Lung Squamous Cell Carcinoma',
+                        kn.birth_date_col: '>=18'
+                    }
+                ],
+                kn.sample_id_col: 'DEV-01',
+                kn.mutation_list_col: [
+                    {
+                        kn.hugo_symbol_col: 'KRAS',
+                        kn.protein_change_col: 'p.G12D'
+                    }
+                ]
+            },
+            {
+                kn.oncotree_primary_diagnosis_name_col: 'Lung Adenocarcinoma',
+                kn.mrn_col: '01',
+                kn.clinical_exclusion_reasons_col: [
+                    {
+                        kn.oncotree_primary_diagnosis_name_col: '!Lung Squamous Cell Carcinoma',
+                        kn.birth_date_col: '>=18'
+                    }
+                ],
+                kn.genomic_exclusion_reasons_col: [
+                    {
+                        kn.variant_category_col: 'SV',
+                        kn.hugo_symbol_col: 'ALK'
+                    }
+                ],
+                kn.sample_id_col: 'DEV-01',
+                kn.wt_genes_col: [
+                    {
+                        kn.variant_category_col: 'WILDTYPE',
+                        kn.hugo_symbol_col: 'EGFR'
+                    }
+                ]
+            }
+        ], self._print(node['matches'])

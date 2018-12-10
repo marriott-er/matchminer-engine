@@ -107,6 +107,7 @@ class MatchEngine(AssessNodeUtils, IntersectResultsUtils):
             proj = self.proj.copy()
 
         # perform query
+        node['query']['mrn'] = "702146"  # todo REMOVEME
         matches = list(self.db[s.sample_collection_name].find(node['query'], proj))
 
         # add exclusion reasons to match results
@@ -141,7 +142,6 @@ class MatchEngine(AssessNodeUtils, IntersectResultsUtils):
             sample[kn.mr_trial_dose_code_col] = self.trial_info['dose_code'] if 'dose_code' in self.trial_info else None
             sample[kn.mr_coordinating_center_col] = self.trial_info[s.trial_coordinating_center_col]
 
-            print sample
             if not self.validator.validate_document(sample):
                 raise ValueError('%s sample did not pass data validation: %s' % (sample[kn.sample_id_col],
                                                                                  self.validator.errors))

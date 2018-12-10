@@ -19,25 +19,29 @@ class TestAssessNodeUtils(TestQueryUtilitiesShared):
 
         # inclusion
         node = {'value': {s.mt_diagnosis: 'Lung Adenocarcinoma'}}
-        self.a._parse_diagnosis(node=node, query=self.query, proj_info=self.proj_info)
+        i = self.a._parse_diagnosis(node=node, query=self.query, proj_info=self.proj_info)
+        assert i is True
         assert self.query['$and'][0] == {kn.oncotree_primary_diagnosis_name_col: {'$in': ['Lung Adenocarcinoma']}}
         assert self.proj_info[0] == {s.mt_diagnosis: 'Lung Adenocarcinoma'}
         assert node[kn.mr_diagnosis_level_col] == 'specific'
 
         # exclusion
         node = {'value': {s.mt_diagnosis: '!Lung Adenocarcinoma'}}
-        self.a._parse_diagnosis(node=node, query=self.query, proj_info=self.proj_info)
+        i = self.a._parse_diagnosis(node=node, query=self.query, proj_info=self.proj_info)
+        assert i is False
         assert self.query['$and'][1] == {kn.oncotree_primary_diagnosis_name_col: {'$nin': ['Lung Adenocarcinoma']}}
         assert self.proj_info[1] == {s.mt_diagnosis: '!Lung Adenocarcinoma'}
         assert node[kn.mr_diagnosis_level_col] == 'specific'
 
         # _solid_ and _liquid_ expansion capture
         node = {'value': {s.mt_diagnosis: s.oncotree_all_solid_text}}
-        self.a._parse_diagnosis(node=node, query=self.query, proj_info=self.proj_info)
+        i = self.a._parse_diagnosis(node=node, query=self.query, proj_info=self.proj_info)
+        assert i is True
         assert node[kn.mr_diagnosis_level_col] == '_solid_'
 
         node = {'value': {s.mt_diagnosis: s.oncotree_all_liquid_text}}
-        self.a._parse_diagnosis(node=node, query=self.query, proj_info=self.proj_info)
+        i = self.a._parse_diagnosis(node=node, query=self.query, proj_info=self.proj_info)
+        assert i is True
         assert node[kn.mr_diagnosis_level_col] == '_liquid_'
 
     def test_parse_age(self):

@@ -20,16 +20,15 @@ def export_results(args, file_format, outpath):
     """
     cmd = 'mongoexport ' \
           '--uri {mongo_uri} ' \
-          '--db {mongo_dbname} ' \
           '--collection {trial_match_collection} ' \
           '--fields {trial_match_fields} ' \
           '--type {file_format} ' \
           '--out {outpath}'.format(mongo_uri=args.mongo_uri if args.mongo_uri is not None else s.MONGO_URI,
-                                   mongo_dbname=args.mongo_dbname if args.mongo_dbname is not None else s.MONGO_DBNAME,
                                    trial_match_collection=s.trial_match_collection_name,
-                                   trial_match_fields=trial_matches_schema.keys(),
+                                   trial_match_fields=','.join(trial_matches_schema.keys()),
                                    file_format=file_format,
                                    outpath='%s.%s' % (outpath, file_format))
+    logging.info(cmd)
     subprocess.call(cmd.split(' '))
 
 
@@ -69,8 +68,11 @@ def main(args):
     utils = SharedUtils(args.mongo_uri, args.mongo_dbname)
 
     # parse input arguments
-    trials = utils.find_trials()
-    print '---debug---'
+    query = None
+    if args.protocol_nos is not None:
+        query = {'protocol_no': {'$in': args.protocol_nos.split(',')}}
+
+    trials = utils.find_trials(query=query)
     for trial in trials:
 
         # parse trial document for all match trees
