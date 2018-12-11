@@ -184,7 +184,7 @@ class LoadService:
                         mutation[col] = int(mutation[col])
 
             # validate data with samples schema
-            if sample_obj['sampleId'] == 'BL-17-E26202':
+            if sample_obj['sampleId'] == 'BL-17-J11189':
                 import json
                 print json.dumps(sample_obj, sort_keys=True, indent=4, default=str)
 
