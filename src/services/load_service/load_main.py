@@ -184,6 +184,10 @@ class LoadService:
                         mutation[col] = int(mutation[col])
 
             # validate data with samples schema
+            if sample_obj['sampleId'] == 'BL-17-E26202':
+                import json
+                print json.dumps(sample_obj, sort_keys=True, indent=4, default=str)
+
             if not self.validator.validate_document(sample_obj):
                 raise ValueError('%s sample did not pass data validation: %s' % (sample_obj[kn.sample_id_col],
                                                                                  self.validator.errors))
