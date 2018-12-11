@@ -169,10 +169,15 @@ class LoadService:
 
             # convert integer columns to int
             print '---debug---'
-            print [k for k, v in self.p.cdtypes.iteritems() if v == int]
             for col in [k for k, v in self.p.cdtypes.iteritems() if v == int]:
                 if col in sample_obj and sample_obj[col]:
-                    sample_obj[col] = int(sample_obj[col])
+                    try:
+                        sample_obj[col] = int(sample_obj[col])
+                    except ValueError as e:
+                        print 'col', col
+                        print 'sample_obj', sample_obj[col]
+                        print 'why isnt anything easy', pd.notnull(sample_obj[col])
+                        raise e
 
             # Special type edge case for chromosome column
             for mutation in sample_obj[kn.mutation_list_col]:
