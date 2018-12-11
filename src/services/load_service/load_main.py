@@ -168,16 +168,9 @@ class LoadService:
                     sample_obj[col] = dt.datetime.strptime(str(sample_obj[col]), self.date_format)
 
             # convert integer columns to int
-            print '---debug---'
             for col in [k for k, v in self.p.cdtypes.iteritems() if v == int]:
                 if col in sample_obj and sample_obj[col]:
-                    try:
-                        sample_obj[col] = int(sample_obj[col])
-                    except ValueError as e:
-                        print 'col', col
-                        print 'sample_obj', sample_obj[col]
-                        print 'why isnt anything easy', pd.notnull(sample_obj[col])
-                        raise e
+                    sample_obj[col] = int(sample_obj[col])
 
             # Special type edge case for chromosome column
             for mutation in sample_obj[kn.mutation_list_col]:
