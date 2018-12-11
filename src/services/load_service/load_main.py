@@ -154,7 +154,10 @@ class LoadService:
         logging.info('Adding clinical data to mongo...')
         cols = [i for i in self.p.clinical_df.columns if i in s.rename_clinical.values()]
         clinical_json = dataframe_to_json(df=self.p.clinical_df[cols])
-        for sample_obj in clinical_json:
+        for idx, sample_obj in enumerate(clinical_json):
+
+            if idx % 1000 == 0:
+                logging.info('Processed %d cases' % idx)
 
             # add genomic data
             sample_obj = self._add_genomic_data_to_clinical_dataframe(sample_obj=sample_obj)
@@ -186,7 +189,7 @@ class LoadService:
                                                                                  self.validator.errors))
 
         # insert into mongo
-        self.db[s.sample_collection_name].insert(clinical_json)
+        self.db[s.sample_collection_name].insert_many(clinical_json)
 
     def _add_genomic_data_to_clinical_dataframe(self, sample_obj):
         """

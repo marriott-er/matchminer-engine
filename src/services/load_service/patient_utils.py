@@ -25,7 +25,9 @@ class PatientUtils:
             kn.mrn_col: str,
             kn.alt_mrn_col: str,
             kn.pdf_layout_version_col: int,
-            kn.ord_physician_npi_col: int
+            kn.ord_physician_npi_col: int,
+            kn.metamain_count_col: int,
+            kn.case_count_col: int
         }
         self.gdtypes = {
             kn.coverage_col: int,
