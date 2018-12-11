@@ -24,7 +24,8 @@ class PatientUtils:
         self.cdtypes = {
             kn.mrn_col: str,
             kn.alt_mrn_col: str,
-            kn.pdf_layout_version_col: int
+            kn.pdf_layout_version_col: int,
+            kn.ord_physician_npi_col: int
         }
         self.gdtypes = {
             kn.coverage_col: int,
