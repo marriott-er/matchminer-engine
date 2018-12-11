@@ -166,7 +166,7 @@ class LoadService:
 
             # convert integer columns to int
             for col in [k for k, v in self.p.cdtypes.iteritems() if v == int]:
-                if col in sample_obj and sample_obj:
+                if col in sample_obj and sample_obj[col]:
                     sample_obj[col] = int(sample_obj[col])
 
             # Special type edge case for chromosome column
