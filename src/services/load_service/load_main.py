@@ -168,6 +168,8 @@ class LoadService:
                     sample_obj[col] = dt.datetime.strptime(str(sample_obj[col]), self.date_format)
 
             # convert integer columns to int
+            print '---debug---'
+            print [k for k, v in self.p.cdtypes.iteritems() if v == int]
             for col in [k for k, v in self.p.cdtypes.iteritems() if v == int]:
                 if col in sample_obj and sample_obj[col]:
                     sample_obj[col] = int(sample_obj[col])
