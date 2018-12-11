@@ -156,7 +156,7 @@ class LoadService:
         clinical_json = dataframe_to_json(df=self.p.clinical_df[cols])
         for idx, sample_obj in enumerate(clinical_json):
 
-            if idx % 1000 == 0:
+            if idx % 1000 == 0 and idx != 0:
                 logging.info('Processed %d cases' % idx)
 
             # add genomic data
