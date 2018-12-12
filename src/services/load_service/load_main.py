@@ -154,6 +154,10 @@ class LoadService:
         logging.info('Adding clinical data to mongo...')
         cols = [i for i in self.p.clinical_df.columns if i in s.rename_clinical.values()]
         clinical_json = dataframe_to_json(df=self.p.clinical_df[cols])
+
+        print '---debug---'
+        print [k for k, v in self.p.cdtypes.iteritems() if v == int]
+
         for idx, sample_obj in enumerate(clinical_json):
 
             if idx % 1000 == 0 and idx != 0:
@@ -165,7 +169,19 @@ class LoadService:
             # convert date columns as datetime object
             for col in s.date_cols:
                 if col in sample_obj:
+
+                    if sample_obj['sampleId'] == 'BL-17-J11189':
+                        print 'we out here'
+                        print col
+                        print sample_obj[col]
+                        print type(sample_obj[col])
+                        print '---'
+
                     sample_obj[col] = dt.datetime.strptime(str(sample_obj[col]), self.date_format)
+
+                    if sample_obj['sampleId'] == 'BL-17-J11189':
+                        print sample_obj[col]
+                        print type(sample_obj[col])
 
             # convert integer columns to int
             for col in [k for k, v in self.p.cdtypes.iteritems() if v == int]:
