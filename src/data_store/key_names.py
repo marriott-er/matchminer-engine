@@ -34,6 +34,24 @@ actionability_col = 'actionability'
 
 # SVs key names
 sv_comment_col = 'structuralVariantComment'
+sv_type_col = 'svType'
+sv_lp_gene = 'lpHugoSymbol'
+sv_lp_chromosome_col = 'lpChromosome'
+sv_lp_strand = 'lpStrand'
+sv_lp_intergenic = 'lpIntergenic'
+sv_lp_position = 'lpPosition'
+sv_lp_band = 'lpBand'
+sv_lp_type = 'lpType'
+sv_lp_type_number = 'lpTypeNumber'
+sv_rp_gene = 'rpHugoSymbol'
+sv_rp_chromosome_col = 'rpChromosome'
+sv_rp_strand = 'rpStrand'
+sv_rp_intergenic = 'rpIntergenic'
+sv_rp_position = 'rpPosition'
+sv_rp_band = 'rpBand'
+sv_rp_type = 'rpType'
+sv_rp_type_number = 'rpTypeNumber'
+
 
 # Low Coverage key names
 coverage_type_col = 'coverageType'

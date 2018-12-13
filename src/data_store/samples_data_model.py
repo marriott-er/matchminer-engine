@@ -56,7 +56,25 @@ cnvs_schema = {
 
 svs_schema = {
     kn.variant_category_col: variant_category_rules,
-    kn.sv_comment_col: {'type': 'string', 'required': True},
+    kn.sv_comment_col: {'type': 'string', 'required': False},
+    kn.sv_type_col: {'type': 'string', 'allowed': ['Deletion', 'rearrangement', 'indel']},
+    kn.sv_lp_gene: {'type': 'string', 'required': True},
+    kn.sv_lp_chromosome_col: {'type': 'string'},
+    kn.sv_lp_strand: {'type': 'string', 'allowed': ['+', '-', None], 'nullable': True},
+    kn.sv_lp_intergenic: {'type': 'boolean', 'nullable': True},
+    kn.sv_lp_position: {'type': 'integer'},
+    kn.sv_lp_band: {'type': 'string'},
+    kn.sv_lp_type: {'type': 'string', 'allowed': ['intron', 'exon', None], 'nullable': True},
+    kn.sv_lp_type_number: {'type': 'integer'},
+    kn.sv_rp_gene: {'type': 'string', 'required': True},
+    kn.sv_rp_chromosome_col: {'type': 'string'},
+    kn.sv_rp_strand: {'type': 'string', 'allowed': ['+', '-', None], 'nullable': True},
+    kn.sv_rp_intergenic: {'type': 'boolean', 'nullable': True},
+    kn.sv_rp_position: {'type': 'integer'},
+    kn.sv_rp_band: {'type': 'string'},
+    kn.sv_rp_type: {'type': 'string', 'allowed': ['intron', 'exon', None], 'nullable': True},
+    kn.sv_rp_type_number: {'type': 'integer'},
+
 }
 wts_schema = {
     kn.variant_category_col: variant_category_rules,
