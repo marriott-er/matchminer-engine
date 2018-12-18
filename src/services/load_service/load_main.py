@@ -169,19 +169,7 @@ class LoadService:
             # convert date columns as datetime object
             for col in s.date_cols:
                 if col in sample_obj:
-
-                    if sample_obj['sampleId'] == 'BL-17-J11189':
-                        print 'we out here'
-                        print col
-                        print sample_obj[col]
-                        print type(sample_obj[col])
-                        print '---'
-
                     sample_obj[col] = dt.datetime.strptime(str(sample_obj[col]), self.date_format)
-
-                    if sample_obj['sampleId'] == 'BL-17-J11189':
-                        print sample_obj[col]
-                        print type(sample_obj[col])
 
             # convert integer columns to int
             for col in [k for k, v in self.p.cdtypes.iteritems() if v == int]:
@@ -200,13 +188,13 @@ class LoadService:
                         mutation[col] = int(mutation[col])
 
             # validate data with samples schema
-            if sample_obj['sampleId'] == 'BL-17-J11189':
+            try:
+                if not self.validator.validate_document(sample_obj):
+                    raise ValueError('%s sample did not pass data validation: %s' % (sample_obj[kn.sample_id_col],
+                                                                                     self.validator.errors))
+            except ValueError:
                 import json
                 print json.dumps(sample_obj, sort_keys=True, indent=4, default=str)
-
-            if not self.validator.validate_document(sample_obj):
-                raise ValueError('%s sample did not pass data validation: %s' % (sample_obj[kn.sample_id_col],
-                                                                                 self.validator.errors))
 
         # insert into mongo
         self.db[s.sample_collection_name].insert_many(clinical_json)
