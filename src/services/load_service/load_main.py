@@ -157,6 +157,7 @@ class LoadService:
 
         print '---debug---'
         print [k for k, v in self.p.cdtypes.iteritems() if v == int]
+        # todo removeme^^
 
         for idx, sample_obj in enumerate(clinical_json):
 
@@ -192,9 +193,10 @@ class LoadService:
                 if not self.validator.validate_document(sample_obj):
                     raise ValueError('%s sample did not pass data validation: %s' % (sample_obj[kn.sample_id_col],
                                                                                      self.validator.errors))
-            except ValueError:
+            except ValueError as e:
                 import json
                 print json.dumps(sample_obj, sort_keys=True, indent=4, default=str)
+                raise ValueError(e)
 
         # insert into mongo
         self.db[s.sample_collection_name].insert_many(clinical_json)
