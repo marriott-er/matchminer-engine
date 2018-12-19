@@ -179,7 +179,7 @@ class LoadService:
                     print 'col', col
                     print 'val', sample_obj[col]
 
-                if col in sample_obj and sample_obj[col]:
+                if col in sample_obj and pd.notnull(sample_obj[col]):
                     sample_obj[col] = int(sample_obj[col])
 
                 if sample_obj['sampleId'] == "BL-17-E26202":
