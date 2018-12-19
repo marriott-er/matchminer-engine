@@ -184,6 +184,7 @@ class LoadService:
 
                 if sample_obj['sampleId'] == "BL-17-E26202":
                     print 'adjusted val', int(sample_obj[col])
+                    print
 
             # Special type edge case for chromosome column
             for mutation in sample_obj[kn.mutation_list_col]:
@@ -196,8 +197,9 @@ class LoadService:
                     if col in mutation and pd.notnull(mutation[col]):
                         mutation[col] = int(mutation[col])
 
-            if sample_obj['sampleId'] == 'BL017-E26202':
+            if sample_obj['sampleId'] == 'BL-17-E26202':
                 print 'adjusted val 2', int(sample_obj['metamainCount'])
+                print
 
             # validate data with samples schema
             try:
