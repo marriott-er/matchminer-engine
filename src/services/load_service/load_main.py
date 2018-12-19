@@ -183,7 +183,7 @@ class LoadService:
                     sample_obj[col] = int(sample_obj[col])
 
                 if sample_obj['sampleId'] == "BL-17-E26202":
-                    print 'adjusted val', int(sample_obj[col])
+                    print 'adjusted val', sample_obj[col]
                     print
 
             # Special type edge case for chromosome column
@@ -198,12 +198,15 @@ class LoadService:
                         mutation[col] = int(mutation[col])
 
             if sample_obj['sampleId'] == 'BL-17-E26202':
-                print 'adjusted val 2', int(sample_obj['metamainCount'])
+                print 'adjusted val 2 | ', sample_obj['metamainCount']
                 print
 
             # validate data with samples schema
             try:
                 # todo here see ip4 screen logs to continue debugging
+                if sample_obj['sampleId'] == 'BL-17-E26202':
+                    print 'adjusted val 3 | ', sample_obj['metamainCount']
+                    print
                 if not self.validator.validate_document(sample_obj):
                     raise ValueError('%s sample did not pass data validation: %s' % (sample_obj[kn.sample_id_col],
                                                                                      self.validator.errors))
