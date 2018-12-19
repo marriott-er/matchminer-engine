@@ -174,6 +174,13 @@ class LoadService:
 
             # convert integer columns to int
             for col in [k for k, v in self.p.cdtypes.iteritems() if v == int]:
+
+                if sample_obj['sampleId'] == "BL-17-E26202":
+                    print 'col', col
+                    print 'val', sample_obj[col]
+                    print 'adjusted val', int(sample_obj[col])
+                    print
+
                 if col in sample_obj and sample_obj[col]:
                     sample_obj[col] = int(sample_obj[col])
 
@@ -190,6 +197,7 @@ class LoadService:
 
             # validate data with samples schema
             try:
+                # todo here see ip4 screen logs to continue debugging
                 if not self.validator.validate_document(sample_obj):
                     raise ValueError('%s sample did not pass data validation: %s' % (sample_obj[kn.sample_id_col],
                                                                                      self.validator.errors))
