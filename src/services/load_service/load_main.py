@@ -195,6 +195,9 @@ class LoadService:
                     if col in mutation and pd.notnull(mutation[col]):
                         mutation[col] = int(mutation[col])
 
+            if sample_obj['sampleId'] == 'BL017-E26202':
+                print 'adjusted val', int(sample_obj['metamainCount'])
+
             # validate data with samples schema
             try:
                 # todo here see ip4 screen logs to continue debugging
