@@ -155,10 +155,6 @@ class LoadService:
         cols = [i for i in self.p.clinical_df.columns if i in s.rename_clinical.values()]
         clinical_json = dataframe_to_json(df=self.p.clinical_df[cols])
 
-        print '---debug---'
-        print [k for k, v in self.p.cdtypes.iteritems() if v == int]
-        # todo removeme^^
-
         for idx, sample_obj in enumerate(clinical_json):
 
             if idx % 1000 == 0 and idx != 0:
@@ -175,16 +171,8 @@ class LoadService:
             # convert integer columns to int
             for col in [k for k, v in self.p.cdtypes.iteritems() if v == int]:
 
-                if sample_obj['sampleId'] == "BL-17-E26202":
-                    print 'col', col
-                    print 'val', sample_obj[col]
-
                 if col in sample_obj and pd.notnull(sample_obj[col]):
                     sample_obj[col] = int(sample_obj[col])
-
-                if sample_obj['sampleId'] == "BL-17-E26202":
-                    print 'adjusted val', sample_obj[col]
-                    print
 
             # Special type edge case for chromosome column
             for mutation in sample_obj[kn.mutation_list_col]:
@@ -197,23 +185,10 @@ class LoadService:
                     if col in mutation and pd.notnull(mutation[col]):
                         mutation[col] = int(mutation[col])
 
-            if sample_obj['sampleId'] == 'BL-17-E26202':
-                print 'adjusted val 2 | ', sample_obj['metamainCount']
-                print
-
             # validate data with samples schema
-            try:
-                # todo here see ip4 screen logs to continue debugging
-                if sample_obj['sampleId'] == 'BL-17-E26202':
-                    print 'adjusted val 3 | ', sample_obj['metamainCount']
-                    print
-                if not self.validator.validate_document(sample_obj):
-                    raise ValueError('%s sample did not pass data validation: %s' % (sample_obj[kn.sample_id_col],
-                                                                                     self.validator.errors))
-            except ValueError as e:
-                import json
-                print json.dumps(sample_obj, sort_keys=True, indent=4, default=str)
-                raise ValueError(e)
+            if not self.validator.validate_document(sample_obj):
+                raise ValueError('%s sample did not pass data validation: %s' % (sample_obj[kn.sample_id_col],
+                                                                                 self.validator.errors))
 
         # insert into mongo
         self.db[s.sample_collection_name].insert_many(clinical_json)
