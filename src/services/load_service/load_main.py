@@ -157,38 +157,43 @@ class LoadService:
 
         for idx, sample_obj in enumerate(clinical_json):
 
-            if idx % 1000 == 0 and idx != 0:
-                logging.info('Processed %d cases' % idx)
+            try:
 
-            # add genomic data
-            sample_obj = self._add_genomic_data_to_clinical_dataframe(sample_obj=sample_obj)
+                if idx % 1000 == 0 and idx != 0:
+                    logging.info('Processed %d cases' % idx)
 
-            # convert date columns as datetime object
-            for col in s.date_cols:
-                if col in sample_obj:
-                    sample_obj[col] = dt.datetime.strptime(str(sample_obj[col]), self.date_format)
+                # add genomic data
+                sample_obj = self._add_genomic_data_to_clinical_dataframe(sample_obj=sample_obj)
 
-            # convert integer columns to int
-            for col in [k for k, v in self.p.cdtypes.iteritems() if v == int]:
+                # convert date columns as datetime object
+                for col in s.date_cols:
+                    if col in sample_obj:
+                        sample_obj[col] = dt.datetime.strptime(str(sample_obj[col]), self.date_format)
 
-                if col in sample_obj and pd.notnull(sample_obj[col]):
-                    sample_obj[col] = int(sample_obj[col])
+                # convert integer columns to int
+                for col in [k for k, v in self.p.cdtypes.iteritems() if v == int]:
 
-            # Special type edge case for chromosome column
-            for mutation in sample_obj[kn.mutation_list_col]:
-                if kn.chromosome_col in mutation:
-                    mutation[kn.chromosome_col] = handle_chromosome_column(mutation[kn.chromosome_col])
+                    if col in sample_obj and pd.notnull(sample_obj[col]):
+                        sample_obj[col] = int(sample_obj[col])
 
-                # Integers are stored as floats in the dataframe because Pandas can't handle null values in a column
-                # with an integer data type
-                for col in [k for k, v in self.p.gdtypes.iteritems() if v == int]:
-                    if col in mutation and pd.notnull(mutation[col]):
-                        mutation[col] = int(mutation[col])
+                # Special type edge case for chromosome column
+                for mutation in sample_obj[kn.mutation_list_col]:
+                    if kn.chromosome_col in mutation:
+                        mutation[kn.chromosome_col] = handle_chromosome_column(mutation[kn.chromosome_col])
 
-            # validate data with samples schema
-            if not self.validator.validate_document(sample_obj):
-                raise ValueError('%s sample did not pass data validation: %s' % (sample_obj[kn.sample_id_col],
-                                                                                 self.validator.errors))
+                    # Integers are stored as floats in the dataframe because Pandasl can't handle null values in a column
+                    # with an integer data type
+                    for col in [k for k, v in self.p.gdtypes.iteritems() if v == int]:
+                        if col in mutation and pd.notnull(mutation[col]):
+                            mutation[col] = int(mutation[col])
+
+                # validate data with samples schema
+                if not self.validator.validate_document(sample_obj):
+                    raise ValueError('%s sample did not pass data validation: %s' % (sample_obj[kn.sample_id_col],
+                                                                                     self.validator.errors))
+            except ValueError as e:
+                logging.warning('Issue loading record. Skipped: %s' % sample_obj[kn.sample_id_col])
+                logging.warning(e)
 
         # insert into mongo
         self.db[s.sample_collection_name].insert_many(clinical_json)
