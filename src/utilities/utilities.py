@@ -70,7 +70,7 @@ def handle_vc(vc):
     :param vc: {str}
     :return: {str}
     """
-    return s.variant_category_wt_val if vc == 'WT' else vc
+    return s.variant_category_wt_val if vc is None or vc == 'WT' else vc
 
 
 def get_coordinating_center(trial):

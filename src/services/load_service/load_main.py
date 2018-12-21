@@ -181,7 +181,7 @@ class LoadService:
                     if kn.chromosome_col in mutation:
                         mutation[kn.chromosome_col] = handle_chromosome_column(mutation[kn.chromosome_col])
 
-                    # Integers are stored as floats in the dataframe because Pandasl can't handle null values in a column
+                    # Integers are stored as floats in the dataframe because Pandas can't handle null values in a column
                     # with an integer data type
                     for col in [k for k, v in self.p.gdtypes.iteritems() if v == int]:
                         if col in mutation and pd.notnull(mutation[col]):
