@@ -4,6 +4,7 @@ import pandas as pd
 
 from src.utilities import settings as s
 from src.data_store import key_names as kn
+from src.data_store import samples_data_model as sdm
 from src.utilities.utilities import set_dtypes
 from src.utilities.utilities import load_table_in_chunks
 
@@ -23,18 +24,34 @@ class PatientUtils:
         self.genomic_df = None
         self.cdtypes = {
             kn.mrn_col: str,
-            kn.alt_mrn_col: str,
-            kn.pdf_layout_version_col: int,
-            kn.ord_physician_npi_col: int,
-            kn.metamain_count_col: int,
-            kn.case_count_col: int,
-            kn.copy_count_col: int
+            kn.alt_mrn_col: str
         }
+        for k, v in sdm.samples_schema.iteritems():
+            if v['type'] == 'integer':
+                self.cdtypes[k] = int
+
         self.gdtypes = {
             kn.coverage_col: int,
             kn.transcript_exon_col: int,
+            kn.position_col: int,
+            kn.tier_col: int,
+            kn.copy_count_col: int,
+            kn.cnv_row_id_col: int,
+            kn.sv_lp_position: int,
             kn.chromosome_col: str,
         }
+        genomic_schemas = [
+            sdm.mutations_schema,
+            sdm.cnvs_schema,
+            sdm.svs_schema,
+            sdm.wts_schema,
+            sdm.low_coverage_schema
+        ]
+        for schema in genomic_schemas:
+            for k, v in schema.iteritems():
+                if v['type'] == 'integer':
+                    self.gdtypes[k] = int
+
         self.true_values = ['TRUE', 'True', 'true']
         self.false_values = ['FALSE', 'False', 'false']
         self.db = db
