@@ -178,7 +178,8 @@ class LoadService:
 
                 # Special type edge case for chromosome column
                 vc_lists = [kn.mutation_list_col, kn.cnv_list_col, kn.sv_list_col, kn.wt_genes_col,
-                       kn.mr_low_coverage_list_col]
+                            kn.pertinent_negatives_list_col, kn.pertinent_undercovered_list_col,
+                            kn.additional_undercovered_list_col]
                 for vc_list in vc_lists:
                     for vc in sample_obj[vc_list]:
                         if kn.chromosome_col in vc:
