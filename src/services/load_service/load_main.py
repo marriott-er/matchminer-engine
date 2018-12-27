@@ -177,15 +177,18 @@ class LoadService:
                         sample_obj[col] = int(sample_obj[col])
 
                 # Special type edge case for chromosome column
-                for mutation in sample_obj[kn.mutation_list_col]:
-                    if kn.chromosome_col in mutation:
-                        mutation[kn.chromosome_col] = handle_chromosome_column(mutation[kn.chromosome_col])
+                vc_lists = [kn.mutation_list_col, kn.cnv_list_col, kn.sv_list_col, kn.wt_genes_col,
+                       kn.mr_low_coverage_list_col]
+                for vc_list in vc_lists:
+                    for vc in sample_obj[vc_list]:
+                        if kn.chromosome_col in vc:
+                            vc[kn.chromosome_col] = handle_chromosome_column(vc[kn.chromosome_col])
 
-                    # Integers are stored as floats in the dataframe because Pandas can't handle null values in a column
-                    # with an integer data type
-                    for col in [k for k, v in self.p.gdtypes.iteritems() if v == int]:
-                        if col in mutation and pd.notnull(mutation[col]):
-                            mutation[col] = int(mutation[col])
+                        # Integers are stored as floats in the dataframe because
+                        # Pandas can't handle null values in a column with an integer data type
+                        for col in [k for k, v in self.p.gdtypes.iteritems() if v == int]:
+                            if col in vc and pd.notnull(vc[col]):
+                                vc[col] = int(vc[col])
 
                 # validate data with samples schema
                 if not self.validator.validate_document(sample_obj):
