@@ -112,8 +112,14 @@ class MatchEngine(AssessNodeUtils, IntersectResultsUtils):
         if sample_ids is not None:
             node['query'][kn.sample_id_col] = {'$in': sample_ids}
 
+        print '--debug--'
+        print
+        print node['query']
+
         # perform query
         matches = list(self.db[s.sample_collection_name].find(node['query'], proj))
+
+        print len(matches)
 
         # add exclusion reasons to match results
         for match in matches:
@@ -148,7 +154,9 @@ class MatchEngine(AssessNodeUtils, IntersectResultsUtils):
             sample[kn.mr_coordinating_center_col] = self.trial_info[s.trial_coordinating_center_col]
 
             print '--debug--'
-            print sample
+            import json
+            print
+            print json.dumps(sample, sort_keys=True, indent=4, default=str)
 
             if not self.validator.validate_document(sample):
                 raise ValueError('%s sample did not pass data validation: %s' % (sample[kn.sample_id_col],
