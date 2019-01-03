@@ -112,14 +112,8 @@ class MatchEngine(AssessNodeUtils, IntersectResultsUtils):
         if sample_ids is not None:
             node['query'][kn.sample_id_col] = {'$in': sample_ids}
 
-        print '--debug--'
-        print
-        print node['query']
-
         # perform query
         matches = list(self.db[s.sample_collection_name].find(node['query'], proj))
-
-        print len(matches)
 
         # add exclusion reasons to match results
         for match in matches:
