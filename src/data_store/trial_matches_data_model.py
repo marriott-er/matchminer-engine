@@ -55,7 +55,7 @@ trial_matches_schema = {
     # clinical reasons for matching
     kn.oncotree_primary_diagnosis_name_col: {'type': 'string', 'required': True},
     kn.mr_diagnosis_level_col: {'type': 'string', 'allowed': ['_solid_', '_liquid_', 'specific', None]},
-    kn.birth_date_col: {'type': 'datetime', 'required': True},
+    kn.birth_date_col: {'type': 'datetime', 'required': False},
     kn.gender_col: {'type': 'string', 'allowed': sdm.gender_allowed_vals},
 
     # mutational signature information
