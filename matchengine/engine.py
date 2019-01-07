@@ -519,34 +519,35 @@ class MatchEngine(object):
             # STEP #
             for step in trial['treatment_list']['step']:
                 if 'match' in step:
-                    trial_matches = self._assess_match(mrn_map, trial_matches, trial, step, 'step', trial_status)
+                     self._assess_match(mrn_map, trial, step, 'step', trial_status)
 
                 # ARM #
                 for arm in step['arm']:
                     if 'match' in arm:
-                        trial_matches = self._assess_match(mrn_map, trial_matches, trial, arm, 'arm', trial_status)
+                        self._assess_match(mrn_map, trial, arm, 'arm', trial_status)
 
                     # DOSE #
                     for dose in arm['dose_level']:
                         if 'match' in dose:
-                            trial_matches = self._assess_match(mrn_map, trial_matches, trial, dose, 'dose', trial_status)
+                            self._assess_match(mrn_map, trial, dose, 'dose', trial_status)
 
         logging.info('Sorting trial matches')
-        trial_matches = add_sort_order(trial_matches)
+        trial_matches = add_sort_order(self.db)
 
         # add to db
         logging.info('Adding trial matches to database')
         add_matches(trial_matches, self.db)
 
+        # TODO remove and rename trial_match_temp to trial_match
+
         return trial_matches
 
-    def _assess_match(self, mrn_map, trial_matches, trial, trial_segment, match_segment, trial_status):
+    def _assess_match(self, mrn_map, trial, trial_segment, match_segment, trial_status):
         """
         Given a trial's match tree, finds all patients that matches to it and records the step, arm, or dose
         internal id that it matched to along with the genomic alteration that matched.
 
         :param mrn_map: Dictionary mapping patient sample ids to MRNs
-        :param trial_matches: Dictionary containing the matches
         :param trial: Trial document
         :param trial_segment: Either the step, arm, or dose segment of the trial document
         :param match_segment: Marker indicating if segment is step, arm, or dose
@@ -615,10 +616,10 @@ class MatchEngine(object):
                     match['internal_id'] = str(trial_segment['step_internal_id'])
                     match['code'] = trial_segment['step_code']
 
-                # add to trial_matches
-                trial_matches.append(match)
+                # insert into db trial_matches_tmp
+                self.db.trial_match_tmp.insert(match)
 
-        return trial_matches
+        # return trial_matches
 
     @staticmethod
     def _search_oncotree_diagnosis(onco_tree, c):

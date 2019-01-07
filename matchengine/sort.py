@@ -6,7 +6,7 @@ import logging
 logging.basicConfig(level=logging.DEBUG, format='[%(levelname)s] %(message)s', )
 
 
-def add_sort_order(trial_matches):
+def add_sort_order(db):
     """
     Aggregate all the trial matches by MRN and provide a sort order using the following logic:
     (1) First sort by tier
@@ -20,7 +20,7 @@ def add_sort_order(trial_matches):
         (1) sort_order: Order in which to display the matches
         (2) freq: Frequency with which this trial match appears throughout the entire patient cohort
     """
-
+    trial_matches = [item for item in db.trial_match_tmp.find()]
     trial_match_df = pd.DataFrame.from_dict(trial_matches)
 
     if len(trial_match_df.index) == 0:
@@ -63,7 +63,9 @@ def add_sort_order(trial_matches):
 
         master_sort_order = final_sort(sort_order, master_sort_order)
 
-    trial_match_df['sort_order'] = trial_match_df.apply(lambda x: master_sort_order[(x['sample_id'], x['protocol_no'])]
+        # transform report date from ISO to string
+
+    trial_match_df['sort_order'] = trial_match_df.apply(lambda x: master_sort_order[(x['sample_id'], x['protocol_no'])] # move inside loop
                                                         if (x['sample_id'], x['protocol_no']) in master_sort_order
                                                         else -1, axis=1)
     return trial_match_df
